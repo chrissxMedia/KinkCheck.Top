@@ -1,3 +1,6 @@
+import type { AstroCookies } from "astro";
+import { createClient, type User } from "@supabase/supabase-js";
+
 export const ratings: [string, string][] = [
     ["i dont know", "#d0d0d0"],
     ["favorite", "#00e0e0"],
@@ -170,4 +173,33 @@ export function decodeKinkCheck({ kinks, version }: metadata, s: string): kinkch
         });
     });
     return { ratings };
+}
+
+export const supabase = createClient(
+    import.meta.env.SUPABASE_URL,
+    import.meta.env.SUPABASE_ANON_KEY,
+    { auth: { flowType: "pkce" } }
+);
+
+export const authProviders: [string, string][] = [
+    ["github", "GitHub"],
+    ["discord", "Discord"],
+    ["twitch", "Twitch"],
+];
+
+export const oauthOptions = { redirectTo: "http://localhost:4321/api/callback" };
+
+export async function getUser({ cookies }: { cookies: AstroCookies }): Promise<User | null> {
+    const access_token = cookies.get("sb-access-token")?.value;
+    const refresh_token = cookies.get("sb-refresh-token")?.value;
+    if (!access_token || !refresh_token) {
+        return null;
+    }
+    const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
+    if (error) {
+        cookies.delete("sb-access-token", { path: "/" });
+        cookies.delete("sb-refresh-token", { path: "/" });
+        return null;
+    }
+    return data.user;
 }
