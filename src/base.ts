@@ -1,5 +1,5 @@
 import type { AstroCookies } from "astro";
-import { createClient, type User } from "@supabase/supabase-js";
+import { AuthError, createClient, type PostgrestError, type User, type UserMetadata } from "@supabase/supabase-js";
 
 export const ratings: [string, string][] = [
     ["i dont know", "#d0d0d0"],
@@ -189,17 +189,119 @@ export const authProviders: [string, string][] = [
 
 export const oauthOptions = { redirectTo: "http://localhost:4321/api/callback" };
 
-export async function getUser({ cookies }: { cookies: AstroCookies }): Promise<User | null> {
+export async function getUser({ cookies }: { cookies: AstroCookies }): Promise<[User | null, null] | [null, AuthError]> {
     const access_token = cookies.get("sb-access-token")?.value;
     const refresh_token = cookies.get("sb-refresh-token")?.value;
     if (!access_token || !refresh_token) {
-        return null;
+        return [null, new AuthError("Not logged in", 400)];
     }
     const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
     if (error) {
+        console.warn(error);
         cookies.delete("sb-access-token", { path: "/" });
         cookies.delete("sb-refresh-token", { path: "/" });
-        return null;
+        return [null, error];
     }
-    return data.user;
+    return [data.user, null];
+}
+
+export type Profile = { id: string, username: string, full_name: string, avatar_url: string };
+const profileCache: { [id: string]: Profile & { ttl: Date } } = {};
+function getCachedProfile(id: string): Profile | undefined {
+    const cachedProfile = profileCache[id];
+    if (cachedProfile && cachedProfile.ttl > new Date()) {
+        return cachedProfile;
+    }
+}
+function setCachedProfile(profile: Profile) {
+    profileCache[profile.id] = { ttl: new Date(Date.now() + 1000 * 60 * 60), ...profile };
+}
+
+export async function getProfile(user: { id: string, user_metadata: UserMetadata }): Promise<Profile> {
+    const { data, error } = await getProfileById(user.id);
+
+    if (error) {
+        console.log(error);
+    }
+
+    if (data) {
+        return data;
+    } else {
+        const m = user.user_metadata;
+        const username = m.username ?? m.user_name ?? m.preferred_username ?? m.nickname ?? m.name ?? m.slug ?? user.id;
+        const profile: Profile = {
+            id: user.id,
+            avatar_url: m.avatar_url ?? m.picture,
+            full_name: m.full_name ?? username,
+            username,
+        };
+        const { error } = await supabase.from("profiles").insert<Profile>(profile);
+        if (error) {
+            console.warn(error);
+        }
+        setCachedProfile(profile);
+        return profile;
+    }
+}
+
+export async function updateProfile(profile: Partial<Profile> & { id: string }): Promise<PostgrestError | undefined> {
+    const { data, error } = await supabase
+        .from("profiles")
+        .update(profile)
+        .eq("id", profile.id)
+        .select<"*", Profile>()
+        .single();
+
+    if (error) {
+        return error;
+    }
+
+    setCachedProfile(data);
+}
+
+export async function getProfileByName(username: string): Promise<{ data: Profile | null, error: PostgrestError | null }> {
+    const cached = Object.values(profileCache).filter((x) => x.ttl > new Date()).filter((x) => x.username === username);
+
+    if (cached.length === 1) {
+        return { data: cached[0], error: null };
+    } else if (cached.length > 1) {
+        cached.forEach(({ id }) => delete profileCache[id]);
+    }
+
+    const res = await supabase.from("profiles").select<"*", Profile>().eq("username", username).single();
+
+    if (res.data && !res.error) {
+        setCachedProfile(res.data);
+    }
+
+    return res;
+}
+
+export async function getProfileById(id: string): Promise<{ data: Profile | null, error: PostgrestError | null }> {
+    const cached = getCachedProfile(id);
+
+    if (cached) {
+        return { data: cached, error: null };
+    }
+
+    const res = await supabase.from("profiles").select<"*", Profile>().eq("id", id).single();
+
+    if (res.data && !res.error) {
+        setCachedProfile(res.data);
+    }
+
+    return res;
+}
+
+const validAvatars: string[] = [];
+
+export async function isAvatarValid(url: string): Promise<boolean> {
+    if (validAvatars.includes(url)) return true;
+    try {
+        const valid = (await fetch(url)).ok;
+        if (valid) validAvatars.push(url);
+        return valid;
+    } catch {
+        return false;
+    }
 }
