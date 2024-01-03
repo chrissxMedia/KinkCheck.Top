@@ -1,11 +1,9 @@
 ---
 import FlagGenerator from "../components/FlagGenerator";
-import HeaderLogo from "../components/HeaderLogo.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Flag Generator">
-    <header><HeaderLogo>Flag Generator</HeaderLogo></header>
     <FlagGenerator client:load />
 </Layout>
 
