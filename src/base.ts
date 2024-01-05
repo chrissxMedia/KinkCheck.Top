@@ -185,6 +185,7 @@ export const authProviders: [string, string][] = [
     ["github", "GitHub"],
     ["discord", "Discord"],
     ["twitch", "Twitch"],
+    ["spotify", "Spotify"],
 ];
 
 export const oauthOptions = { redirectTo: "http://localhost:4321/api/callback" };
