@@ -4,6 +4,7 @@ import favicon from "../favicon.png";
 import { version } from "../../package.json";
 import ScreenshotButton from "../components/ScreenshotButton";
 import type { Options } from "html2canvas";
+import Header from "../components/Header.astro";
 
 export interface Props {
     title?: string;
@@ -17,6 +18,9 @@ if (!title.includes(kc)) title += " | " + kc;
 
 <BaseLayout lang="en" {title} {favicon}>
     <div id="content">
+        <Header title={Astro.props.title}>
+            <slot name="header" />
+        </Header>
         <slot />
     </div>
     <Footer start={2023} link="https://github.com/chrissxMedia/KinkCheck.Top">
@@ -47,8 +51,8 @@ if (!title.includes(kc)) title += " | " + kc;
         justify-content: center;
         /* TODO: figure out an appropriate padding (or margin) in part based on vw */
     }
-    nav :global(a),
-    nav :global:visited {
+    :global(a),
+    :global:visited {
         color: #c0c0c0;
         text-decoration: underline;
         cursor: pointer;
