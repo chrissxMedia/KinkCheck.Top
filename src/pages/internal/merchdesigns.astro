@@ -1,12 +1,12 @@
 ---
-import HeaderLogo from "../components/HeaderLogo.astro";
-import Rater from "../components/Rater";
-import Layout from "../layouts/Layout.astro";
+import HeaderLogo from "../../components/HeaderLogo.astro";
+import Rater from "../../components/Rater";
+import Layout from "../../layouts/Layout.astro";
 ---
 
 <Layout
     title="Merch Designs"
-    screenshotOptions={{ windowWidth: 200, scale: 10, backgroundColor: null }}
+    screenshotOptions={{ windowWidth: 200, scale: 20, backgroundColor: null }}
 >
     <div class="c">
         <HeaderLogo includeVersion={false} />
@@ -19,6 +19,12 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <style>
+    :global(header) {
+        visibility: hidden;
+        width: 0;
+        height: 0;
+    }
+
     :global(div#content) {
         width: max-content;
         font-size: 16pt;
