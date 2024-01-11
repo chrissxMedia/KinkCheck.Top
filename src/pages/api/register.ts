@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { supabase } from "../../base";
+import { supabase } from "../../backendlib";
 
 export const POST: APIRoute = async ({ request, redirect }) => {
     const formData = await request.formData();
@@ -18,5 +18,5 @@ export const POST: APIRoute = async ({ request, redirect }) => {
         return new Response(error.message, { status: 500 });
     }
 
-    return redirect("/signin");
+    return redirect("/signin?registered");
 };

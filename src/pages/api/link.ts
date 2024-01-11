@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { authProviders, getUser, oauthOptions, supabase } from "../../base";
+import { authProviders, getUser, oauthOptions, supabase } from "../../backendlib";
 import { type Provider } from "@supabase/supabase-js";
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
