@@ -47,11 +47,10 @@ export default function KinkCheck(meta: template_revision) {
         setRatings(r);
         console.log(encodeKinkCheck(meta, { ratings: r }));
     };
-    // TODO: add a name field
     return <main class={styles.catcontainer}>
         {
-            meta.kinks.map(([cat, kinks], i) => (
-                <Category cat={cat} kinks={kinks} ratings={ratings[i]} setRating={setRating(i)} />
+            meta.kinks.map(([cat, kinks], c) => (
+                <Category cat={cat} kinks={kinks} ratings={ratings[c]} setRating={setRating(c)} />
             ))
         }
     </main>;
