@@ -1,7 +1,7 @@
 import { createClient, type User, AuthError, type UserMetadata, type PostgrestError } from "@supabase/supabase-js";
 import type { AstroCookies } from "astro";
 import NodeCache from "node-cache";
-import type { template, template_revision } from "./base";
+import type { check, check_revision, kinkcheck, template, template_revision } from "./base";
 
 type ValOrErr<V, E> = [V, null] | [null, E];
 
@@ -23,7 +23,8 @@ export const authProviders: [string, string][] = [
 
 export const oauthOptions = { redirectTo: "http://localhost:4321/api/callback" };
 
-export async function getUser({ cookies }: { cookies: AstroCookies }): Promise<[User | null, null] | [null, AuthError]> {
+export async function getUser({ cookies }: { cookies: AstroCookies }): Promise<ValOrErr<User | null, AuthError>> {
+    // TODO: consider { cookies, clientAddress }: { cookies: AstroCookies, clientAddress: string } for rate limiting
     const access_token = cookies.get("sb-access-token")?.value;
     const refresh_token = cookies.get("sb-refresh-token")?.value;
     if (!access_token || !refresh_token) {
@@ -164,6 +165,66 @@ export async function getTemplateRevision({ id, version }: { id: string, version
     }
 
     return [{ ...template, ...revision }, null];
+}
+
+export type Check = check & { revisions: check_revision[] };
+const checkCache = new NodeCache({ stdTTL: 3600 });
+
+export async function getCheck({ user, template }: { user: string, template: string }): Promise<ValOrErr<Check, PostgrestError>> {
+    const key = `${user}/${template}`;
+    const cached = checkCache.get<Check>(key);
+    if (cached) {
+        return [cached, null];
+    }
+
+    const { data: check, error } = await supabase
+        .from("checks")
+        .select<"*", check>()
+        .eq("user_id", user)
+        .eq("template", template).single();
+    if (error) {
+        return [null, error];
+    }
+
+    // TODO: reconsider how we cache revisions as they can have inf ttl once finished (but that isn't in rls yet!!)
+    const { data: revisions, error: err } = await supabase
+        .from("check_revisions")
+        .select<"*", check_revision>()
+        .eq("user_id", user)
+        .eq("template", template);
+    if (err) {
+        return [null, err];
+    }
+
+    const t = { ...check, revisions };
+    templateCache.set(key, t);
+    return [t, null];
+}
+
+export async function createCheckRevision({ user, template, version, data }:
+    { user: string, template: string, version: string, data: kinkcheck }):
+    Promise<PostgrestError | null> {
+    const { error } = await supabase
+        .from("check_revisions")
+        .insert<check_revision>({ user_id: user, template, version, modified: new Date(), data });
+    // TODO: try to update the cache
+    checkCache.del(`${user}/${template}`);
+    return error;
+}
+
+export async function updateCheckRevision({ user, template, version, data, oldDate }:
+    { user: string, template: string, version: string, data: kinkcheck, oldDate: Date }):
+    Promise<PostgrestError | null> {
+    const { error } = await supabase
+        .from("check_revisions")
+        .update<Partial<check_revision>>({ version, modified: new Date(), data })
+        .eq("user_id", user)
+        .eq("template", template)
+        .eq("modified", oldDate)
+        .single();
+    // TODO: try to update the cache
+    checkCache.del(`${user}/${template}`);
+    return error;
 }
 
 const validAvatars: string[] = [];

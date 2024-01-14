@@ -24,15 +24,26 @@ export type template_revision = {
     kinks: kinklist;
 };
 
-const valueForAllKinks = <T>(kinks: kinklist, x: T) =>
-    kinks.map(([, kinks]) => kinks.map((k) => k[1].map(() => x)));
-
 export type ratings = number[][][];
-export const defaultRatings = (kinks: kinklist): ratings => valueForAllKinks(kinks, 0);
 //export type checklist = boolean[][][];
-//export const defaultChecklist = (kinks: kinklist): checklist => valueForAllKinks(kinks, false);
 export type kinkcheck = { ratings: ratings };
-export const defaultKinkcheck = (kinks: kinklist): kinkcheck => { return { ratings: defaultRatings(kinks) } };
+
+export type check = {
+    user_id: string;
+    template: string;
+    visibility: "private" | "public";
+};
+export type check_revision = {
+    user_id: string;
+    template: string;
+    version: string;
+    modified: Date;
+    data: kinkcheck;
+};
+
+const valueForAllKinks = <T>(kinks: kinklist, x: T) => kinks.map(([, kinks]) => kinks.map((k) => k[1].map(() => x)));
+export const defaultRatings = (kinks: kinklist): ratings => valueForAllKinks(kinks, 0);
+//export const defaultChecklist = (kinks: kinklist): checklist => valueForAllKinks(kinks, false);
 
 function packIndexedValues<T>(indexedValues: [number, T][]): T[] {
     return indexedValues.reduce<T[]>((arr, [idx, val]) => {
