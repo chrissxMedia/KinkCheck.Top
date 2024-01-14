@@ -227,15 +227,17 @@ export async function updateCheckRevision({ user, template, version, data, oldDa
     return error;
 }
 
-const validAvatars: string[] = [];
+const validAvatars = new NodeCache({ stdTTL: 3600 });
 
 export async function isAvatarValid(url: string): Promise<boolean> {
-    if (validAvatars.includes(url)) return true;
+    const cached = validAvatars.get<boolean>(url);
+    if (cached !== undefined) return cached;
     try {
         const valid = (await fetch(url)).ok;
-        if (valid) validAvatars.push(url);
+        validAvatars.set(url, valid);
         return valid;
     } catch {
+        validAvatars.set(url, false);
         return false;
     }
 }
