@@ -227,13 +227,13 @@ export async function updateCheckRevision({ user, template, version, data, oldDa
     return error;
 }
 
-const validAvatars: string[] = [];
+const validAvatars = new Set<string>();
 
 export async function isAvatarValid(url: string): Promise<boolean> {
-    if (validAvatars.includes(url)) return true;
+    if (validAvatars.has(url)) return true;
     try {
         const valid = (await fetch(url)).ok;
-        if (valid) validAvatars.push(url);
+        if (valid) validAvatars.add(url);
         return valid;
     } catch {
         return false;
