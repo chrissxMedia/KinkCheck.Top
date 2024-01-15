@@ -8,12 +8,12 @@
 .table {
     border: 1px solid #303030;
     border-collapse: collapse;
-    font-size: 16pt;
+    font-size: 1.333em;
 }
 
 .catname {
-    margin-bottom: 6px;
-    margin-top: 9px;
+    margin-bottom: 0.25em;
+    margin-top: 0.35em;
 }
 
 .category {
