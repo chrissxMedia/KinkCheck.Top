@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { defaultRatings, encodeKinkCheck, type kink, type template_revision } from "../base";
+import { defaultRatings, encodeKinkCheck, type kink, type template_revision, type kinkcheck } from "../base";
 import Kink from "./Kink";
 import styles from "./KinkCheck.module.css";
 
@@ -39,8 +39,8 @@ export function Category({ cat, kinks, ratings, setRating }: {
     );
 }
 
-export default function KinkCheck(meta: template_revision) {
-    const [ratings, setRatings] = useState(defaultRatings(meta.kinks));
+export default function KinkCheck(meta: template_revision & { check?: kinkcheck }) {
+    const [ratings, setRatings] = useState(meta.check?.ratings ?? defaultRatings(meta.kinks));
     const setRating = (cat: number) => (kink: number) => (pos: number) => (rat: number) => {
         const r = [...ratings!];
         r[cat][kink][pos] = rat;
@@ -50,7 +50,7 @@ export default function KinkCheck(meta: template_revision) {
     return <main class={styles.catcontainer}>
         {
             meta.kinks.map(([cat, kinks], c) => (
-                <Category cat={cat} kinks={kinks} ratings={ratings[c]} setRating={setRating(c)} />
+                <Category cat={cat} kinks={kinks} ratings={ratings[c]} setRating={meta.check ? undefined : setRating(c)} />
             ))
         }
     </main>;
