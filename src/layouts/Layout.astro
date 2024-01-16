@@ -33,13 +33,13 @@ if (!title.includes(kc)) title += " | " + kc;
             <ScreenshotButton {title} options={screenshotOptions} client:load />
         </nav>
         <!-- TODO: find a way to put this in the footer element well -->
-        <p>KinkCheck.Top v{version}</p>
+        <p>{kc} v{version}</p>
     </Footer>
 </BaseLayout>
 
 <style>
     div#content {
-        padding: 12px;
+        padding: 12px calc(0.666vw - 4px) 0 calc(0.666vw - 4px);
         margin: auto;
     }
     @media screen and (width <= 600px) {
