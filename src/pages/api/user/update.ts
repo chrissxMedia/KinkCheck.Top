@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getUser, supabase, updateProfile } from "../../backendlib";
+import { getUser, supabase, updateProfile } from "../../../backendlib";
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     const formData = await request.formData();
