@@ -1,7 +1,7 @@
 import { createClient, type User, AuthError, type UserMetadata, type PostgrestError } from "@supabase/supabase-js";
 import type { AstroCookies } from "astro";
 import NodeCache from "node-cache";
-import type { check, check_revision, kinkcheck, template, template_revision } from "./base";
+import type { Check, Template, TemplateRevision, check, check_revision, kinkcheck, template, template_revision } from "./base";
 
 type ValOrErr<V, E> = [V, null] | [null, E];
 
@@ -21,7 +21,7 @@ export const authProviders: [string, string][] = [
     ["gitlab", "GitLab"],
 ];
 
-export const oauthOptions = { redirectTo: "http://localhost:4321/api/callback" };
+export const oauthOptions = { redirectTo: "http://localhost:4321/api/user/callback" };
 
 export async function getUser({ cookies }: { cookies: AstroCookies }): Promise<ValOrErr<User | null, AuthError>> {
     // TODO: consider { cookies, clientAddress }: { cookies: AstroCookies, clientAddress: string } for rate limiting
@@ -120,7 +120,6 @@ export async function getProfileById(id: string): Promise<ValOrErr<Profile, Post
     return [data, null];
 }
 
-export type Template = template & { revisions: template_revision[] };
 const templateCache = new NodeCache({ stdTTL: 3600 });
 
 export async function getTemplateById(id: string): Promise<ValOrErr<Template, PostgrestError>> {
@@ -146,7 +145,7 @@ export async function getTemplateById(id: string): Promise<ValOrErr<Template, Po
 }
 
 export async function getTemplateRevision({ id, version }: { id: string, version: string }):
-    Promise<ValOrErr<template & template_revision, { message: string }>> {
+    Promise<ValOrErr<TemplateRevision, { message: string }>> {
     const [template, error] = await getTemplateById(id);
 
     if (error) {
@@ -167,7 +166,6 @@ export async function getTemplateRevision({ id, version }: { id: string, version
     return [{ ...template, ...revision }, null];
 }
 
-export type Check = check & { revisions: check_revision[] };
 const checkCache = new NodeCache({ stdTTL: 3600 });
 
 export async function getCheck({ user, template }: { user: string, template: string }): Promise<ValOrErr<Check, PostgrestError>> {
