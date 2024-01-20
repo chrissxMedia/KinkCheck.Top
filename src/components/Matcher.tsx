@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { decodeKinkCheck, defaultKinkcheck, type ratings, type template_revision } from "../base";
+import { decodeKinkCheck, defaultRatings, type ratings, type template_revision } from "../base";
 import { Category } from "./KinkCheck";
 import kc from "./KinkCheck.module.css";
 import styles from "./Matcher.module.css";
@@ -23,11 +23,11 @@ export function match(a: ratings, b: ratings): ratings {
 export default function Matcher(meta: template_revision) {
     const [partnerA, setPartnerA] = useState("");
     const [partnerB, setPartnerB] = useState("");
-    let kcA = defaultKinkcheck(meta.kinks);
-    let kcB = defaultKinkcheck(meta.kinks);
+    let kcA = { ratings: defaultRatings(meta.kinks) };
+    let kcB = { ratings: defaultRatings(meta.kinks) };
     let errorA: string | undefined, errorB: string | undefined;
-    try { kcA = decodeKinkCheck(meta, partnerA.trim()); } catch (e: any) { errorA = e.toString(); }
-    try { kcB = decodeKinkCheck(meta, partnerB.trim()); } catch (e: any) { errorB = e.toString(); }
+    try { kcA = decodeKinkCheck(meta, JSON.parse(partnerA.trim())); } catch (e: any) { errorA = e.toString(); }
+    try { kcB = decodeKinkCheck(meta, JSON.parse(partnerB.trim())); } catch (e: any) { errorB = e.toString(); }
     kcB.ratings = kcB.ratings.map((r) => r.map(rs => rs.toReversed()));
     const matched = match(kcA.ratings, kcB.ratings);
     return <main>

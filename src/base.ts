@@ -26,9 +26,12 @@ export type template_revision = {
 export type Template = template & { revisions: template_revision[] };
 export type TemplateRevision = template & template_revision;
 
+// these are purely internal types!
 export type ratings = number[][][];
 //export type checklist = boolean[][][];
 export type kinkcheck = { ratings: ratings };
+
+export type check_data = { ratings: (number[] | undefined)[] };
 
 export type check = {
     user_id: string;
@@ -40,7 +43,7 @@ export type check_revision = {
     template: string;
     version: string;
     modified: Date;
-    data: kinkcheck;
+    data: check_data;
 };
 export type Check = check & { revisions: check_revision[] };
 export type CheckRevision = check & check_revision;
@@ -49,27 +52,27 @@ const valueForAllKinks = <T>(kinks: kinklist, x: T) => kinks.map(([, kinks]) => 
 export const defaultRatings = (kinks: kinklist): ratings => valueForAllKinks(kinks, 0);
 //export const defaultChecklist = (kinks: kinklist): checklist => valueForAllKinks(kinks, false);
 
-function packIndexedValues<T>(indexedValues: [number, T][]): T[] {
-    return indexedValues.reduce<T[]>((arr, [idx, val]) => {
+function packIndexedValues<T>(indexedValues: [number, T][]): (T | undefined)[] {
+    return indexedValues.reduce<(T | undefined)[]>((arr, [idx, val]) => {
         arr[idx] = val;
         return arr;
     }, Array(Math.max(...indexedValues.map(([idx]) => idx))));
 }
 
-export function encodeKinkCheck({ kinks }: { kinks: kinklist }, { ratings }: kinkcheck): string {
+export function encodeKinkCheck({ kinks }: { kinks: kinklist }, { ratings }: kinkcheck): check_data {
     const r = packIndexedValues(ratings.flatMap((_, cat) =>
         kinks[cat][1].map<[number, number[]]>(([, , id], i) => [id, ratings[cat][i]])));
-    return JSON.stringify({ ratings: r });
+    return { ratings: r };
 }
 
-export function decodeKinkCheck({ kinks }: { kinks: kinklist }, s: string): kinkcheck {
+export function decodeKinkCheck({ kinks }: { kinks: kinklist }, s: check_data): kinkcheck {
     const ratings = defaultRatings(kinks);
-    JSON.parse(s).ratings.forEach((rat: number[], id: number) => {
+    s.ratings.forEach((rat, id) => {
+        if (!rat) return;
         ratings.forEach((_, cat) => {
             ratings[cat].forEach((_, i) => {
                 if (kinks[cat][1][i][2] === id) {
-                    // TODO: do something if the number of positions is different
-                    ratings[cat][i] = rat;
+                    ratings[cat][i] = rat.length < ratings[cat][i].length ? [rat[0], rat[0]] : rat;
                 }
             });
         });
