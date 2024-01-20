@@ -200,7 +200,7 @@ export async function getCheck({ user, template }: { user: string, template: str
 }
 
 export async function createCheckRevision({ user, template, version, data }:
-    { user: string, template: string, version: string, data: kinkcheck }):
+    { user: string, template: string, version: string, data: check_data }):
     Promise<PostgrestError | null> {
     const { error } = await supabase
         .from("check_revisions")
@@ -211,7 +211,7 @@ export async function createCheckRevision({ user, template, version, data }:
 }
 
 export async function updateCheckRevision({ user, template, version, data, oldDate }:
-    { user: string, template: string, version: string, data: kinkcheck, oldDate: Date }):
+    { user: string, template: string, version: string, data: check_data, oldDate: Date }):
     Promise<PostgrestError | null> {
     const { error } = await supabase
         .from("check_revisions")
