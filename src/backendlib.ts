@@ -1,7 +1,7 @@
 import { createClient, type User, AuthError, type UserMetadata, type PostgrestError } from "@supabase/supabase-js";
 import type { AstroCookies } from "astro";
 import NodeCache from "node-cache";
-import type { Check, Template, TemplateRevision, check, check_revision, kinkcheck, template, template_revision } from "./base";
+import type { Check, Template, TemplateRevision, check, check_data, check_revision, template, template_revision } from "./base";
 
 type ValOrErr<V, E> = [V, null] | [null, E];
 
@@ -28,7 +28,7 @@ export async function getUser({ cookies }: { cookies: AstroCookies }): Promise<V
     const access_token = cookies.get("sb-access-token")?.value;
     const refresh_token = cookies.get("sb-refresh-token")?.value;
     if (!access_token || !refresh_token) {
-        return [null, new AuthError("Not logged in", 400)];
+        return [null, null];
     }
     const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
     if (error) {
@@ -86,6 +86,7 @@ export async function updateProfile(profile: Partial<Profile> & { id: string }):
     profileCache.set(data.id, data);
 }
 
+// TODO: think about whether we really need this
 export async function getProfileByName(username: string): Promise<ValOrErr<Profile, PostgrestError>> {
     // TODO: consider just having a second cache for usernames
     const cached = profileCache.keys().filter((k) => profileCache.get<Profile>(k)?.username === username);
@@ -166,7 +167,30 @@ export async function getTemplateRevision({ id, version }: { id: string, version
     return [{ ...template, ...revision }, null];
 }
 
+// FIXME: this completely fucks up visibility
 const checkCache = new NodeCache({ stdTTL: 3600 });
+
+// TODO: all kinds of caching (we just need to redo like all the caching lmao)
+export async function getAllChecksByUser(user: string): Promise<ValOrErr<Check[], PostgrestError>> {
+    const { data: checks, error } = await supabase
+        .from("checks")
+        .select<"*", check>()
+        .eq("user_id", user);
+    if (error) return [null, error];
+
+    const results = await Promise.all(checks.map(check => supabase
+        .from("check_revisions")
+        .select<"*", check_revision>()
+        .eq("user_id", user)
+        .eq("template", check.template)));
+    const err = results.find(({ error }) => error)?.error;
+    if (err) return [null, err];
+
+    const revs = results.map(({ data }) => data!);
+    const full_checks: Check[] = checks.map((check, i) => ({ ...check, revisions: revs[i] }));
+
+    return [full_checks, null];
+}
 
 export async function getCheck({ user, template }: { user: string, template: string }): Promise<ValOrErr<Check, PostgrestError>> {
     const key = `${user}/${template}`;
@@ -197,6 +221,25 @@ export async function getCheck({ user, template }: { user: string, template: str
     const t = { ...check, revisions };
     templateCache.set(key, t);
     return [t, null];
+}
+
+export async function getOwnCheck({ cookies }: { cookies: AstroCookies }, template: string):
+    Promise<ValOrErr<Check | null, AuthError | PostgrestError>> {
+    const [user, error] = await getUser({ cookies });
+    if (!user) return [null, error];
+    return getCheck({ user: user.id, template });
+}
+
+export function getLatestCheckRevision(check: Check): check & check_revision | null {
+    if (!check.revisions.length) return null;
+    return {
+        ...check,
+        ...check.revisions.toSorted(({ modified: a }, { modified: b }) => a < b ? 1 : a > b ? -1 : 0)[0]
+    };
+}
+
+export function createCheckMeta(check: check): PromiseLike<PostgrestError | null> {
+    return supabase.from("checks").insert<check>(check).then(({ error }) => error);
 }
 
 export async function createCheckRevision({ user, template, version, data }:
