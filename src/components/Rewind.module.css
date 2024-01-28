@@ -1,3 +1,7 @@
+.main {
+    font-size: min(12pt, 1.5vw);
+}
+
 .row {
     display: flex;
     flex-direction: row;
@@ -10,20 +14,20 @@
 
 .settings {
     flex-wrap: wrap;
-    width: 1000px;
+    width: 63.2em;
     justify-content: space-between;
     padding: 1em 0;
 }
 
 .sexrewind {
-    width: 950px;
-    height: 950px;
+    width: 7.5em;
+    height: 7.5em;
     background-color: #b6fbed;
     color: #a9337e;
-    font-size: 96pt;
+    font-size: 8em;
     font-family: var(--sans-serif);
     font-weight: bold;
-    padding: 25px;
+    padding: 0.2em;
     justify-content: space-between;
 }
 
