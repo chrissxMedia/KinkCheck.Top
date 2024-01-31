@@ -1,11 +1,11 @@
 .tr {
-    border: 1px solid #303030;
+    border: 0.05em solid #303030;
 }
 
 .td {
-    padding-left: 8px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding-left: 0.375em;
+    padding-top: 0.094em;
+    padding-bottom: 0.094em;
     position: relative;
 }
 
@@ -13,13 +13,14 @@
     background-color: rgb(var(--cmblack));
     color: white;
     visibility: hidden;
-    width: 300px;
+    width: 30ch;
     text-align: center;
-    border-radius: 8pt;
+    border-radius: 0.5em;
     position: absolute;
     z-index: 1;
     top: 100%;
     left: 0;
+    padding: 0.125em;
 }
 
 .td:hover .desc {
