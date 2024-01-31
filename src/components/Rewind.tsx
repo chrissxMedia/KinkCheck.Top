@@ -8,7 +8,7 @@ export default function Rewind() {
     const [sexmins, setSexmins] = useState("0");
     const [sexpartners, setSexpartners] = useState("0");
     return <main class={styles.main}>
-        <div class={styles.settings + " " + styles.row}>
+        <div class={styles.settings}>
             <Input placeholder="You had sex" value={sextimes} setValue={setSextimes} />
             <Input placeholder="Description" value={sexdesc} setValue={setSexdesc} />
             <Input placeholder="Minutes had sex" value={sexmins} setValue={setSexmins} />

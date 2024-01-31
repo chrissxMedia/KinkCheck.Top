@@ -13,10 +13,19 @@
 }
 
 .settings {
-    flex-wrap: wrap;
+    display: flex;
+    flex-flow: row wrap;
     width: 63.2em;
     justify-content: space-between;
     padding: 1em 0;
+}
+
+@media screen and (width <= 600px) {
+    .settings {
+        flex-direction: column;
+        font-size: 2.5em;
+        width: 25.28em;
+    }
 }
 
 .sexrewind {

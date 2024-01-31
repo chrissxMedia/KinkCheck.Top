@@ -8,7 +8,7 @@ export default function Kink({ kink: [kink, positions, , description], ratings, 
         <tr class={styles.tr}>
             <td class={styles.td}>
                 <span>{kink}</span>
-                <span class={styles.desc}>{description}</span>
+                {description && <span class={styles.desc}>{description}</span>}
             </td>
             {positions.map((pos, p) => (
                 <td class={styles.td}>
