@@ -1,12 +1,14 @@
 .catcontainer {
+    width: 100%;
     display: flex;
     flex-flow: row wrap;
     justify-content: space-evenly;
     column-gap: 2ch;
+    container: catcontainer / inline-size;
 }
 
 .table {
-    border: 1px solid #303030;
+    border: 0.05em solid #303030;
     border-collapse: collapse;
     font-size: 1.333em;
 }
