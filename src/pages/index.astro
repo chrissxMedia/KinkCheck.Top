@@ -1,18 +1,56 @@
 ---
+import {
+    getLatestCheckRevision,
+    getOwnCheck,
+    getTemplateRevision,
+} from "../backendlib";
+import { decodeKinkCheck, defaultRatings } from "../base";
+import CheckCard from "../components/CheckCard.astro";
 import Layout from "../layouts/Layout.astro";
-import KinkCheck from "../components/KinkCheck";
-import RatingOverview from "../components/RatingOverview.astro";
-import { kinks } from "../base";
+
+const [template, error] = await getTemplateRevision({
+    id: "aed3291f-73c5-4939-ad80-829bd9953bb4",
+    version: "latest",
+});
+
+if (error) {
+    return new Response(error.message, { status: 500 });
+}
+
+const [check] = await getOwnCheck(Astro, template.id);
+const rev = check && getLatestCheckRevision(check);
+const ratings = rev
+    ? decodeKinkCheck(template, rev.data).ratings
+    : defaultRatings(template.kinks);
 ---
 
 <Layout>
-	<RatingOverview slot="header" />
-	<KinkCheck {kinks} client:load />
+    <ul>
+        <h1>Templates</h1>
+        <!--<a href="/templates">Templates &rarr;</a>-->
+        <CheckCard
+            {template}
+            {ratings}
+            href="/templates/aed3291f-73c5-4939-ad80-829bd9953bb4/latest"
+        />
+    </ul>
 </Layout>
 
 <style>
-	:global(div#content) {
-		min-width: 475px;
-		max-width: 1800px;
-	}
+    :global(div#content) {
+        max-width: 1000px;
+    }
+    ul {
+        display: flex;
+        flex-direction: column;
+        row-gap: 1em;
+        padding: 0;
+    }
+    a {
+        font-size: 1.5em;
+        color: white;
+    }
+    h1 {
+        margin: 0;
+    }
 </style>
