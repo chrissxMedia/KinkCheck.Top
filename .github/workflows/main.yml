@@ -24,5 +24,5 @@ jobs:
       - uses: docker/build-push-action@v5
         with:
           push: true
-          platforms: linux/amd64,linux/arm64,linux/arm32,linux/ppc64le,linux/s390x
+          platforms: linux/amd64,linux/arm64,linux/arm,linux/ppc64le,linux/s390x
           tags: chrissx/kinkcheck.top:${{ github.ref_name }}
