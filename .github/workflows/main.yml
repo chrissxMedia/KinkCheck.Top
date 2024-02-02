@@ -21,9 +21,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - run: ls -la
       - uses: docker/build-push-action@v5
         with:
           push: true
+          context: .
           platforms: linux/amd64,linux/arm64,linux/arm,linux/ppc64le,linux/s390x
           tags: chrissx/kinkcheck.top:${{ github.ref_name }}
