@@ -1,4 +1,4 @@
-import { createClient, type User, AuthError, type UserMetadata, type PostgrestError } from "@supabase/supabase-js";
+import { createClient, type User, type AuthError, type UserMetadata, type PostgrestError } from "@supabase/supabase-js";
 import type { AstroCookies } from "astro";
 import NodeCache from "node-cache";
 import type { Check, Template, TemplateRevision, check, check_data, check_revision, template, template_revision } from "./base";
