@@ -34,5 +34,5 @@ jobs:
         with:
           push: true
           context: .
-          platforms: linux/amd64,linux/arm64,linux/arm,linux/ppc64le
+          platforms: linux/amd64,linux/arm64
           tags: chrissx/kinkcheck.top:${{ github.ref_name }}
