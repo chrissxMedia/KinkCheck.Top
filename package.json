@@ -1,7 +1,7 @@
 {
   "name": "kinkcheck",
   "type": "module",
-  "version": "0.7.0",
+  "version": "0.7.0-dev",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -11,14 +11,17 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@astrojs/node": "^7.0.3",
+    "@astrojs/node": "^8.3.2",
     "@astrojs/preact": "^3.5.0",
+    "@nanostores/preact": "^0.5.0",
     "@supabase/supabase-js": "^2.39.1",
     "astro": "^4.11.3",
+    "astro-hcaptcha": "^0.1.0",
     "autoprefixer": "^10.4.19",
     "cmdesigns": "^0.1.2",
     "cssnano": "^7.0.3",
     "html2canvas": "^1.4.1",
+    "nanostores": "^0.9.5",
     "node-cache": "^5.1.2",
     "preact": "^10.22.0",
     "stylelint-config-standard": "^34.0.0",

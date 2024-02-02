@@ -7,6 +7,6 @@ export default defineConfig({
   integrations: [preact()],
   output: "server",
   adapter: node({
-    mode: "standalone"
+    mode: "standalone",
   })
 });
