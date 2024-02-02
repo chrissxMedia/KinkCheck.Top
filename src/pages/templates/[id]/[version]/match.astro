@@ -1,0 +1,32 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import Main from "../../../../components/Matcher";
+import RatingOverview from "../../../../components/RatingOverview.astro";
+import { getTemplateRevision } from "../../../../backendlib";
+
+const { id, version } = Astro.params;
+
+if (!id || !version) {
+    return new Response(`no template ${!id ? "id" : "version"} given`, {
+        status: 400,
+    });
+}
+
+const [template, error] = await getTemplateRevision({ id, version });
+
+if (error) {
+    return new Response(error.message, { status: 500 });
+}
+---
+
+<Layout title={`${template.name} ${template.version} Matcher`}>
+	<RatingOverview slot="header" />
+	<Main {...template} client:load />
+</Layout>
+
+<style>
+	:global(div#content) {
+		min-width: 475px;
+		max-width: 1800px;
+	}
+</style>
