@@ -1,7 +1,9 @@
-import { useState } from "preact/hooks";
-import { defaultRatings, encodeKinkCheck, type kink, type template_revision, type kinkcheck } from "../base";
+import { useEffect, useState } from "preact/hooks";
+import { encodeKinkCheck, type ratings, type kink, type kinkcheck, type kinklist, type TemplateRevision } from "../base";
 import Kink from "./Kink";
 import styles from "./KinkCheck.module.css";
+import { useStore } from "@nanostores/preact";
+import { ratingstore } from "../kcstore";
 
 export function ExampleTable({ kinks }: { kinks: kink[] }) {
     const [ratings, setRatings] = useState(kinks.map(([, positions]) => positions.map(() => 0)));
@@ -39,19 +41,30 @@ export function Category({ cat, kinks, ratings, setRating }: {
     );
 }
 
-export default function KinkCheck(meta: template_revision & { check?: kinkcheck }) {
-    const [ratings, setRatings] = useState(meta.check?.ratings ?? defaultRatings(meta.kinks));
+export function Check({ kinks, ratings, setRating }: {
+    kinks: kinklist, ratings: ratings,
+    setRating?: (c: number) => (k: number) => (p: number) => (r: number) => void
+}) {
+    return <div class={styles.catcontainer}>
+        {
+            kinks.map(([cat, kinks], c) => (
+                <Category cat={cat} kinks={kinks} ratings={ratings[c]} setRating={setRating && setRating(c)} />
+            ))
+        }
+    </div>;
+}
+
+export function KinkCheck(meta: TemplateRevision & { init: kinkcheck }) {
+    let ratings = useStore(ratingstore) ?? meta.init.ratings;
+    // FIXME:
+    useEffect(() => {
+        ratingstore.set(ratings = meta.init.ratings);
+    }, [meta.init.ratings]);
     const setRating = (cat: number) => (kink: number) => (pos: number) => (rat: number) => {
         const r = [...ratings!];
         r[cat][kink][pos] = rat;
-        setRatings(r);
+        ratingstore.set(r);
         console.log(encodeKinkCheck(meta, { ratings: r }));
     };
-    return <main class={styles.catcontainer}>
-        {
-            meta.kinks.map(([cat, kinks], c) => (
-                <Category cat={cat} kinks={kinks} ratings={ratings[c]} setRating={meta.check ? undefined : setRating(c)} />
-            ))
-        }
-    </main>;
+    return <Check kinks={meta.kinks} ratings={ratings!} setRating={setRating} />;
 }
