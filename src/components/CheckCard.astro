@@ -1,0 +1,35 @@
+---
+import type { ratings, template, template_revision } from "../base";
+import { Check } from "./KinkCheck";
+import LinkCard from "./LinkCard.astro";
+
+export interface Props {
+    href: string;
+    ratings: ratings;
+    template: template & template_revision;
+}
+
+const { href, ratings: rat, template } = Astro.props;
+
+template.kinks = template.kinks.map(([cat, kinks]) => [
+    cat,
+    kinks.map(([kink, pos, id]) => [kink, pos, id]),
+]);
+---
+
+<LinkCard {href} background="#101010">
+    <h2>{template.name}</h2>
+    <div>
+        <Check {...template} ratings={rat} />
+    </div>
+</LinkCard>
+
+<style>
+    h2 {
+        margin: 0;
+    }
+    div {
+        width: 100%;
+        font-size: min(0.55em, calc(1vw - 0.5px));
+    }
+</style>
