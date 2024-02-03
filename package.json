@@ -15,7 +15,7 @@
     "@astrojs/preact": "^3.0.0",
     "@nanostores/preact": "^0.5.0",
     "@supabase/supabase-js": "^2.39.1",
-    "astro": "^4.3.0",
+    "astro": "^4.3.2",
     "astro-hcaptcha": "^0.1.0",
     "astro-htmx": "^1.0.5",
     "autoprefixer": "^10.4.16",
