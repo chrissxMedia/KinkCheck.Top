@@ -1,5 +1,8 @@
 FROM node:lts-alpine
-ENV NODE_ENV production
+ENV NODE_ENV=production
+ENV SUPABASE_URL=
+ENV SUPABASE_ANON_KEY=
+env HCAPTCHA_SITEKEY=
 WORKDIR /usr/src/app
 
 # requires buildx/buildkit, which not everything has *yet*
