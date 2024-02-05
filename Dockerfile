@@ -2,7 +2,7 @@ FROM node:lts-alpine
 ENV NODE_ENV=production
 ENV SUPABASE_URL=
 ENV SUPABASE_ANON_KEY=
-env HCAPTCHA_SITEKEY=
+ENV HCAPTCHA_SITEKEY=
 WORKDIR /usr/src/app
 
 # requires buildx/buildkit, which not everything has *yet*
@@ -18,4 +18,4 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 USER node
 COPY dist .
 EXPOSE 4321
-CMD node server/entry.mjs
+CMD ["node", "server/entry.mjs"]
