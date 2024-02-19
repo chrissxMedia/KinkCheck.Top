@@ -2,12 +2,13 @@ import { createClient, type User, type AuthError, type UserMetadata, type Postgr
 import type { AstroCookies } from "astro";
 import NodeCache from "node-cache";
 import type { Check, Template, TemplateRevision, check, check_data, check_revision, template, template_revision } from "./base";
+import env from "./env";
 
 type ValOrErr<V, E> = [V, null] | [null, E];
 
 export const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
+    env.SUPABASE_URL,
+    env.SUPABASE_ANON_KEY,
     { auth: { flowType: "pkce" } }
 );
 
