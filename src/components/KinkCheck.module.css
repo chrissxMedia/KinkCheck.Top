@@ -1,26 +1,28 @@
 .catcontainer {
+    width: 100%;
     display: flex;
     flex-flow: row wrap;
     justify-content: space-evenly;
     column-gap: 2ch;
+    container: catcontainer / inline-size;
 }
 
 .table {
-    border: 1px solid #303030;
+    border: 0.05em solid #303030;
     border-collapse: collapse;
-    font-size: 16pt;
+    font-size: 1.333em;
 }
 
 .catname {
-    margin-bottom: 6px;
-    margin-top: 9px;
+    margin-bottom: 0.25em;
+    margin-top: 0.35em;
 }
 
 .category {
     min-width: 28%;
 }
 
-@media screen and (width <= 800px) {
+@container catcontainer (width <= 50em) {
     .category,
     .table {
         width: 100%;

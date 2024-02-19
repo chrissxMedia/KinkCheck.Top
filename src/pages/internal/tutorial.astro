@@ -1,7 +1,6 @@
 ---
-import { kinks } from "../base";
-import { ExampleTable } from "../components/KinkCheck";
-import MarkdownLayout from "../layouts/MarkdownLayout.astro";
+import { ExampleTable } from "../../components/KinkCheck";
+import MarkdownLayout from "../../layouts/MarkdownLayout.astro";
 ---
 
 <MarkdownLayout frontmatter={{ title: "Overview & Tutorial" }}>
@@ -20,7 +19,10 @@ import MarkdownLayout from "../layouts/MarkdownLayout.astro";
     </p>
 
     <ExampleTable
-        kinks={[kinks["General"][7], kinks["General"][0]]}
+        kinks={[
+            ["Vaginal Fisting", ["give", "receive"], 6],
+            ["Fellatio/Blowjobs", ["receive", "give"], 0],
+        ]}
         client:only
     />
 

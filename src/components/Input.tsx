@@ -5,6 +5,6 @@ export default function Input({ error, placeholder, value, setValue, className }
     return <div className={className}>
         <input type="text" spellcheck={false} autocorrect="false"
             placeholder={placeholder} value={value} onInput={(e) => setValue(e.target.value)} />
-        <span style={{ color: "red" }}>{error}</span>
+        {error && <span style={{ color: "red" }}>{error}</span>}
     </div>;
 }

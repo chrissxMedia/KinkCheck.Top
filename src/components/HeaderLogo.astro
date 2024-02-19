@@ -1,25 +1,15 @@
----
-import { version } from "../../package.json";
-
-export interface Props {
-    includeVersion?: boolean;
-}
-
-const { includeVersion = true } = Astro.props;
-const v = includeVersion ? " v" + version : "";
----
-
 <h1>
     <a href="/">
         <span class="k">K</span>ink<span class="c">C</span>heck<span class="t"
-            >.Top{v}</span
+            >.Top</span
         >
-    </a><slot />
+    </a><span class="t"><slot /></span>
 </h1>
 
 <style>
     h1 {
-        margin: 0;
+        margin: auto 0;
+        height: max-content;
     }
     .k {
         color: rgb(var(--cmpurple));

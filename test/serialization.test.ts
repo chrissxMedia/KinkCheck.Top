@@ -1,29 +1,50 @@
 import { expect, test } from "vitest";
-import { decodeKinkCheck, encodeKinkCheck, kinks } from "../src/base";
+import { decodeKinkCheck, encodeKinkCheck, type kinklist, type kinkcheck, type check_data } from "../src/base";
 
-const exampleMeta = { kinks, version: "0" };
-const exampleCheck = { version: "0", ratings: [[4.5, 3], [1, 2], [1.5, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0], [0, 0], [0], [0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0], [0, 0], [0], [0], [0], [0], [0, 0], [0], [0], [0], [0], [0], [0], [0, 0], [0, 0], [0], [0], [0, 0], [0], [0], [0, 0], [0, 0]] };
+const exampleMeta1 = {
+    kinks: [
+        ["Category 1", [
+            ["Kink A", ["top", "bottom"], 0],
+            ["Kink B", ["dom", "sub"], 1],
+        ]],
+        ["Category 2", [
+            ["Kink C", [""], 2],
+        ]],
+    ] as kinklist,
+};
+
+const exampleMeta2 = {
+    kinks: [
+        ["Category 1", [
+            ["Kink B", ["give", "receive"], 1],
+        ]],
+        ["Category 2", [
+            ["Kink C", [""], 2],
+        ]],
+        ["Category 3", [
+            ["Kink A'", ["top", "bottom"], 0],
+        ]],
+    ] as kinklist,
+};
+
+const exampleCheck1: kinkcheck = { ratings: [[[1, 2], [3, 4]], [[1.5]]] };
+const exampleCheck2: kinkcheck = { ratings: [[[3, 4]], [[1.5]], [[1, 2]]] };
 
 test("re-encoding", () => {
-    expect(encodeKinkCheck(exampleMeta, decodeKinkCheck(exampleMeta, JSON.stringify(exampleCheck)))).toBe(JSON.stringify(exampleCheck));
-});
-
-test("decodeKinkCheck throws when given a too new version", () => {
-    let x;
-    try {
-        x = decodeKinkCheck(exampleMeta, JSON.stringify({ version: "1", ratings: exampleCheck.ratings }));
-    } catch {
-        return;
-    }
-    throw x;
+    expect(decodeKinkCheck(exampleMeta1, encodeKinkCheck(exampleMeta1, exampleCheck1))).toStrictEqual(exampleCheck1);
 });
 
 test("extra data is ignored", () => {
-    expect(decodeKinkCheck(exampleMeta, JSON.stringify({ extra: "data", ...exampleCheck })))
-        .toStrictEqual(decodeKinkCheck(exampleMeta, JSON.stringify(exampleCheck)));
+    expect(decodeKinkCheck(exampleMeta1, { extra: "data", ...encodeKinkCheck(exampleMeta1, exampleCheck1) } as check_data))
+        .toStrictEqual(exampleCheck1);
 });
 
 test("extra kinks are ignored", () => {
-    expect(decodeKinkCheck(exampleMeta, JSON.stringify({ ...exampleCheck, ratings: [...exampleCheck.ratings, [0, 1]] })))
-        .toStrictEqual(decodeKinkCheck(exampleMeta, JSON.stringify(exampleCheck)));
+    expect(decodeKinkCheck(exampleMeta1,
+        { ...exampleCheck1, ratings: [...encodeKinkCheck(exampleMeta1, exampleCheck1).ratings, [0, 1]] }))
+        .toStrictEqual(exampleCheck1);
+});
+
+test("moving kinks around and slightly adjusting them results in the same encoding", () => {
+    expect(encodeKinkCheck(exampleMeta1, exampleCheck1)).toStrictEqual(encodeKinkCheck(exampleMeta2, exampleCheck2));
 });

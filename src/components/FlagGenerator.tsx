@@ -1,7 +1,7 @@
 import { useEffect, useState } from "preact/hooks";
 import styles from "./FlagGenerator.module.css";
 
-const colors = {
+const colors: { [k: string]: string } = {
     "t": "rgb(var(--transblue))",
     "r": "rgb(var(--transpink))",
     "a": "white",
@@ -13,7 +13,7 @@ export default function FlagGenerator() {
     const [flag, setFlag] = useState("");
     let input: HTMLInputElement;
     const chars = [...flag.toLowerCase()].filter(x => "trans".includes(x));
-    const height = 400 / chars.length;
+    const height = 20 / chars.length;
     useEffect(() => input.focus());
     return (
         <main>
@@ -21,8 +21,8 @@ export default function FlagGenerator() {
                 spellcheck={false} autocorrect="off" class={styles.input}
                 value={flag} onInput={e => setFlag(e.target.value)} />
             {chars.length ? chars.map(x => (
-                <div style={{ width: 600, backgroundColor: colors[x], height }} />
-            )) : <div style={{ width: 600, backgroundColor: "transparent", height: 400 }} />}
+                <div style={{ width: "30em", backgroundColor: colors[x], height: `${height}em` }} />
+            )) : <div style={{ width: "30em", backgroundColor: "transparent", height: "20em" }} />}
         </main>
     );
 }

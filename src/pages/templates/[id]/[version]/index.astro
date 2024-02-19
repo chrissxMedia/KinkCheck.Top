@@ -1,0 +1,46 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import { KinkCheck } from "../../../../components/KinkCheck";
+import RatingOverview from "../../../../components/RatingOverview.astro";
+import { getLatestCheckRevision, getOwnCheck, getTemplateRevision } from "../../../../backendlib";
+import SaveTemplateButton from "../../../../components/SaveTemplateButton";
+import { decodeKinkCheck, defaultRatings } from "../../../../base";
+
+const { id, version } = Astro.params;
+
+if (!id || !version) {
+    return new Response(`no template ${!id ? "id" : "version"} given`, {
+        status: 400,
+    });
+}
+
+const [template, error] = await getTemplateRevision({ id, version });
+
+if (error) {
+    return new Response(error.message, { status: 500 });
+}
+
+const [check] = await getOwnCheck(Astro, template.id);
+const rev = check && getLatestCheckRevision(check);
+---
+
+<Layout title={`${template.name} ${template.version}`}>
+    <RatingOverview slot="header" />
+    <SaveTemplateButton {...template} slot="header" client:load />
+    <main>
+        <KinkCheck
+            {...template}
+            init={rev
+                ? decodeKinkCheck(template, rev.data)
+                : { ratings: defaultRatings(template.kinks) }}
+            client:load
+        />
+    </main>
+</Layout>
+
+<style>
+    :global(div#content) {
+        min-width: 475px;
+        max-width: 1800px;
+    }
+</style>

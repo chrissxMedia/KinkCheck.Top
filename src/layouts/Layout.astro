@@ -4,19 +4,23 @@ import favicon from "../favicon.png";
 import { version } from "../../package.json";
 import ScreenshotButton from "../components/ScreenshotButton";
 import type { Options } from "html2canvas";
+import Header from "../components/Header.astro";
 
 export interface Props {
     title?: string;
     screenshotOptions?: Partial<Options>;
 }
 
-const kc = `KinkCheck.Top v${version}`;
+const kc = "KinkCheck.Top";
 let { title = kc, screenshotOptions } = Astro.props;
 if (!title.includes(kc)) title += " | " + kc;
 ---
 
 <BaseLayout lang="en" {title} {favicon}>
     <div id="content">
+        <Header title={Astro.props.title}>
+            <slot name="header" />
+        </Header>
         <slot />
     </div>
     <Footer start={2023} link="https://github.com/chrissxMedia/KinkCheck.Top">
@@ -28,12 +32,14 @@ if (!title.includes(kc)) title += " | " + kc;
             <!-- TODO: <a href="?">Merch</a> -->
             <ScreenshotButton {title} options={screenshotOptions} client:load />
         </nav>
+        <!-- TODO: find a way to put this in the footer element well -->
+        <p>{kc} v{version}</p>
     </Footer>
 </BaseLayout>
 
 <style>
     div#content {
-        padding: 12px;
+        padding: 12px calc(0.666vw - 4px) 0 calc(0.666vw - 4px);
         margin: auto;
     }
     @media screen and (width <= 600px) {
@@ -47,10 +53,14 @@ if (!title.includes(kc)) title += " | " + kc;
         justify-content: center;
         /* TODO: figure out an appropriate padding (or margin) in part based on vw */
     }
-    nav :global(a),
-    nav :global:visited {
+    :global(a),
+    :global:visited {
         color: #c0c0c0;
         text-decoration: underline;
         cursor: pointer;
+    }
+    p {
+        margin: 0;
+        margin-top: 0.5em;
     }
 </style>

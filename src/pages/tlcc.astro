@@ -1,7 +1,6 @@
 ---
 import LyricBadge from "../components/LyricBadge.astro";
 import Layout from "../layouts/Layout.astro";
-import HeaderLogo from "../components/HeaderLogo.astro";
 
 const transbianLines: [string, string][] = [
     ["Snortin' lines of progesterone", "has taken prog"],
@@ -29,10 +28,11 @@ const transbianLines: [string, string][] = [
 ---
 
 <Layout title="Trans Lesbian Badges">
-    <header><HeaderLogo>Trans Lesbian Badges</HeaderLogo></header>
-    <iframe
-        src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/782840377&color=%23ff5500&auto_play=false&hide_related=true"
-    ></iframe>
+    <div>
+        <iframe
+            src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/782840377&color=%23ff5500&auto_play=false&hide_related=true"
+        ></iframe>
+    </div>
     <main>
         {
             transbianLines.map(([line, description]) => (
@@ -43,10 +43,16 @@ const transbianLines: [string, string][] = [
 </Layout>
 
 <style>
+    :global(div#content) {
+        max-width: 2000px;
+    }
+    div {
+        display: flex;
+    }
     iframe {
         width: calc(min(100% - 10ch, 1000px));
         height: 166px;
-        margin: 5ch;
+        margin: 5ch auto;
         border: 0;
     }
     main {
