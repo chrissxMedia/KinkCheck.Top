@@ -46,10 +46,7 @@ const profileCache = new NodeCache({ stdTTL: 3600 });
 
 export async function getProfile(user: { id: string, user_metadata: UserMetadata }): Promise<Profile> {
     const [profile, error] = await getProfileById(user.id);
-
-    if (error) {
-        console.log(error);
-    }
+    if (error) console.log(error);
 
     if (profile) {
         return profile;
@@ -79,10 +76,7 @@ export async function updateProfile(profile: Partial<Profile> & { id: string }):
         .eq("id", profile.id)
         .select<"*", Profile>()
         .single();
-
-    if (error) {
-        return error;
-    }
+    if (error) return error;
 
     profileCache.set(data.id, data);
 }
@@ -99,9 +93,7 @@ export async function getProfileByName(username: string): Promise<ValOrErr<Profi
     }
 
     const { data, error } = await supabase.from("profiles").select<"*", Profile>().eq("username", username).single();
-    if (error) {
-        return [null, error];
-    }
+    if (error) return [null, error];
 
     profileCache.set(data.id, data);
     return [data, error];
@@ -109,14 +101,10 @@ export async function getProfileByName(username: string): Promise<ValOrErr<Profi
 
 export async function getProfileById(id: string): Promise<ValOrErr<Profile, PostgrestError>> {
     const cached = profileCache.get<Profile>(id);
-    if (cached) {
-        return [cached, null];
-    }
+    if (cached) return [cached, null];
 
     const { data, error } = await supabase.from("profiles").select<"*", Profile>().eq("id", id).single();
-    if (error) {
-        return [null, error];
-    }
+    if (error) return [null, error];
 
     profileCache.set(id, data);
     return [data, null];
@@ -183,7 +171,8 @@ export async function getAllChecksByUser(user: string): Promise<ValOrErr<Check[]
         .from("check_revisions")
         .select<"*", check_revision>()
         .eq("user_id", user)
-        .eq("template", check.template)));
+        .eq("template", check.template)
+        .order("modified")));
     const err = results.find(({ error }) => error)?.error;
     if (err) return [null, err];
 
@@ -196,28 +185,24 @@ export async function getAllChecksByUser(user: string): Promise<ValOrErr<Check[]
 export async function getCheck({ user, template }: { user: string, template: string }): Promise<ValOrErr<Check, PostgrestError>> {
     const key = `${user}/${template}`;
     const cached = checkCache.get<Check>(key);
-    if (cached) {
-        return [cached, null];
-    }
+    if (cached) return [cached, null];
 
     const { data: check, error } = await supabase
         .from("checks")
         .select<"*", check>()
         .eq("user_id", user)
-        .eq("template", template).single();
-    if (error) {
-        return [null, error];
-    }
+        .eq("template", template)
+        .single();
+    if (error) return [null, error];
 
     // TODO: reconsider how we cache revisions as they can have inf ttl once finished (but that isn't in rls yet!!)
     const { data: revisions, error: err } = await supabase
         .from("check_revisions")
         .select<"*", check_revision>()
         .eq("user_id", user)
-        .eq("template", template);
-    if (err) {
-        return [null, err];
-    }
+        .eq("template", template)
+        .order("modified");
+    if (err) return [null, err];
 
     const c = { ...check, revisions };
     checkCache.set(key, c);
@@ -248,7 +233,7 @@ export async function createCheckRevision({ user, template, version, data }:
     Promise<PostgrestError | null> {
     const { error } = await supabase
         .from("check_revisions")
-        .insert<check_revision>({ user_id: user, template, version, modified: new Date(), data });
+        .insert<check_revision>({ user_id: user, template, version, modified: new Date().toISOString(), data });
     // TODO: try to update the cache
     checkCache.del(`${user}/${template}`);
     return error;
@@ -259,7 +244,7 @@ export async function updateCheckRevision({ user, template, version, data, oldDa
     Promise<PostgrestError | null> {
     const { error } = await supabase
         .from("check_revisions")
-        .update<Partial<check_revision>>({ version, modified: new Date(), data })
+        .update<Partial<check_revision>>({ version, modified: new Date().toISOString(), data })
         .eq("user_id", user)
         .eq("template", template)
         .eq("modified", oldDate)
