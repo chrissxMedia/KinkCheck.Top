@@ -41,8 +41,10 @@ export async function getUser({ cookies }: { cookies: AstroCookies }): Promise<V
     return [data.user, null];
 }
 
+// TODO: consider putting in base
 export type Profile = { id: string, username: string, full_name: string, avatar_url: string };
 const profileCache = new NodeCache({ stdTTL: 3600 });
+const usernameCache = new NodeCache({ stdTTL: 3600 });
 
 export async function getProfile(user: { id: string, user_metadata: UserMetadata }): Promise<Profile> {
     const [profile, error] = await getProfileById(user.id);
@@ -63,12 +65,17 @@ export async function getProfile(user: { id: string, user_metadata: UserMetadata
         const { error } = await supabase.from("profiles").insert<Profile>(profile);
         if (error) {
             console.warn(error);
+            // TODO: consider not returning the profile
+            // (leads to having to handle a lot more edge-cases, but also ensures consistency)
+        } else {
+            profileCache.set(profile.id, profile);
+            usernameCache.set(profile.username, profile.id);
         }
-        profileCache.set(profile.id, profile);
         return profile;
     }
 }
 
+// TODO: consider returning the new profile
 export async function updateProfile(profile: Partial<Profile> & { id: string }): Promise<PostgrestError | undefined> {
     const { data, error } = await supabase
         .from("profiles")
@@ -79,24 +86,19 @@ export async function updateProfile(profile: Partial<Profile> & { id: string }):
     if (error) return error;
 
     profileCache.set(data.id, data);
+    usernameCache.set(data.username, data.id);
 }
 
-// TODO: think about whether we really need this
-export async function getProfileByName(username: string): Promise<ValOrErr<Profile, PostgrestError>> {
-    // TODO: consider just having a second cache for usernames
-    const cached = profileCache.keys().filter((k) => profileCache.get<Profile>(k)?.username === username);
-
-    if (cached.length === 1) {
-        return [profileCache.get(cached[0])!, null];
-    } else if (cached.length > 1) {
-        profileCache.del(cached);
-    }
+export async function getUserIdByName(username: string): Promise<ValOrErr<string, PostgrestError>> {
+    const cached = usernameCache.get<string>(username);
+    if (cached) return [cached, null];
 
     const { data, error } = await supabase.from("profiles").select<"*", Profile>().eq("username", username).single();
     if (error) return [null, error];
 
     profileCache.set(data.id, data);
-    return [data, error];
+    usernameCache.set(username, data.id);
+    return [data.id, null];
 }
 
 export async function getProfileById(id: string): Promise<ValOrErr<Profile, PostgrestError>> {
@@ -107,6 +109,7 @@ export async function getProfileById(id: string): Promise<ValOrErr<Profile, Post
     if (error) return [null, error];
 
     profileCache.set(id, data);
+    usernameCache.set(data.username, id);
     return [data, null];
 }
 
