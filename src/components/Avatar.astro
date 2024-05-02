@@ -1,0 +1,32 @@
+---
+import { isAvatarValid } from "../backendlib";
+
+export interface Props {
+    avatar_url: string;
+    username: string;
+    size: string;
+}
+
+let { avatar_url, username, size } = Astro.props;
+
+if (!(await isAvatarValid(avatar_url))) {
+    // TODO: proper 404 pic
+    avatar_url = "/tlflag.svg";
+}
+---
+
+<img
+    src={avatar_url}
+    alt={`${username}'s avatar`}
+    crossorigin="anonymous"
+    referrerpolicy="origin"
+/>
+
+<style define:vars={{ size }}>
+    img {
+        width: var(--size);
+        height: var(--size);
+        border-radius: calc(var(--size) / 2);
+        object-fit: cover;
+    }
+</style>
