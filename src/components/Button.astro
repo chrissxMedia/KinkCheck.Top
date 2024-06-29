@@ -1,0 +1,16 @@
+---
+// this belongs in cmdesigns, and will be put there when it's ready
+type Props = astroHTML.JSX.ButtonHTMLAttributes;
+---
+
+<button {...Astro.props}><slot /></button>
+
+<style>
+    button {
+        color: white;
+        background-color: rgb(var(--cmblack));
+        border: 0;
+        border-radius: 0.25em;
+        padding: 0.5em;
+    }
+</style>
