@@ -1,0 +1,17 @@
+---
+import { getUserIdByName } from "../backendlib";
+
+const { username } = Astro.params;
+
+if (!username) {
+    return new Response("no username given", { status: 400 });
+}
+
+const [id, error] = await getUserIdByName(username);
+
+if (error) {
+    return new Response(error.message, { status: 500 });
+}
+
+return Astro.redirect(`/profiles/${id}`);
+---
