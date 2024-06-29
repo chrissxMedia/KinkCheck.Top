@@ -30,7 +30,24 @@ const [check] = await getOwnCheck(Astro, template.id);
 const rev = check && getCheckRevision(check, "latest");
 ---
 
-<Layout title={`${template.name} ${template.version}`}>
+<Layout
+    title={`${template.name} ${template.version}`}
+    headertitle={template.name}
+>
+    <select class="versionselector" slot="header">
+        <option value="latest" selected={version === "latest"}>
+            latest ({template.revisions[0].version})
+        </option>
+        <optgroup label="Versions">
+            {
+                template.revisions.map((rev) => (
+                    <option selected={version === rev.version}>
+                        {rev.version}
+                    </option>
+                ))
+            }
+        </optgroup>
+    </select>
     <RatingOverview slot="header" />
     <SaveTemplateButton {...template} slot="header" client:load />
     <main>
@@ -44,9 +61,22 @@ const rev = check && getCheckRevision(check, "latest");
     </main>
 </Layout>
 
+<script>
+    import { navigate } from "astro:transitions/client";
+
+    document.querySelectorAll("select.versionselector").forEach((el) => {
+        el.addEventListener("change", (e) => {
+            navigate(`${(e.target as HTMLSelectElement).value}`);
+        });
+    });
+</script>
+
 <style>
     :global(div#content) {
         min-width: 475px;
         max-width: 1800px;
+    }
+    select {
+        margin: auto 0;
     }
 </style>
