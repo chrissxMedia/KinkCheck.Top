@@ -1,0 +1,34 @@
+---
+import type { User } from "@supabase/supabase-js";
+import type { Profile } from "../backendlib";
+import LinkCard from "./LinkCard.astro";
+import UserCard from "./UserCard.astro";
+
+export interface Props {
+    user?: (User & Profile) | null;
+    smol?: boolean;
+}
+
+const { user, smol } = Astro.props;
+---
+
+{
+    user ? (
+        <>
+            <UserCard {...user} {smol} />
+            {/* TODO: sign out */}
+            <LinkCard href="/settings" {smol}>
+                Settings
+            </LinkCard>
+        </>
+    ) : (
+        <>
+            <LinkCard href="/register" {smol}>
+                Register
+            </LinkCard>
+            <LinkCard href="/signin" {smol}>
+                Sign In
+            </LinkCard>
+        </>
+    )
+}
