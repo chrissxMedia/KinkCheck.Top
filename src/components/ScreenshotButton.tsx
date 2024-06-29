@@ -7,7 +7,8 @@ export default function ScreenshotButton({ title, options = {} }: { title: strin
         <>
             <a onClick={async () => {
                 // TODO: be able to pass in a selector for what to screenshot
-                const content = document.querySelector("div#content") as HTMLElement;
+                // FIXME: currently this is kind of broken (header is not included)
+                const content = document.querySelector("div#screenshotcontents") as HTMLElement;
                 document.body.classList.add("screenshot");
                 content.style.width = options.windowWidth + "px";
                 const canvas = await html2canvas(content, {

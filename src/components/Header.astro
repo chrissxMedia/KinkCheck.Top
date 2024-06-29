@@ -1,21 +1,63 @@
 ---
+import { getProfile, getUser } from "../backendlib";
 import HeaderLogo from "./HeaderLogo.astro";
+import HeaderMenuItems from "./HeaderMenuItems.astro";
 
-export interface Props {
-    title?: string;
-}
+// TODO: consider an option to force hamburger menu
 
-const { title } = Astro.props;
+const [user] = await getUser(Astro);
+const profile = user && (await getProfile(user));
+const fullUser = user && profile && { ...user, ...profile };
 ---
 
-<header class="column">
+<header>
     <div class="row">
-        <HeaderLogo>{title}</HeaderLogo>
+        <HeaderLogo><slot name="title" /></HeaderLogo>
         <slot />
+        <div class="menucontainer">
+            <HeaderMenuItems user={fullUser} smol />
+            <svg viewBox="0 0 448 512" id="hamburger">
+                <path
+                    d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"
+                ></path>
+            </svg>
+        </div>
+    </div>
+    <div id="userlinks">
+        <HeaderMenuItems user={fullUser} />
     </div>
 </header>
 
-<style>
+<script>
+    // FIXME: this seems to break with view:transitions
+    document.querySelectorAll("svg#hamburger").forEach((svg) => {
+        const links = document.getElementById("userlinks")!;
+        svg.addEventListener("click", () => {
+            if (links.style.display === "flex") {
+                links.style.display = "none";
+            } else {
+                links.style.display = "flex";
+            }
+        });
+    });
+</script>
+
+<style define:vars={{ menucontainername: user && profile ? "mcli" : "mclo" }}>
+    header {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0.5em;
+        padding: 12px calc(1.333vw - 8px) 0 calc(1.333vw - 8px);
+        min-height: 50px;
+        background-color: #101010;
+    }
+
+    @media screen and (width <= 600px) {
+        header {
+            padding: 12px 0 0 0;
+        }
+    }
+
     .row {
         display: flex;
         flex-direction: row;
@@ -23,8 +65,68 @@ const { title } = Astro.props;
         column-gap: 1em;
     }
 
-    .column {
+    .menucontainer {
+        flex-grow: 1;
+        min-width: 2em;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: flex-end;
+        column-gap: 0.5em;
+        container: var(--menucontainername) / inline-size;
+    }
+
+    /* FIXME: horrible hacks */
+
+    .menucontainer > :global(li) {
+        display: none;
+    }
+
+    @container mclo (width >= 300px) {
+        svg {
+            display: none;
+        }
+        .menucontainer > :global(li) {
+            display: flex;
+        }
+    }
+
+    /* TODO: SOME way to make this based on the length of the username etc */
+    @container mcli (width >= 600px) {
+        svg {
+            display: none;
+        }
+        .menucontainer > :global(li) {
+            display: flex;
+        }
+    }
+
+    #userlinks {
+        display: none;
+        flex-direction: row;
+        flex-wrap: wrap;
+        /* TODO: redesign somehow (flex-end won't help us here qwq) */
+        justify-content: space-evenly;
+        gap: 0.5rem;
+        padding: 0.25rem;
+        border-radius: 1em;
+    }
+
+    svg {
+        /* TODO: consider a right padding or something */
+        width: 2em;
+        max-height: 2.25em;
+    }
+
+    path {
+        fill: white;
     }
 </style>
+
+<script define:vars={{ mw: user && profile ? 500 : 250 }}>
+    // FIXME: this might be the worst code i ever wrote
+    document.querySelectorAll(".menucontainer").forEach((mc) => {
+        if (mc.clientWidth < mw) {
+            mc.style.flexGrow = 0;
+        }
+    });
+</script>
