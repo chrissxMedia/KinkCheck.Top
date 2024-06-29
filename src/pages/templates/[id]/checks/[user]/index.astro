@@ -1,0 +1,85 @@
+---
+import {
+    getCheck,
+    getCheckRevision,
+    getProfileById,
+    getTemplateRevision,
+getUserIdByName,
+} from "../../../../../backendlib";
+import { decodeKinkCheck, defaultRatings, prettyDate } from "../../../../../base";
+import { Check } from "../../../../../components/KinkCheck";
+import RatingOverview from "../../../../../components/RatingOverview.astro";
+import Layout from "../../../../../layouts/Layout.astro";
+
+const { id, user } = Astro.params;
+
+if (!id || !user) {
+    return new Response(`no ${!id ? "template id" : "user"} given`, {
+        status: 400,
+    });
+}
+
+if (user.startsWith("@")) {
+    const [id, error] = await getUserIdByName(user.substring(1));
+    if (error) {
+        return Response(error.message, { code: 500 });
+    }
+    const url = Astro.url;
+    url.pathname = url.pathname.replace(user, id);
+    return Astro.redirect(url);
+}
+
+const [profile] = await getProfileById(user);
+
+const [check, err] = await getCheck({ user, template: id });
+
+if (err) {
+    return new Response(err.message, { status: 500 });
+}
+
+const rev = getCheckRevision(check, "latest");
+
+const [template, error] = await getTemplateRevision({
+    id,
+    version: rev?.version ?? "latest",
+});
+
+if (error) {
+    return new Response(error.message, { status: 500 });
+}
+
+// TODO: selecting revisions, ........
+// TODO: when self maybe display and edit button
+---
+
+<Layout
+    title={`${template.name} ${template.version} from ${
+        profile ? profile.full_name : user
+    }`}
+    headertitle={`${template.name} ${template.version}`}
+>
+    <span class="checkdesc" slot="header">
+        <span>from {profile ? profile.full_name : user}</span>
+        <span>{rev && prettyDate(new Date(rev.modified))}</span>
+    </span>
+    <RatingOverview slot="header" />
+    <main>
+        <Check
+            {...template}
+            ratings={rev
+                ? decodeKinkCheck(template, rev.data).ratings
+                : defaultRatings(template.kinks)}
+        />
+    </main>
+</Layout>
+
+<style>
+    :global(div#content) {
+        min-width: 475px;
+        max-width: 1800px;
+    }
+    .checkdesc {
+        display: flex;
+        flex-direction: column;
+    }
+</style>

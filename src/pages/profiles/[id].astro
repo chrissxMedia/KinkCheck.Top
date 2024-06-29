@@ -1,0 +1,97 @@
+---
+import Avatar from "../../components/Avatar.astro";
+import Layout from "../../layouts/Layout.astro";
+import {
+    getAllChecksByUser,
+    getCheckRevision,
+    getProfileById,
+    getTemplateRevision,
+} from "../../backendlib";
+import CheckCard from "../../components/CheckCard.astro";
+import {
+    decodeKinkCheck,
+    type check,
+    type check_revision,
+    type TemplateRevision,
+} from "../../base";
+
+const { id } = Astro.params;
+
+if (!id) {
+    return new Response("no user id given", { status: 400 });
+}
+
+const [profile, error] = await getProfileById(id);
+
+if (error) {
+    return new Response(error.message, { status: 500 });
+}
+
+const [checks, err] = await getAllChecksByUser(id);
+const usableChecks =
+    checks &&
+    (await Promise.all(
+        checks
+            .map((x) => getCheckRevision(x, "latest"))
+            .filter((x) => x)
+            .map((x) => x!)
+            .map<Promise<[check & check_revision, TemplateRevision | null]>>(
+                async (check) => [
+                    check,
+                    await getTemplateRevision({
+                        id: check.template,
+                        version: check.version,
+                    }).then(([t]) => t),
+                ],
+            ),
+    ));
+---
+
+<Layout title={`${profile.full_name} (@${profile.username})`}>
+    <Avatar {...profile} size="44px" slot="header" />
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+    irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+    nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
+    qui officia deserunt mollit anim id est laborum.
+
+    <h2>Checks</h2>
+    {
+        err || !checks.length || !usableChecks ? (
+            <>
+                <p>
+                    There are no checks from this user (or they aren't visible
+                    to you)
+                </p>
+                <pre>{err}</pre>
+            </>
+        ) : (
+            <ul>
+                {usableChecks.map(([check, template]) =>
+                    !template ? (
+                        <li>
+                            Can't load template (TODO: display error): {check}
+                        </li>
+                    ) : (
+                        // TODO: when it's the user's own profile we might want to link to the template
+                        <CheckCard
+                            {template}
+                            {...decodeKinkCheck(template, check.data)}
+                            href={`/templates/${template.id}/checks/${check.user_id}`}
+                        />
+                    ),
+                )}
+            </ul>
+        )
+    }
+</Layout>
+
+<style>
+    :global(div#content) {
+        max-width: 1000px;
+    }
+    ul {
+        padding: 0;
+    }
+</style>
