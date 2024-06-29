@@ -1,6 +1,6 @@
 ---
 import {
-    getLatestCheckRevision,
+    getCheckRevision,
     getOwnCheck,
     getTemplateRevision,
 } from "../backendlib";
@@ -18,7 +18,7 @@ if (error) {
 }
 
 const [check] = await getOwnCheck(Astro, template.id);
-const rev = check && getLatestCheckRevision(check);
+const rev = check && getCheckRevision(check, "latest");
 const ratings = rev
     ? decodeKinkCheck(template, rev.data).ratings
     : defaultRatings(template.kinks);
@@ -31,7 +31,7 @@ const ratings = rev
         <CheckCard
             {template}
             {ratings}
-            href="/templates/aed3291f-73c5-4939-ad80-829bd9953bb4/latest"
+            href={`/templates/${template.id}/latest`}
         />
     </ul>
 </Layout>

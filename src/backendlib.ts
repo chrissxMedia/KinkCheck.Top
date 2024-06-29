@@ -225,12 +225,13 @@ export async function getOwnCheck({ cookies }: { cookies: AstroCookies }, templa
     return getCheck({ user: user.id, template });
 }
 
-export function getLatestCheckRevision(check: Check): check & check_revision | null {
+export function getCheckRevision(check: Check, modified: string): CheckRevision | null {
     if (!check.revisions.length) return null;
-    return {
-        ...check,
-        ...check.revisions.toSorted(({ modified: a }, { modified: b }) => a < b ? 1 : a > b ? -1 : 0)[0]
-    };
+    const revision = modified === "latest"
+        ? check.revisions[check.revisions.length - 1]
+        : check.revisions.find((r) => r.modified === modified);
+    if (!revision) return null;
+    return { ...check, ...revision };
 }
 
 export function createCheckMeta(check: check): PromiseLike<PostgrestError | null> {

@@ -2,7 +2,11 @@
 import Layout from "../../../../layouts/Layout.astro";
 import { KinkCheck } from "../../../../components/KinkCheck";
 import RatingOverview from "../../../../components/RatingOverview.astro";
-import { getLatestCheckRevision, getOwnCheck, getTemplateRevision } from "../../../../backendlib";
+import {
+    getCheckRevision,
+    getOwnCheck,
+    getTemplateRevision,
+} from "../../../../backendlib";
 import SaveTemplateButton from "../../../../components/SaveTemplateButton";
 import { decodeKinkCheck, defaultRatings } from "../../../../base";
 
@@ -20,8 +24,10 @@ if (error) {
     return new Response(error.message, { status: 500 });
 }
 
+template.revisions.reverse();
+
 const [check] = await getOwnCheck(Astro, template.id);
-const rev = check && getLatestCheckRevision(check);
+const rev = check && getCheckRevision(check, "latest");
 ---
 
 <Layout title={`${template.name} ${template.version}`}>
