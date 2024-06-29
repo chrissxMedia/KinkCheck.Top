@@ -1,0 +1,121 @@
+---
+import { authProviders, getProfile, getUser } from "../backendlib";
+import Button from "../components/Button.astro";
+import Layout from "../layouts/Layout.astro";
+
+const [user] = await getUser(Astro);
+const profile = user && (await getProfile(user));
+
+if (!user || !profile) {
+    return Astro.redirect("/");
+}
+
+const changed = Astro.url.search === "?changed";
+---
+
+<Layout title="User Settings">
+    <form action="/api/user/update" method="post" data-astro-reload>
+        <code>{JSON.stringify(profile)}</code>
+        {
+            changed && (
+                <p>
+                    Your changes were saved. You might need to confirm your
+                    email again, if you changed it.
+                </p>
+            )
+        }
+        <table>
+            <tbody>
+                <tr>
+                    <td><label for="email">Email</label></td>
+                    <td>
+                        <input
+                            type="email"
+                            name="email"
+                            value={user.email}
+                            id="email"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="username">Username</label></td>
+                    <td>
+                        <input
+                            type="text"
+                            name="username"
+                            value={profile.username}
+                            id="username"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="full_name">Display Name</label></td>
+                    <td>
+                        <input
+                            type="text"
+                            name="full_name"
+                            value={profile.full_name}
+                            id="full_name"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="avatar_url">Avatar URL</label></td>
+                    <td>
+                        <input
+                            type="text"
+                            name="avatar_url"
+                            value={profile.avatar_url}
+                            id="avatar_url"
+                        />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <Button type="submit">Update</Button>
+    </form>
+    <form action="/api/user/link" method="post" class="links" data-astro-reload>
+        {
+            authProviders.map(([value, name]) => {
+                const id = user.identities?.find((x) => x.provider === value);
+                return id ? (
+                    <Button type="button">{name} is already linked</Button>
+                ) : (
+                    <Button {value} name="provider" type="submit">
+                        Link {name}
+                    </Button>
+                );
+            })
+        }
+    </form>
+</Layout>
+
+<style>
+    code {
+        font-size: 9pt;
+        word-wrap: break-word;
+        width: 1000px;
+    }
+    :global(div#content) {
+        /* TODO: rescale */
+        width: max-content;
+        max-width: 1000px;
+    }
+    form {
+        font-size: 16pt;
+        margin-top: 1em;
+        display: flex;
+        flex-direction: column;
+        row-gap: 0.5em;
+    }
+    .links {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .links button {
+        width: 50%;
+    }
+    input {
+        width: 100%;
+    }
+</style>
