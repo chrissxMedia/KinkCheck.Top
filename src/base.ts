@@ -79,3 +79,13 @@ export function decodeKinkCheck({ kinks }: { kinks: kinklist }, s: check_data): 
     });
     return { ratings };
 }
+
+export function prettyDate(d: Date): string {
+    const year = d.getUTCFullYear().toString().padStart(4, "0");
+    const month = (d.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = d.getUTCDate().toString().padStart(2, "0");
+    const hours = d.getUTCHours().toString().padStart(2, "0");
+    const mins = d.getUTCMinutes().toString().padStart(2, "0");
+    const secs = d.getUTCSeconds().toString().padStart(2, "0");
+    return `${year}-${month}-${day} ${hours}:${mins}:${secs} UTC`;
+}
