@@ -1,0 +1,69 @@
+---
+import HCaptcha from "astro-hcaptcha";
+import { authProviders } from "../backendlib";
+import Layout from "../layouts/Layout.astro";
+import Button from "../components/Button.astro";
+import env from "../env";
+
+const confirmEmail = Astro.url.search === "?registered";
+---
+
+<Layout title="Sign in">
+    <div class="signin">
+        {
+            confirmEmail && (
+                <p>
+                    Note: You need to confirm your email address before you can
+                    sign in.
+                </p>
+            )
+        }
+        <form action="/api/user/signin" method="post" data-astro-reload>
+            <input type="email" name="email" placeholder="Email" />
+            <input type="password" name="password" placeholder="Password" />
+            <HCaptcha sitekey={env.HCAPTCHA_SITEKEY} theme="dark" />
+            <Button type="submit">Sign in</Button>
+            <div class="providers">
+                {
+                    authProviders.map(([value, name]) => (
+                        <Button {value} name="provider" type="submit">
+                            Sign in with {name}
+                        </Button>
+                    ))
+                }
+            </div>
+        </form>
+    </div>
+</Layout>
+
+<style>
+    :global(div#content) {
+        width: max-content;
+        max-width: 100%;
+    }
+    .signin {
+        font-size: 16pt;
+        max-width: 50ch;
+    }
+    p {
+        margin: 1em 0;
+        color: rgb(var(--cmred));
+    }
+    form {
+        margin-top: 1em;
+        display: flex;
+        flex-direction: column;
+        row-gap: 0.5em;
+    }
+    .providers {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    @media screen and (width < 480px) {
+        .providers {
+            flex-direction: column;
+        }
+    }
+</style>

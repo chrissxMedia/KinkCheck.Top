@@ -1,0 +1,43 @@
+---
+import HCaptcha from "astro-hcaptcha";
+import Layout from "../layouts/Layout.astro";
+import Button from "../components/Button.astro";
+import env from "../env";
+---
+
+<Layout title="Register new account">
+    <div class="register">
+        <p>Already have an account? <a href="/signin">Sign in</a></p>
+        <form action="/api/user/register" method="post" data-astro-reload>
+            <input type="email" name="email" placeholder="Email" />
+            <input type="text" name="username" placeholder="Username" />
+            <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                minlength={8}
+            />
+            <HCaptcha sitekey={env.HCAPTCHA_SITEKEY} theme="dark" />
+            <Button type="submit">Create account</Button>
+        </form>
+    </div>
+</Layout>
+
+<style>
+    :global(div#content) {
+        /* TODO: rescale */
+        width: max-content;
+        max-width: 100%;
+    }
+    .register {
+        font-size: 16pt;
+    }
+    p {
+        margin: 1em 0;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+        row-gap: 0.5em;
+    }
+</style>
