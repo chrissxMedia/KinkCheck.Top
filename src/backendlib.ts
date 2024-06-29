@@ -1,7 +1,7 @@
 import { createClient, type User, type AuthError, type UserMetadata, type PostgrestError } from "@supabase/supabase-js";
 import type { AstroCookies } from "astro";
 import NodeCache from "node-cache";
-import type { Check, Template, TemplateRevision, check, check_data, check_revision, template, template_revision } from "./base";
+import type { Check, CheckRevision, TemplateRevision, check, check_data, check_revision, template, template_revision } from "./base";
 import env from "./env";
 
 type ValOrErr<V, E> = [V, null] | [null, E];
@@ -23,6 +23,8 @@ export const authProviders: [string, string][] = [
 ];
 
 export const oauthOptions = { redirectTo: "http://localhost:4321/api/user/callback" };
+
+// TODO: apparently we need to specify sorting for every api call maybe
 
 export async function getUser({ cookies }: { cookies: AstroCookies }): Promise<ValOrErr<User | null, AuthError>> {
     // TODO: consider { cookies, clientAddress }: { cookies: AstroCookies, clientAddress: string } for rate limiting
@@ -113,50 +115,54 @@ export async function getProfileById(id: string): Promise<ValOrErr<Profile, Post
     return [data, null];
 }
 
-const templateCache = new NodeCache({ stdTTL: 3600 });
+const templateMetaCache = new NodeCache({ stdTTL: 3600 });
+const templateRevisionCache = new NodeCache({ stdTTL: 3600 });
 
-export async function getTemplateById(id: string): Promise<ValOrErr<Template, PostgrestError>> {
-    const cached = templateCache.get<Template>(id);
-    if (cached) {
-        return [cached, null];
-    }
+export async function getTemplateMeta(id: string): Promise<ValOrErr<template, PostgrestError>> {
+    const cached = templateMetaCache.get<template>(id);
+    if (cached) return [cached, null];
 
-    const { data: template, error } = await supabase.from("templates").select<"*", template>().eq("id", id).single();
-    if (error) {
-        return [null, error];
-    }
+    const { data: template, error } = await supabase
+        .from("templates")
+        .select<"*", template>()
+        .eq("id", id)
+        .single();
+    if (error) return [null, error];
+
+    templateMetaCache.set(id, template);
+    return [template, null];
+}
+
+export async function getTemplateRevisions(id: string): Promise<ValOrErr<template_revision[], PostgrestError>> {
+    const cached = templateRevisionCache.get<template_revision[]>(id);
+    if (cached) return [cached, null];
+
+    const { data: revisions, error } = await supabase
+        .from("template_revisions")
+        .select<"*", template_revision>()
+        .eq("id", id)
+        .order("created");
+    if (error) return [null, error];
 
     // TODO: reconsider how we cache revisions as they can have inf ttl
-    const { data: revisions, error: err } = await supabase.from("template_revisions").select<"*", template_revision>().eq("id", id);
-    if (err) {
-        return [null, err];
-    }
-
-    const t = { ...template, revisions };
-    templateCache.set(id, t);
-    return [t, null];
+    templateRevisionCache.set(id, revisions);
+    return [revisions, null];
 }
 
 export async function getTemplateRevision({ id, version }: { id: string, version: string }):
     Promise<ValOrErr<TemplateRevision, { message: string }>> {
-    const [template, error] = await getTemplateById(id);
+    const [meta, error] = await getTemplateMeta(id);
+    if (error) return [null, error];
 
-    if (error) {
-        return [null, error];
-    }
+    const [revisions, err] = await getTemplateRevisions(id);
+    if (err) return [null, err];
 
-    const revision =
-        version === "latest"
-            ? template.revisions.toSorted((a, b) =>
-                a.created > b.created ? -1 : a.created === b.created ? 0 : 1,
-            )[0]
-            : template.revisions.find((r) => r.version === version);
+    const revision = version === "latest"
+        ? revisions[revisions.length - 1]
+        : revisions.find((r) => r.version === version);
+    if (!revision) return [null, { message: `unknown version: ${version}` }];
 
-    if (!revision) {
-        return [null, { message: "unknown version" }];
-    }
-
-    return [{ ...template, ...revision }, null];
+    return [{ ...meta, revisions, ...revision }, null];
 }
 
 // FIXME: this completely fucks up visibility

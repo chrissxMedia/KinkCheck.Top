@@ -24,7 +24,7 @@ export type template_revision = {
     kinks: kinklist;
 };
 export type Template = template & { revisions: template_revision[] };
-export type TemplateRevision = template & template_revision;
+export type TemplateRevision = Template & template_revision;
 
 // these are purely internal types!
 export type ratings = number[][][];
@@ -46,7 +46,7 @@ export type check_revision = {
     data: check_data;
 };
 export type Check = check & { revisions: check_revision[] };
-export type CheckRevision = check & check_revision;
+export type CheckRevision = Check & check_revision;
 
 const valueForAllKinks = <T>(kinks: kinklist, x: T) => kinks.map(([, kinks]) => kinks.map((k) => k[1].map(() => x)));
 export const defaultRatings = (kinks: kinklist): ratings => valueForAllKinks(kinks, 0);
