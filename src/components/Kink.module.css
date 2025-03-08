@@ -9,6 +9,10 @@
     position: relative;
 }
 
+.td:last-child {
+    padding-right: 8px;
+}
+
 .desc {
     background-color: rgb(var(--cmblack));
     color: white;
