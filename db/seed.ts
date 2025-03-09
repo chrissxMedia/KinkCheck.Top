@@ -5,10 +5,12 @@ export default async function () {
 	await db.insert(Template).values([
 		{
 			id: "kcc",
-			revision: "0.7",
-			created_at: new Date("2024-07-16T12:14:00.000Z"),
+			revision: "0.8-dev",
+			created_at: new Date("2025-03-01T00:00:00.000Z"),
 			type: "full",
 			name: "Classic",
+			// TODO: {kinks:[...]}
+			// TODO: convert tabs to spaces
 			data: [
 				["General", [
 					["Fellatio/Blowjobs", ["receive", "give"], 0],
@@ -16,6 +18,7 @@ export default async function () {
 					["Face-Fucking", ["give", "receive"], 2],
 					["Face-Sitting", ["top", "bottom"], 3, "top sits on bottom's face"],
 					["Handjobs", ["give", "receive"], 4],
+					["Frotting/Scissoring", ["give", "receive"], 98],
 					["Vaginal Penetration", ["top", "bottom"], 97],
 					["Vaginal Fingering", ["give", "receive"], 5],
 					["Vaginal Fisting", ["give", "receive"], 6],
@@ -43,6 +46,7 @@ export default async function () {
 					["Rape/CNC", ["top", "bottom"], 28],
 					["Kidnapping", ["dom", "sub"], 29],
 					["Spanking", ["give", "receive"], 30],
+					["Hair Pulling", ["give", "receive"], 101],
 					["Forced Orgasms", ["give", "receive"], 31],
 					["Orgasm Denial", ["dom", "sub"], 32],
 					["Chastity", ["dom", "sub"], 33],
@@ -55,8 +59,8 @@ export default async function () {
 					["Gags", ["dom", "sub"], 40],
 					["Begging", ["dom", "sub"], 41],
 					["Teasing", ["dom", "sub"], 42],
-					["Sounding/Urethral Insertion", ["dom", "sub"], 43],
 					["Worship", ["dom", "sub"], 44],
+					["Sounding/Urethral Insertion", ["dom", "sub"], 43],
 				]],
 				["Kinks", [
 					["Incest", ["cousins", "siblings"], 45],
@@ -74,12 +78,13 @@ export default async function () {
 					["Exhibition/Voyeur", ["exhib", "voyeur"], 56],
 					["Double-Penetration", ["top", "bottom"], 57],
 					["Multi-Partner", ["top", "bottom"], 58],
-					["Tickling", ["dom", "sub"], 59],
+					["Tickling", ["give", "receive"], 59],
 					["Cumswapping", [""], 60],
 					["Thighsex", ["top", "bottom"], 61],
 					["Titfuck", ["top", "bottom"], 62],
 					["Footjob", ["give", "receive"], 63],
 					["Armpit Sex", ["top", "bottom"], 64],
+					["Smoking", [""], 99],
 				]],
 				["Pain", [
 					["Physical Pain", ["give", "receive"], 65],
@@ -110,7 +115,8 @@ export default async function () {
 					["Furry", [""], 88],
 				]],
 				["Extreme", [
-					["Scat", [""], 89],
+					["Scat", [""], 89, "anything involving feces"],
+					["Vomit", [""], 100],
 					["Cutting", ["give", "receive"], 90],
 					["Raceplay", ["dom", "sub"], 91],
 					["Bestiality", [""], 92],
