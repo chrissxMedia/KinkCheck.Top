@@ -1,0 +1,40 @@
+---
+import { db, Template } from "astro:db";
+import HeaderLogo from "../../../components/HeaderLogo.astro";
+import KinkCheck from "../../../components/KinkCheck";
+import RatingOverview from "../../../components/RatingOverview.astro";
+import { getCurrentTemplate } from "../../../db";
+import Layout from "../../../layouts/Layout.astro";
+
+const { id } = Astro.params;
+const template = id && (await getCurrentTemplate(id));
+
+if (!template) {
+    return new Response(400);
+}
+
+export async function getStaticPaths() {
+    const ids = await db.select({ id: Template.id }).from(Template);
+    return ids.map(({ id }) => ({ params: { id } }));
+}
+---
+
+<Layout title={`${template.name} ${template.revision}`}>
+    <header>
+        <HeaderLogo>{template.name}&nbsp;{template.revision}</HeaderLogo>
+        <RatingOverview />
+    </header>
+    <KinkCheck {...template.data} client:load />
+</Layout>
+
+<style>
+    :global(div#content) {
+        min-width: 475px;
+        max-width: 1800px;
+    }
+    header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+</style>
