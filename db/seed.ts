@@ -129,6 +129,26 @@ export default async function () {
                 ],
             },
         },
+        {
+            id: "april-fools",
+            revision: "0.1",
+            created_at: new Date("2025-04-01T00:00:00.000Z"),
+            type: "full",
+            name: "AF",
+            data: {
+                kinks: [
+                    ["Extreme", [
+                        ["Hand Holding", [""], 0],
+                        ["Cuddles", [""], 1],
+                        ["Making Out", [""], 2],
+                        ["Forehead Kisses", ["give", "receive"], 3],
+                        ["Hair Playing", ["give", "receive"], 4],
+                        ["Paw Frotting", [""], 5],
+                        ["Austria", ["top", "bottom"], 6],
+                    ]],
+                ],
+            },
+        },
     ]);
     //db.insert(Check).values([]);
 }
