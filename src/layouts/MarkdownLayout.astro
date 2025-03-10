@@ -1,0 +1,23 @@
+---
+import Layout from "./Layout.astro";
+import HeaderLogo from "../components/HeaderLogo.astro";
+export type Props = { frontmatter: { title: string } };
+const { frontmatter } = Astro.props;
+---
+
+<Layout title={frontmatter.title}>
+    <header><HeaderLogo>{frontmatter.title}</HeaderLogo></header>
+    <main>
+        <slot />
+    </main>
+</Layout>
+
+<style>
+    :global(div#content) {
+        max-width: 120ch;
+    }
+
+    main :global(p) {
+        font-family: var(--sans-serif);
+    }
+</style>

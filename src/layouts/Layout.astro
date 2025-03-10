@@ -25,6 +25,7 @@ if (!title.includes(kc)) title += " | " + kc;
             <a href="/tlcc">Trans Lesbian Badges</a>
             <a href="/flag">Flag Generator</a>
             <a href="/rewind">Rewind</a>
+            <a href="/privacy">Privacy Policy</a>
             |
             <!-- TODO: <a href="?">Merch</a> -->
             <ScreenshotButton {title} options={screenshotOptions} client:load />
@@ -44,8 +45,9 @@ if (!title.includes(kc)) title += " | " + kc;
     }
     nav {
         display: flex;
-        column-gap: 1ch;
+        column-gap: 1.25ch;
         justify-content: center;
+        flex-wrap: wrap;
         /* TODO: figure out an appropriate padding (or margin) in part based on vw */
     }
     nav :global(a),
