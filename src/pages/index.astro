@@ -4,12 +4,13 @@ import HeaderLogo from "../components/HeaderLogo.astro";
 import KinkCheck from "../components/KinkCheck";
 import RatingOverview from "../components/RatingOverview.astro";
 import { db, Template } from "astro:db";
-import type { kinklist } from "../base";
+import type { template_revision } from "../base";
 
 const template = await db
 	.select()
 	.from(Template)
 	.then((x) => x[0]);
+const data = template.data as template_revision;
 ---
 
 <Layout>
@@ -17,7 +18,7 @@ const template = await db
 		<HeaderLogo />
 		<RatingOverview />
 	</header>
-	<KinkCheck kinks={template.data as kinklist} client:load />
+	<KinkCheck {...data} client:load />
 </Layout>
 
 <style>
