@@ -10,7 +10,17 @@ export const ratings: [string, string][] = [
 export type positions = [string, string] | [""];
 export type kink = [string, positions, number] | [string, positions, number, string];
 export type kinklist = [string, kink[]][];
+// TODO: rename
 export type template_revision = { kinks: kinklist };
+// TODO: check whether astro:db can handle this
+export type template = {
+    id: string;
+    revision: string;
+    created_at: Date;
+    type: "full";
+    name: string;
+    data: template_revision;
+};
 
 const valueForAllKinks = <T>(kinks: kinklist, x: T) =>
     kinks.map<T[][]>((c) => c[1].map((k) => k[1].map(() => x)));

@@ -3,14 +3,12 @@ import Layout from "../layouts/Layout.astro";
 import HeaderLogo from "../components/HeaderLogo.astro";
 import KinkCheck from "../components/KinkCheck";
 import RatingOverview from "../components/RatingOverview.astro";
-import { db, Template } from "astro:db";
-import type { template_revision } from "../base";
+import { getCurrentTemplate } from "../db";
 
-const template = await db
-	.select()
-	.from(Template)
-	.then((x) => x[0]);
-const data = template.data as template_revision;
+const template = await getCurrentTemplate("kcc");
+if (!template) {
+	throw new Error(`cant find template (should never happen, our db is f-ed)`);
+}
 ---
 
 <Layout>
@@ -18,7 +16,7 @@ const data = template.data as template_revision;
 		<HeaderLogo />
 		<RatingOverview />
 	</header>
-	<KinkCheck {...data} client:load />
+	<KinkCheck {...template.data} client:load />
 </Layout>
 
 <style>
