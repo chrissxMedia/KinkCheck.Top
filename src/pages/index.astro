@@ -13,7 +13,9 @@ if (!template) {
 
 <Layout>
 	<header>
-		<HeaderLogo />
+		<HeaderLogo includeVersion={false}>
+			<span class="smol">v{template.revision}</span>
+		</HeaderLogo>
 		<RatingOverview />
 	</header>
 	<KinkCheck {...template.data} client:load />

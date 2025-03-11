@@ -11,8 +11,8 @@ const v = includeVersion ? " v" + version : "";
 
 <h1>
     <a href="/">
-        <span class="k">K</span>ink<span class="c">C</span>heck<span class="t"
-            >.Top{v}</span
+        <span class="k">K</span>ink<span class="c">C</span>heck<span
+            class="smol">.Top{v}</span
         >
     </a><slot />
 </h1>
@@ -27,7 +27,7 @@ const v = includeVersion ? " v" + version : "";
     .c {
         color: rgb(var(--cmred));
     }
-    .t {
+    h1 :global(.smol) {
         font-size: 0.75em;
     }
     a {
