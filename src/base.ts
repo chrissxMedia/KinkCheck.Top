@@ -21,6 +21,13 @@ export type template = {
     name: string;
     data: template_revision;
 };
+export type check = {
+    id: string;
+    template_id: string;
+    template_revision: string;
+    created_at: Date;
+    data: { ratings: any };
+};
 
 const valueForAllKinks = <T>(kinks: kinklist, x: T) =>
     kinks.map<T[][]>((c) => c[1].map((k) => k[1].map(() => x)));
