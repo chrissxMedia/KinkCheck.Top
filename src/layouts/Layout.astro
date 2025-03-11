@@ -30,6 +30,8 @@ if (!title.includes(kc)) title += " | " + kc;
             <!-- TODO: <a href="?">Merch</a> -->
             <ScreenshotButton {title} options={screenshotOptions} client:load />
         </nav>
+        <!-- TODO: find a way to put this in the cmdesigns footer element well -->
+        <p>{kc}</p>
     </Footer>
 </BaseLayout>
 
@@ -55,5 +57,9 @@ if (!title.includes(kc)) title += " | " + kc;
         color: #c0c0c0;
         text-decoration: underline;
         cursor: pointer;
+    }
+    p {
+        margin: 0;
+        margin-top: 0.5em;
     }
 </style>
