@@ -37,15 +37,15 @@ function packIndexedValues<T>(indexedValues: [number, T][]): T[] {
     }, Array(Math.max(...indexedValues.map(([idx]) => idx))));
 }
 
-export function encodeKinkCheck({ kinks }: { kinks: kinklist }, { ratings }: kinkcheck): string {
+export function encodeKinkCheck({ kinks }: template_revision, { ratings }: kinkcheck): { ratings: any } {
     const r = packIndexedValues(ratings.flatMap((_, cat) =>
         kinks[cat][1].map<[number, number[]]>(([, , id], i) => [id, ratings[cat][i]])));
-    return JSON.stringify({ ratings: r });
+    return { ratings: r };
 }
 
-export function decodeKinkCheck({ kinks }: { kinks: kinklist }, s: string): kinkcheck {
+export function decodeKinkCheck({ kinks }: template_revision, s: { ratings: any }): kinkcheck {
     const ratings = defaultRatings(kinks);
-    JSON.parse(s).ratings.forEach((rat: number[] | undefined, id: number) => {
+    s.ratings.forEach((rat: number[] | undefined, id: number) => {
         if (!rat) return;
         ratings.forEach((_, cat) => {
             ratings[cat].forEach((_, i) => {
