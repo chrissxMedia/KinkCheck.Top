@@ -7,11 +7,12 @@ import RatingOverview from "../../../components/RatingOverview.astro";
 import { getCheck, getTemplateVersion } from "../../../db";
 import Layout from "../../../layouts/Layout.astro";
 
+//export const prerender = false;
 const { id } = Astro.params;
 const check = id && (await getCheck(id));
 
 if (!check) {
-    return new Response(404, "The check does not exist.");
+    return new Response("The check does not exist.", { status: 404 });
 }
 
 const template = await getTemplateVersion(
@@ -20,7 +21,7 @@ const template = await getTemplateVersion(
 );
 
 if (!template) {
-    return new Response(500, "Broken check, template does not exist.");
+    return new Response("Broken check, template doesnt exist", { status: 500 });
 }
 
 export async function getStaticPaths() {
@@ -32,7 +33,9 @@ export async function getStaticPaths() {
 <Layout title={`${template.name} ${template.revision}`}>
     <header>
         <HeaderLogo includeVersion={false}>
-            {template.name}<span class="smol">&nbsp;v{template.revision} check {id}</span>
+            {template.name}<span class="smol"
+                >&nbsp;v{template.revision} check {id}</span
+            >
         </HeaderLogo>
         <RatingOverview />
     </header>

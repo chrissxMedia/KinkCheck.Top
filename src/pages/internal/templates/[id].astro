@@ -10,7 +10,7 @@ const { id } = Astro.params;
 const template = id && (await getCurrentTemplate(id));
 
 if (!template) {
-    return new Response(400);
+    return new Response("Template not found", { status: 404 });
 }
 
 export async function getStaticPaths() {
