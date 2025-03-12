@@ -21,8 +21,8 @@ export default function Matcher(meta: template_revision) {
     let kcA = defaultKinkcheck(meta.kinks);
     let kcB = defaultKinkcheck(meta.kinks);
     let errorA, errorB;
-    try { kcA = decodeKinkCheck(meta, partnerA.trim()); } catch(e: any) { errorA = e.toString(); }
-    try { kcB = decodeKinkCheck(meta, partnerB.trim()); } catch(e: any) { errorB = e.toString(); }
+    try { kcA = decodeKinkCheck(meta, JSON.parse(partnerA).trim()); } catch(e: any) { errorA = e.toString(); }
+    try { kcB = decodeKinkCheck(meta, JSON.parse(partnerB).trim()); } catch(e: any) { errorB = e.toString(); }
     kcB.ratings = kcB.ratings.map(ks => ks.map(rs => rs.toReversed()));
     const matched = match(kcA.ratings, kcB.ratings);
     return <main>
