@@ -7,7 +7,7 @@ import RatingOverview from "../../../components/RatingOverview.astro";
 import { getCheck, getTemplateVersion } from "../../../db";
 import Layout from "../../../layouts/Layout.astro";
 
-//export const prerender = false;
+export const prerender = false;
 const { id } = Astro.params;
 const check = id && (await getCheck(id));
 
@@ -22,11 +22,6 @@ const template = await getTemplateVersion(
 
 if (!template) {
     return new Response("Broken check, template doesnt exist", { status: 500 });
-}
-
-export async function getStaticPaths() {
-    const ids = await db.select({ id: Check.id }).from(Check);
-    return ids.map(({ id }) => ({ params: { id } }));
 }
 ---
 
