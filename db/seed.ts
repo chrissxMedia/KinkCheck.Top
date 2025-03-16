@@ -15,7 +15,7 @@ export const templates = [
                     ["Face-Fucking", ["give", "receive"], 2],
                     ["Face-Sitting", ["top", "bottom"], 3, "top sits on bottom's face"],
                     ["Handjobs", ["give", "receive"], 4],
-                    ["Frotting/Scissoring", ["give", "receive"], 98],
+                    ["Frotting/Scissoring", [""], 98],
                     ["Vaginal Penetration", ["top", "bottom"], 97],
                     ["Vaginal Fingering", ["give", "receive"], 5],
                     ["Vaginal Fisting", ["give", "receive"], 6],
