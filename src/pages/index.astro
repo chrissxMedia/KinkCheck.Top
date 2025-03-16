@@ -11,7 +11,7 @@ if (!template) {
 }
 ---
 
-<Layout>
+<Layout screenshotOptions={{ windowWidth: 1500 }}>
 	<header>
 		<HeaderLogo includeVersion={false}>
 			<span class="smol">v{template.revision}</span>
@@ -23,7 +23,7 @@ if (!template) {
 
 <style>
 	:global(div#content) {
-		min-width: 475px;
+		min-width: 500px;
 		max-width: 1800px;
 	}
 	header {
