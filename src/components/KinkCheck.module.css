@@ -8,19 +8,19 @@
 .table {
     border: 1px solid #303030;
     border-collapse: collapse;
-    font-size: 16pt;
+    font-size: 1.35em;
 }
 
 .catname {
-    margin-bottom: 6px;
-    margin-top: 9px;
+    margin-bottom: .25em;
+    margin-top: .375em;
 }
 
 .category {
     min-width: 28%;
 }
 
-@media screen and (width <= 800px) {
+@media screen and (width <= 900px) {
     :global(body:not(.screenshot)) .category,
     :global(body:not(.screenshot)) .table {
         width: 100%;
