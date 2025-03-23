@@ -1,6 +1,7 @@
 import { Check, db, Template } from "astro:db";
+import type { template } from "../src/base";
 
-export const templates = [
+export const templates: template[] = [
     {
         id: "kcc",
         revision: "0.8-dev",
@@ -143,6 +144,40 @@ export const templates = [
                     ["Hair Playing", ["give", "receive"], 4],
                     ["Paw Frotting", [""], 5],
                     ["Austria", ["top", "bottom"], 6],
+                ]],
+            ],
+        },
+    },
+    {
+        id: "unhealthy-stimming",
+        revision: "0.1b",
+        created_at: new Date("2025-03-16T00:00:00.000Z"),
+        type: "full",
+        name: "(unhealthy) Stimming & Coping Mechanisms",
+        data: {
+            kinks: [
+                ["Socio-Sexual etc", [
+                    ["Oversharing", [""], 4],
+                    ["Doomscrolling", [""], 9],
+                    ["Dating Apps", [""], 10],
+                    ["Isolation", [""], 11],
+                    ["Gooning", [""], 13],
+                    ["Binge Watching", [""], 14],
+                    ["Little Stuff", [""], 15],
+                ]],
+                ["Self Harm", [
+                    ["Cutting", [""], 5],
+                    ["Burning", [""], 6],
+                    ["Overeating", [""], 7],
+                    ["Undereating", [""], 8],
+                ]],
+                ["Substances", [
+                    ["Alcohol", [""], 0],
+                    ["Weed", ["smoke", "vape"], 1],
+                    ["Weed", ["eat", "bong"], 16],
+                    ["Nicotine", ["smoke", "vape"], 2],
+                    ["Caffeine", [""], 3],
+                    ["Other Drugs/etc", [""], 12],
                 ]],
             ],
         },
