@@ -1,7 +1,24 @@
 import { Check, Template, and, db, desc, eq } from "astro:db";
 import type { check, template } from "./base";
+import { templates as hardcodedTemplates } from "../db/seed";
+
+let dbInitialized = false;
+
+async function ensureDbInitialized(): Promise<void> {
+    if (dbInitialized) return;
+    const templates = await db.select().from(Template) as template[];
+    dbInitialized = hardcodedTemplates.map((hct) => templates
+        .map((dbt) => hct.id === dbt.id && hct.revision === dbt.revision)
+        .reduce((a, b) => a || b, false)).reduce((a, b) => a || b, false);
+    if (!dbInitialized) {
+        await db.insert(Template).values(hardcodedTemplates.filter((hct) =>
+            !templates.some((dbt) => dbt.id === hct.id && dbt.revision === hct.revision)));
+        dbInitialized = true;
+    }
+}
 
 export async function getTemplate(id: string): Promise<template[] | null> {
+    await ensureDbInitialized();
     const templates = await db
         .select()
         .from(Template)
@@ -17,6 +34,7 @@ export async function getCurrentTemplate(id: string): Promise<template | null> {
 
 export async function getTemplateVersion(id: string, revision: string):
     Promise<template | null> {
+    await ensureDbInitialized();
     const templates = await db
         .select()
         .from(Template)
@@ -25,6 +43,7 @@ export async function getTemplateVersion(id: string, revision: string):
 }
 
 export async function getCheck(id: string): Promise<check | null> {
+    await ensureDbInitialized();
     const checks = await db.select().from(Check).where(eq(Check.id, id));
     return checks && checks.length === 1 ? checks[0] as check : null;
 }
