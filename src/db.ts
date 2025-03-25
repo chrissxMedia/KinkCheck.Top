@@ -8,8 +8,8 @@ async function ensureDbInitialized(): Promise<void> {
     if (dbInitialized) return;
     const templates = await db.select().from(Template) as template[];
     dbInitialized = hardcodedTemplates.map((hct) => templates
-        .map((dbt) => hct.id === dbt.id && hct.revision === dbt.revision)
-        .reduce((a, b) => a || b, false)).reduce((a, b) => a || b, false);
+        .some((dbt) => hct.id === dbt.id && hct.revision === dbt.revision))
+        .reduce((a, b) => a && b, true);
     if (!dbInitialized) {
         await db.insert(Template).values(hardcodedTemplates.filter((hct) =>
             !templates.some((dbt) => dbt.id === hct.id && dbt.revision === hct.revision)));
