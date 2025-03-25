@@ -1,0 +1,15 @@
+FROM node:lts
+WORKDIR /app
+
+COPY . .
+
+ENV ASTRO_DATABASE_FILE=/data/kinkcheck.db
+
+RUN npm ci
+RUN --mount=type=tmpfs,target=/data npm run build
+
+ENV HOST=0.0.0.0
+ENV PORT=4321
+EXPOSE 4321
+VOLUME /data
+CMD ["node", "dist/server/entry.mjs"]

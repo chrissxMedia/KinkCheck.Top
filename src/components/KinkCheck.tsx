@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { defaultRatings, encodeKinkCheck, type kink, type template_revision } from "../base";
+import { defaultKinkcheck, encodeKinkCheck, type kink, type kinkcheck, type template_revision } from "../base";
 import Kink from "./Kink";
 import styles from "./KinkCheck.module.css";
 
@@ -39,19 +39,20 @@ export function Category({ cat, kinks, ratings, setRating }: {
     );
 }
 
-export default function KinkCheck(meta: template_revision) {
-    const [ratings, setRatings] = useState(defaultRatings(meta.kinks));
+export default function KinkCheck(meta: template_revision & { init?: kinkcheck, readonly?: boolean }) {
+    meta.init ??= defaultKinkcheck(meta.kinks);
+    const [ratings, setRatings] = useState(meta.init.ratings);
     const setRating = (cat: number) => (kink: number) => (pos: number) => (rat: number) => {
         const r = [...ratings!];
         r[cat][kink][pos] = rat;
         setRatings(r);
-        console.log(encodeKinkCheck(meta, { ratings: r }));
+        console.log(JSON.stringify(encodeKinkCheck(meta, { ratings: r })));
     };
-    // TODO: add a name field
     return <main class={styles.catcontainer}>
         {
             meta.kinks.map(([cat, kinks], i) => (
-                <Category cat={cat} kinks={kinks} ratings={ratings[i]} setRating={setRating(i)} />
+                <Category cat={cat} kinks={kinks} ratings={ratings[i]}
+                    setRating={meta.readonly ? undefined : setRating(i)} />
             ))
         }
     </main>;

@@ -1,5 +1,4 @@
 #!/bin/sh
 set -uxe
 
-npm ci
-npm run build
+echo "new kinkcheck versions will be deployed using docker" >&2
