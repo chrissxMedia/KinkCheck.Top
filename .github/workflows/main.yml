@@ -30,4 +30,4 @@ jobs:
         with:
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: chrissx/kinkcheck.top:${DOCKER_TAG}
+          tags: chrissx/kinkcheck.top:${{ env.DOCKER_TAG }}
