@@ -150,8 +150,8 @@ export const templates: template[] = [
     },
     {
         id: "unhealthy-stimming",
-        revision: "0.1b",
-        created_at: new Date("2025-03-16T00:00:00.000Z"),
+        revision: "0.1",
+        created_at: new Date("2025-03-25T10:30:00.000Z"),
         type: "full",
         name: "(unhealthy) Stimming & Coping Mechanisms",
         data: {
