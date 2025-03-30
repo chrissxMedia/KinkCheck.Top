@@ -26,7 +26,7 @@ export async function getStaticPaths() {
         </HeaderLogo>
         <RatingOverview />
     </header>
-    <KinkCheck {...template.data} client:load />
+    <KinkCheck {...template.data} store={template.id} client:only />
 </Layout>
 
 <style>
