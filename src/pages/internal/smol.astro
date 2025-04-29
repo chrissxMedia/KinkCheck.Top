@@ -1,9 +1,9 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import HeaderLogo from "../components/HeaderLogo.astro";
-import KinkCheck from "../components/KinkCheck";
-import RatingOverview from "../components/RatingOverview.astro";
-import { getCurrentTemplate } from "../db";
+import Layout from "../../layouts/Layout.astro";
+import HeaderLogo from "../../components/HeaderLogo.astro";
+import KinkCheck from "../../components/KinkCheck";
+import RatingOverview from "../../components/RatingOverview.astro";
+import { getCurrentTemplate } from "../../db";
 
 const template = await getCurrentTemplate("kcc");
 if (!template) {
@@ -11,7 +11,7 @@ if (!template) {
 }
 ---
 
-<Layout screenshotOptions={{ windowWidth: 1500 }}>
+<Layout screenshotOptions={{ windowWidth: 1000 }}>
 	<header>
 		<HeaderLogo includeVersion={false}>
 			<span class="smol">v{template.revision}</span>
@@ -23,8 +23,9 @@ if (!template) {
 
 <style>
 	:global(div#content) {
-		min-width: 500px;
-		max-width: 1800px;
+		min-width: 250px;
+		max-width: 900px;
+        font-size: 6pt;
 	}
 	header {
 		display: flex;

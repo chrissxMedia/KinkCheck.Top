@@ -1,9 +1,7 @@
 ---
 import Layout from "./Layout.astro";
 import HeaderLogo from "../components/HeaderLogo.astro";
-
 export type Props = { frontmatter: { title: string } };
-
 const { frontmatter } = Astro.props;
 ---
 
@@ -21,6 +19,5 @@ const { frontmatter } = Astro.props;
 
     main :global(p) {
         font-family: var(--sans-serif);
-        font-size: 16pt;
     }
 </style>

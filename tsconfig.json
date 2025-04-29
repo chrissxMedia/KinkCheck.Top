@@ -3,5 +3,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
-  }
+  },
+  "exclude": ["dist", "node_modules"],
+  "include": [".astro/types.d.ts", "**/*"]
 }
