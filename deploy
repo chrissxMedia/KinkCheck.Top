@@ -1,4 +1,0 @@
-#!/bin/sh
-set -uxe
-
-echo "new kinkcheck versions will be deployed using docker" >&2
