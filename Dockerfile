@@ -5,6 +5,7 @@ COPY . .
 
 ENV ASTRO_DATABASE_FILE=/data/kinkcheck.db
 
+ENV NODE_ENV=production
 RUN npm ci
 RUN --mount=type=tmpfs,target=/data npm run build
 
