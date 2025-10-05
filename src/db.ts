@@ -5,7 +5,9 @@ import { templates as hardcodedTemplates } from "../db/seed";
 let dbInitialized = false;
 
 async function ensureDbInitialized(): Promise<void> {
+    // TODO: mutex or something
     if (dbInitialized) return;
+    console.log("Initializing DB...");
     const templates = await db.select().from(Template) as template[];
     dbInitialized = hardcodedTemplates.every((hct) => templates
         .some((dbt) => hct.id === dbt.id && hct.revision === dbt.revision));
