@@ -19,7 +19,9 @@
     "cmdesigns": "^0.1.3",
     "cssnano": "^7.0.3",
     "html2canvas": "^1.4.1",
-    "preact": "^10.22.0",
+    "preact": "^10.22.0"
+  },
+  "devDependencies": {
     "stylelint-config-standard": "^34.0.0",
     "vitest": "^3.0.0"
   }
