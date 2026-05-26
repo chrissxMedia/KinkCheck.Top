@@ -1,35 +1,40 @@
-import html2canvas, { type Options } from "html2canvas";
+import { snapdom, type SnapdomOptions } from "@zumer/snapdom";
 
-export default function ScreenshotButton({ title, options = {} }: { title: string, options?: Partial<Options> }) {
-    options.windowWidth ??= 1440;
-    let download: HTMLAnchorElement;
+export default function ScreenshotButton({ title, options = {} }: { title: string, options?: SnapdomOptions }) {
+    options.width ??= 1440;
     return (
         <>
             <a onClick={async () => {
                 // TODO: be able to pass in a selector for what to screenshot
                 const content = document.querySelector("div#content") as HTMLElement;
                 document.body.classList.add("screenshot");
-                content.style.width = options.windowWidth + "px";
-                const canvas = await html2canvas(content, {
-                    backgroundColor: "black",
-                    scrollX: 0,
-                    scrollY: 0,
-                    scale: window.orientation !== undefined ? 1 : 2,
-                    ...options
+                content.style.width = options.width + "px";
+                const scale = window.orientation !== undefined ? 1 : 2;
+                const filename = title + " " + new Date().toISOString().replace(/\....Z$/, "").replace("T", " ") + ".png";
+                await snapdom.download(content, {
+                    backgroundColor: "#000",
+                    width: options.width ? options.width * scale : undefined,
+                    height: options.height ? options.height * scale : undefined,
+                    localFonts: [
+                        {
+                            family: "Unifont",
+                            src: "https://fonts.chrissx.de/fonts/unifont-14.0.03.otf",
+                        }
+                    ],
+                    safariWarmupAttempts: 100,
+                    //embedFonts: true,
+                    //iconFonts: [
+                    //    "Unifont"
+                    //],
+                    filename,
+                    cache: "disabled",
+                    ...options,
                 });
                 document.body.classList.remove("screenshot");
                 content.style.width = "";
 
-                const date = new Date().toISOString()
-                    .replace(/\....Z$/, "").replace("T", " ");
-                download.setAttribute("download", `${title} ${date}.png`);
-                download.setAttribute("href", canvas
-                    .toDataURL("image/png")
-                    .replace("image/png", "image/octet-stream"));
                 // TODO: consider if it's empty to alert instead
-                download.click();
             }}>Take a Screenshot</a>
-            <a ref={x => download = x!} style="width:0;height:0" />
         </>
     );
 }

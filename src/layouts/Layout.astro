@@ -3,12 +3,12 @@ import { BaseLayout, Footer } from "cmdesigns";
 import favicon from "../favicon.png";
 import { version } from "../../package.json";
 import ScreenshotButton from "../components/ScreenshotButton";
-import type { Options } from "html2canvas";
+import type { SnapdomOptions } from "@zumer/snapdom";
 import { GIT_REF, GIT_SHA } from "astro:env/server";
 
 export interface Props {
     title?: string;
-    screenshotOptions?: Partial<Options>;
+    screenshotOptions?: Partial<SnapdomOptions>;
 }
 
 const kc = `KinkCheck.Top v${version}`;

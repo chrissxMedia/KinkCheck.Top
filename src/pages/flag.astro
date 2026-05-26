@@ -4,7 +4,7 @@ import HeaderLogo from "../components/HeaderLogo.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Flag Generator" screenshotOptions={{ windowWidth: 600 }}>
+<Layout title="Flag Generator" screenshotOptions={{ width: 600 }}>
     <HeaderLogo slot="header">Flag Generator</HeaderLogo>
     <FlagGenerator client:load />
 </Layout>
