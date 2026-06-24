@@ -1,10 +1,10 @@
 ---
 import { db, Template } from "astro:db";
-import HeaderLogo from "../../../components/HeaderLogo.astro";
-import KinkCheck from "../../../components/KinkCheck";
-import RatingOverview from "../../../components/RatingOverview.astro";
-import { getCurrentTemplate } from "../../../db";
-import Layout from "../../../layouts/Layout.astro";
+import HeaderLogo from "../../../../components/HeaderLogo.astro";
+import KinkCheck from "../../../../components/KinkCheck";
+import RatingOverview from "../../../../components/RatingOverview.astro";
+import { getCurrentTemplate } from "../../../../db";
+import Layout from "../../../../layouts/Layout.astro";
 
 const { id } = Astro.params;
 const template = id && (await getCurrentTemplate(id));
