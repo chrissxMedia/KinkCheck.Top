@@ -1,34 +1,23 @@
-import { NOW, column, defineDb, defineTable } from "astro:db";
+import { drizzle } from "drizzle-orm/node-sqlite";
+import { customType, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import process from "node:process";
 
-const Template = defineTable({
-  columns: {
-    id: column.text(),
-    revision: column.text(),
-    created_at: column.date({ default: NOW }),
-    type: column.text(),
-    name: column.text(),
-    data: column.json(),
-  },
-  indexes: [
-    { on: ["id", "revision"], unique: true },
-  ],
+const date = customType<{data: Date, driverData: string}>({
+  dataType: () => "text",
+  toDriver: (d) => d.toISOString(),
+  fromDriver: (d) => new Date(d),
 });
 
-const Check = defineTable({
-  columns: {
-    id: column.text({ primaryKey: true }),
-    template_id: column.text(),
-    template_revision: column.text(),
-    created_at: column.date({ default: NOW }),
-    data: column.json(),
-  },
-  foreignKeys: [{
-    columns: ["template_id", "template_revision"],
-    references: () => [Template.columns.id, Template.columns.revision],
-  }],
+export const Check = sqliteTable("checks", {
+  id: text().primaryKey(),
+  template_id: text().notNull(),
+  template_revision: text().notNull(),
+  created_at: date().notNull(),
+  user_id: text(),
+  data: text({ mode: "json" }).notNull(),
 });
 
-// https://astro.build/db/config
-export default defineDb({
-  tables: { Template, Check },
-});
+// not having a separate schema file is a bad idea ig, but this is temporary anyways
+// also, the env name needs to be changed
+export const dbFile = process.env.ASTRO_DATABASE_FILE ?? ".astro/thisshouldntbehere.db";
+export const db = drizzle(dbFile);

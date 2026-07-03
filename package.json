@@ -17,10 +17,13 @@
     "autoprefixer": "^10.5.0",
     "cmdesigns": "^0.1.5",
     "cssnano": "^8.0.0",
+    "drizzle-orm": "^1.0.0-rc.4",
     "html2canvas": "^1.4.1",
     "preact": "^10.22.0"
   },
   "devDependencies": {
+    "@types/node": "^26.1.0",
+    "drizzle-kit": "^1.0.0-rc.4",
     "stylelint-config-standard": "^40.0.0",
     "vitest": "^4.0.0"
   },

@@ -3,8 +3,8 @@ import Layout from "../../../../layouts/Layout.astro";
 import HeaderLogo from "../../../../components/HeaderLogo.astro";
 import Main from "../../../../components/Matcher";
 import RatingOverview from "../../../../components/RatingOverview.astro";
-import { db, Template } from "astro:db";
 import { getCurrentTemplate } from "../../../../db";
+import { templates } from "../../../../../db/seed";
 
 const { id } = Astro.params;
 const template = id && (await getCurrentTemplate(id));
@@ -14,8 +14,8 @@ if (!template) {
 }
 
 export async function getStaticPaths() {
-    const ids = await db.select({ id: Template.id }).from(Template);
-    return ids.map(({ id }) => ({ params: { id } }));
+	// FIXME:
+    return templates.map(({ id }) => ({ params: { id } }));
 }
 ---
 
