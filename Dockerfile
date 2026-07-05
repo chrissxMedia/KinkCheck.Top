@@ -3,8 +3,7 @@ WORKDIR /app
 
 COPY . .
 
-ENV ASTRO_DATABASE_FILE=/data/kinkcheck.db
-
+ENV KCT_DATABASE_FILE=/data/kct_v1.db
 ENV NODE_ENV=production
 ENV ASTRO_TELEMETRY_DISABLED=1
 RUN npm ci

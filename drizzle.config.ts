@@ -5,7 +5,5 @@ export default defineConfig({
   out: "migrations",
   schema: "src/db/config.ts",
   dialect: "sqlite",
-  dbCredentials: {
-    url: dbFile,
-  },
+  dbCredentials: { url: dbFile },
 });
