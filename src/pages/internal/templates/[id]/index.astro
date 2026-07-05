@@ -1,5 +1,5 @@
 ---
-import { templates } from "../../../../../db/seed";
+import { getCollection } from "astro:content";
 import HeaderLogo from "../../../../components/HeaderLogo.astro";
 import KinkCheck from "../../../../components/KinkCheck";
 import RatingOverview from "../../../../components/RatingOverview.astro";
@@ -14,7 +14,7 @@ if (!template) {
 }
 
 export async function getStaticPaths() {
-    // FIXME
+    const templates = await getCollection("templates");
     return templates.map(({ id }) => ({ params: { id } }));
 }
 ---
@@ -26,7 +26,7 @@ export async function getStaticPaths() {
         </HeaderLogo>
         <RatingOverview />
     </header>
-    <KinkCheck {...template.data} store={template.id} client:only />
+    <KinkCheck {...template} store={template.id} client:only />
 </Layout>
 
 <style>

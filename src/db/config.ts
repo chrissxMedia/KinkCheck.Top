@@ -1,4 +1,3 @@
-import { drizzle } from "drizzle-orm/node-sqlite";
 import { customType, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import process from "node:process";
 
@@ -20,4 +19,3 @@ export const Check = sqliteTable("checks", {
 // not having a separate schema file is a bad idea ig, but this is temporary anyways
 // also, the env name needs to be changed
 export const dbFile = process.env.ASTRO_DATABASE_FILE ?? ".astro/thisshouldntbehere.db";
-export const db = drizzle(dbFile);

@@ -1,0 +1,25 @@
+created: 2025-03-25T10:30:00.000Z
+kinks: [
+  ["Socio-Sexual etc", [
+      ["Oversharing", [""], 4],
+      ["Doomscrolling", [""], 9],
+      ["Dating Apps", [""], 10],
+      ["Isolation", [""], 11],
+      ["Gooning", [""], 13],
+      ["Binge Watching", [""], 14],
+      ["Little Stuff", [""], 15],
+  ]],
+  ["Self Harm", [
+      ["Cutting", [""], 5],
+      ["Burning", [""], 6],
+      ["Overeating", [""], 7],
+      ["Undereating", [""], 8],
+  ]],
+  ["Substances", [
+      ["Alcohol", [""], 0],
+      ["Weed", ["smoke", "vape"], 1],
+      ["Weed", ["eat", "bong"], 16],
+      ["Nicotine", ["smoke", "vape"], 2],
+      ["Caffeine", [""], 3],
+      ["Other Drugs/etc", [""], 12],
+  ]]]
