@@ -43,10 +43,10 @@ export async function getTemplateVersion(id: string, revision: string):
     const t = await getTemplate(id);
     if (!t) return null;
     const rs = t.revisions.filter((r) => r.revision === revision);
-    return rs.length === 1 ? { ...t, ...rs[0] } : null;
+    return rs.length ? { ...t, ...rs[0] } : null;
 }
 
 export async function getCheck(id: string): Promise<check | null> {
     const checks = await db.select().from(Check).where(eq(Check.id, id));
-    return checks && checks.length === 1 ? checks[0] as check : null;
+    return checks.length ? checks[0] as check : null;
 }
