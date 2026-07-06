@@ -1,13 +1,24 @@
-import { Check, dbFile } from "./config";
-import { eq } from "drizzle-orm";
+import { Check } from "./config";
+import { eq, type EmptyRelations } from "drizzle-orm";
 import type { check, template, template_revision } from "../base";
 import { getEntry } from "astro:content";
-import { drizzle } from "drizzle-orm/node-sqlite";
+import { drizzle, type NodeSQLiteDatabase } from "drizzle-orm/node-sqlite";
 import { migrate } from "drizzle-orm/node-sqlite/migrator";
+import { copyFileSync, existsSync } from "node:fs";
+import { KCT_DATABASE_FILE, GIT_SHA } from "astro:env/server";
 
-export const db = drizzle(dbFile);
-// TODO: create a backup before running migrations, when there is a new migration, etc
-migrate(db, { migrationsFolder: "migrations" });
+function openDb(): NodeSQLiteDatabase<EmptyRelations> {
+    const file = KCT_DATABASE_FILE;
+    if (existsSync(file) && GIT_SHA) {
+        const backup = `${file}.${GIT_SHA.substring(0, 7)}.bak`;
+        if (!existsSync(backup)) copyFileSync(file, backup);
+    }
+    const db = drizzle(file);
+    migrate(db, { migrationsFolder: "migrations" });
+    return db;
+}
+
+export const db = openDb();
 await db.insert(Check).values([
     {
         id: "test",
