@@ -34,8 +34,8 @@ if (!template) {
         <RatingOverview />
     </header>
     <KinkCheck
-        {...template.data}
-        init={decodeKinkCheck(template.data, check.data)}
+        {...template}
+        init={decodeKinkCheck(template, check.data)}
         readonly
     />
 </Layout>

@@ -10,6 +10,8 @@ jobs:
           node-version: lts/*
       - run: npm ci
       - run: npm run test
+      - run: npx drizzle-kit generate
+      - run: sh -c '[ -z "$(git status --porcelain)" ] || (echo "Git is dirty." ; git status --porcelain ; exit 1)'
   docker:
     if: github.ref == 'refs/heads/daddy' || github.ref == 'refs/heads/bottom'
     runs-on: ubuntu-latest
@@ -31,3 +33,6 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: chrissx/kinkcheck.top:${{ env.DOCKER_TAG }}
+          build-args: |
+            GIT_SHA=${{ github.sha }}
+            GIT_REF=${{ github.ref_name }}
