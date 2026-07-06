@@ -11,7 +11,7 @@ jobs:
       - run: npm ci
       - run: npm run test
       - run: npx drizzle-kit generate
-      - run: sh -c '[ -n "$(git status --porcelain)" ] || (echo "Git is dirty." ; git status --porcelain ; exit 1)'
+      - run: sh -c '[ -z "$(git status --porcelain)" ] || (echo "Git is dirty." ; git status --porcelain ; exit 1)'
   docker:
     if: github.ref == 'refs/heads/daddy' || github.ref == 'refs/heads/bottom'
     runs-on: ubuntu-latest
