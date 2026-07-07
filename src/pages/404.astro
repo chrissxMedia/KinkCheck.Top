@@ -1,0 +1,30 @@
+---
+import MarkdownLayout from "../layouts/MarkdownLayout.astro";
+---
+
+<MarkdownLayout frontmatter={{ title: "404: Not Found" }}>
+    <p>
+        The path <code>{Astro.url.pathname}</code> could not be found. If you believe
+        this is an error, i.e. a dead link, please <a
+            href="https://github.com/chrissxMedia/KinkCheck.Top/issues/new"
+        >
+            file an issue on GitHub
+        </a>.
+    </p>
+</MarkdownLayout>
+
+<style>
+    :global(html) {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    code {
+        font-family: var(--unifont);
+        padding: 2px 8px;
+        background: rgb(var(--cmblack));
+        border-radius: 4px;
+    }
+</style>
