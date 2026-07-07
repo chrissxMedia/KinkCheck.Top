@@ -25,14 +25,11 @@ if (!template) {
 ---
 
 <Layout title={`${template.name} ${template.revision}`}>
-    <header>
-        <HeaderLogo includeVersion={false}>
-            {template.name}<span class="smol"
-                >&nbsp;v{template.revision} check {id}</span
-            >
-        </HeaderLogo>
-        <RatingOverview />
-    </header>
+    <HeaderLogo slot="header">
+        {template.name}
+        <span class="smol">&nbsp;v{template.revision} check&nbsp;{id}</span>
+    </HeaderLogo>
+    <RatingOverview slot="header" />
     <KinkCheck
         {...template}
         init={decodeKinkCheck(template, check.data)}
@@ -44,10 +41,5 @@ if (!template) {
     :global(div#content) {
         min-width: 475px;
         max-width: 1800px;
-    }
-    header {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
     }
 </style>

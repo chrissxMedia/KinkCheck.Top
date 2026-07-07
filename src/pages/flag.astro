@@ -5,7 +5,7 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Flag Generator" screenshotOptions={{ windowWidth: 600 }}>
-    <header><HeaderLogo>Flag Generator</HeaderLogo></header>
+    <HeaderLogo slot="header">Flag Generator</HeaderLogo>
     <FlagGenerator client:load />
 </Layout>
 

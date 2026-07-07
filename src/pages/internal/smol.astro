@@ -7,29 +7,22 @@ import { getCurrentTemplate } from "../../db";
 
 const template = await getCurrentTemplate("kcc");
 if (!template) {
-	throw new Error(`cant find template (should never happen, our db is f-ed)`);
+    throw new Error(`cant find template (should never happen, our db is f-ed)`);
 }
 ---
 
 <Layout screenshotOptions={{ windowWidth: 1000 }}>
-	<header>
-		<HeaderLogo includeVersion={false}>
-			<span class="smol">v{template.revision}</span>
-		</HeaderLogo>
-		<RatingOverview />
-	</header>
-	<KinkCheck {...template} client:load />
+    <HeaderLogo slot="header">
+        <span class="smol">v{template.revision}</span>
+    </HeaderLogo>
+    <RatingOverview slot="header" />
+    <KinkCheck {...template} client:load />
 </Layout>
 
 <style>
-	:global(div#content) {
-		min-width: 250px;
-		max-width: 900px;
+    :global(div#content) {
+        min-width: 250px;
+        max-width: 900px;
         font-size: 6pt;
-	}
-	header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-	}
+    }
 </style>

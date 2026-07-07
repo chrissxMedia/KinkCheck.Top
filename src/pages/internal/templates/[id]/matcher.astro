@@ -20,21 +20,18 @@ export async function getStaticPaths() {
 ---
 
 <Layout title="Matcher">
-	<header>
-		<HeaderLogo>Matcher</HeaderLogo>
-		<RatingOverview />
-	</header>
+    <HeaderLogo slot="header">
+        <span class="smol">
+            {template.name}&nbsp;v{template.revision}&nbsp;Matcher
+        </span>
+    </HeaderLogo>
+    <RatingOverview slot="header" />
     <Main {...template} client:load />
 </Layout>
 
 <style>
-	:global(div#content) {
-		min-width: 475px;
-		max-width: 1800px;
-	}
-	header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-	}
+    :global(div#content) {
+        min-width: 475px;
+        max-width: 1800px;
+    }
 </style>
