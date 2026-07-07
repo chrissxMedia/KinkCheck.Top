@@ -5,6 +5,7 @@ import KinkCheck from "../../../../components/KinkCheck";
 import RatingOverview from "../../../../components/RatingOverview.astro";
 import { getCurrentTemplate } from "../../../../db";
 import Layout from "../../../../layouts/Layout.astro";
+import ClearButton from "../../../../components/ClearButton";
 
 const { id } = Astro.params;
 const template = id && (await getCurrentTemplate(id));
@@ -27,6 +28,7 @@ export async function getStaticPaths() {
         <RatingOverview />
     </header>
     <KinkCheck {...template} store={template.id} client:only />
+    <ClearButton store={template.id} slot="bottom-nav" client:load />
 </Layout>
 
 <style>
@@ -38,5 +40,8 @@ export async function getStaticPaths() {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+    }
+    :global(dialog::backdrop) {
+        background-color: rgba(0, 0, 0, 0.5);
     }
 </style>
