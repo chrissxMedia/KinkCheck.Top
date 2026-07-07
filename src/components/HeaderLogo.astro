@@ -1,19 +1,9 @@
----
-import { version } from "../../package.json";
-
-export interface Props {
-    includeVersion?: boolean;
-}
-
-const { includeVersion = true } = Astro.props;
-const v = includeVersion ? " v" + version : "";
----
 
 <h1>
     <a href="/">
         <span class="k">K</span>ink
         <span class="c">C</span>heck
-        <span class="smol">.Top{v}</span>
+        <span class="smol">.Top</span>
     </a> <slot />
 </h1>
 

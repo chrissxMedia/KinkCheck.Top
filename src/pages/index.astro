@@ -12,12 +12,10 @@ if (!template) {
 ---
 
 <Layout screenshotOptions={{ windowWidth: 1500 }}>
-	<header>
-		<HeaderLogo includeVersion={false}>
-			<span class="smol">v{template.revision}</span>
-		</HeaderLogo>
-		<RatingOverview />
-	</header>
+	<HeaderLogo slot="header">
+		<span class="smol">v{template.revision}</span>
+	</HeaderLogo>
+	<RatingOverview slot="header" />
 	<KinkCheck {...template} client:load />
 </Layout>
 
@@ -25,10 +23,5 @@ if (!template) {
 	:global(div#content) {
 		min-width: 500px;
 		max-width: 1800px;
-	}
-	header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
 	}
 </style>

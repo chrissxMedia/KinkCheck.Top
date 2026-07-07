@@ -21,12 +21,10 @@ export async function getStaticPaths() {
 ---
 
 <Layout title={`${template.name} ${template.revision}`}>
-    <header>
-        <HeaderLogo includeVersion={false}>
-            <span class="smol">{template.name}&nbsp;v{template.revision}</span>
-        </HeaderLogo>
-        <RatingOverview />
-    </header>
+    <HeaderLogo slot="header">
+        <span class="smol">{template.name}&nbsp;v{template.revision}</span>
+    </HeaderLogo>
+    <RatingOverview slot="header" />
     <KinkCheck {...template} store={template.id} client:only />
     <ClearButton store={template.id} slot="bottom-nav" client:load />
 </Layout>
@@ -35,11 +33,6 @@ export async function getStaticPaths() {
     :global(div#content) {
         min-width: 475px;
         max-width: 1800px;
-    }
-    header {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
     }
     :global(dialog::backdrop) {
         background-color: rgba(0, 0, 0, 0.5);
