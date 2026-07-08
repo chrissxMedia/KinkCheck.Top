@@ -32,8 +32,9 @@ export type check = {
 const valueForAllKinks = <T>(kinks: kinklist, x: T) =>
     kinks.map<T[][]>((c) => c[1].map((k) => k[1].map(() => x)));
 
-export type ratings = number[][][];
-export const defaultRatings = (kinks: kinklist): ratings => valueForAllKinks(kinks, 0);
+type ratings = number[][][];
+const defaultRatings = (kinks: kinklist): ratings => valueForAllKinks(kinks, 0);
+/** The runtime / template-specific representation of a check */
 export type kinkcheck = { ratings: ratings };
 export const defaultKinkcheck = (kinks: kinklist): kinkcheck => ({ ratings: defaultRatings(kinks) });
 
@@ -54,10 +55,16 @@ export function decodeKinkCheck({ kinks }: template_revision, s: { ratings: any 
     const ratings = defaultRatings(kinks);
     s.ratings.forEach((rat: number[] | undefined, id: number) => {
         if (!rat) return;
+        let r: number[] = rat; // ← dumb hack bc apparently typescript can't figure it out
         ratings.forEach((_, cat) => {
             ratings[cat].forEach((_, i) => {
-                if (kinks[cat][1][i][2] === id) {
-                    ratings[cat][i] = rat;
+                const [, pos, kid] = kinks[cat][1][i];
+                if (kid === id) {
+                    if(r.length === pos.length) {
+                        ratings[cat][i] = r;
+                    } else if (new Set(r).size === 1) {
+                        ratings[cat][i] = Array(pos.length).fill(r[0]);
+                    }
                 }
             });
         });
