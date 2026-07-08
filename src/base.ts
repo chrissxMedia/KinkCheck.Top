@@ -1,3 +1,5 @@
+import type { checkData } from "./db/config";
+
 export const ratings: [string, string][] = [
     ["i dont know", "#d0d0d0"],
     ["favorite", "#00e0e0"],
@@ -21,18 +23,11 @@ export type template = {
     name: string;
     revisions: template_revision[];
 };
-export type check = {
-    id: string;
-    template_id: string;
-    template_revision: string;
-    created_at: Date;
-    data: { ratings: any };
-};
 
 const valueForAllKinks = <T>(kinks: kinklist, x: T) =>
     kinks.map<T[][]>((c) => c[1].map((k) => k[1].map(() => x)));
 
-type ratings = number[][][];
+export type ratings = number[][][];
 const defaultRatings = (kinks: kinklist): ratings => valueForAllKinks(kinks, 0);
 /** The runtime / template-specific representation of a check */
 export type kinkcheck = { ratings: ratings };
@@ -45,13 +40,13 @@ function packIndexedValues<T>(indexedValues: [number, T][]): T[] {
     }, Array(Math.max(...indexedValues.map(([idx]) => idx))));
 }
 
-export function encodeKinkCheck({ kinks }: template_revision, { ratings }: kinkcheck): { ratings: any } {
+export function encodeKinkCheck({ kinks }: template_revision, { ratings }: kinkcheck): checkData {
     const r = packIndexedValues(ratings.flatMap((_, cat) =>
         kinks[cat][1].map<[number, number[]]>(([, , id], i) => [id, ratings[cat][i]])));
-    return { ratings: r };
+    return { ratings: r } as checkData;
 }
 
-export function decodeKinkCheck({ kinks }: template_revision, s: { ratings: any }): kinkcheck {
+export function decodeKinkCheck({ kinks }: template_revision, s: checkData): kinkcheck {
     const ratings = defaultRatings(kinks);
     s.ratings.forEach((rat: number[] | undefined, id: number) => {
         if (!rat) return;
