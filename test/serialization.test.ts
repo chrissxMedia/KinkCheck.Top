@@ -2,6 +2,8 @@ import { expect, test } from "vitest";
 import { decodeKinkCheck, encodeKinkCheck, type template_revision } from "../src/base";
 
 const exampleMeta1: template_revision = {
+    revision: "0.1",
+    created: new Date(),
     kinks: [
         ["Category 1", [
             ["Kink A", ["top", "bottom"], 0],
@@ -14,12 +16,14 @@ const exampleMeta1: template_revision = {
 };
 
 const exampleMeta2: template_revision = {
+    revision: "0.2",
+    created: new Date(),
     kinks: [
         ["Category 1", [
             ["Kink B", ["give", "receive"], 1],
         ]],
         ["Category 2", [
-            ["Kink C", [""], 2],
+            ["Kink C", ["dom", "sub"], 2],
         ]],
         ["Category 3", [
             ["Kink A'", ["top", "bottom"], 0],
@@ -28,6 +32,7 @@ const exampleMeta2: template_revision = {
 };
 
 const exampleCheck = { ratings: [[1, 2], [3, 4], [1.5]] };
+const exampleCheck2 = { ratings: [[1, 2], [3, 4], [1.5, 1.5]] };
 
 test("re-encoding", () => {
     expect(encodeKinkCheck(exampleMeta1, decodeKinkCheck(exampleMeta1, exampleCheck)))
@@ -45,6 +50,6 @@ test("extra kinks are ignored", () => {
 });
 
 test("moving kinks around and slightly adjusting them results in the same encoding", () => {
-    expect(exampleCheck)
-        .toStrictEqual(encodeKinkCheck(exampleMeta2, decodeKinkCheck(exampleMeta2, exampleCheck)));
+    expect(encodeKinkCheck(exampleMeta2, decodeKinkCheck(exampleMeta2, exampleCheck)))
+        .toStrictEqual(exampleCheck2);
 });
