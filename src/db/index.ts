@@ -1,6 +1,6 @@
-import { Check } from "./config";
+import { type check, Check, checkSelectSchema } from "./config";
 import { eq, type EmptyRelations } from "drizzle-orm";
-import type { check, template, template_revision } from "../base";
+import type { template, template_revision } from "../base";
 import { getEntry } from "astro:content";
 import { drizzle, type NodeSQLiteDatabase } from "drizzle-orm/node-sqlite";
 import { migrate } from "drizzle-orm/node-sqlite/migrator";
@@ -48,5 +48,5 @@ export async function getTemplateVersion(id: string, revision: string):
 
 export async function getCheck(id: string): Promise<check | null> {
     const checks = await db.select().from(Check).where(eq(Check.id, id));
-    return checks.length ? checks[0] as check : null;
+    return checks.length ? checkSelectSchema.parse(checks[0]) : null;
 }
