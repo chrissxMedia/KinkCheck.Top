@@ -1,5 +1,5 @@
 import { z } from "astro/zod";
-import { createSelectSchema } from "drizzle-orm/zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-orm/zod";
 import { customType, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 const date = customType<{ data: Date, driverData: string }>({
@@ -25,8 +25,7 @@ export const validRating = z.union([
 export const checkData = z.object({ ratings: z.array(z.array(validRating).optional()) });
 export type checkData = z.infer<typeof checkData>;
 
-export const checkSelectSchema = createSelectSchema(Check, {
-  created_at: z.date(),
-  data: checkData,
-});
+const refine = { created_at: z.date(), data: checkData };
+export const checkSelectSchema = createSelectSchema(Check, refine);
+export const checkInsertSchema = createInsertSchema(Check, refine);
 export type check = z.infer<typeof checkSelectSchema>;
