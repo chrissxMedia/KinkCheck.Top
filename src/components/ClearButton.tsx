@@ -1,17 +1,5 @@
-import type { ButtonHTMLAttributes, RefObject } from "preact";
 import { useRef } from "preact/hooks";
-
-function Button(attr: ButtonHTMLAttributes & { label: string }) {
-    return <button {...attr} style={{
-        border: 0,
-        padding: "0.5em",
-        borderRadius: "0.25em",
-        margin: "0 0.5em",
-        color: "white",
-        backgroundColor: "#303030",
-        ...(typeof attr.style === "object" ? attr.style : {})
-    }}>{attr.label}</button>;
-}
+import Button from "./Button";
 
 export default function ClearButton({ store }: { store: string }) {
     const dialog = useRef<HTMLDialogElement>(null);
