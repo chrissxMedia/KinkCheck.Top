@@ -6,6 +6,7 @@ import RatingOverview from "../../../../components/RatingOverview.astro";
 import { getCurrentTemplate } from "../../../../db";
 import Layout from "../../../../layouts/Layout.astro";
 import ClearButton from "../../../../components/ClearButton";
+import SaveButton from "../../../../components/SaveButton";
 
 const { id } = Astro.params;
 const template = id && (await getCurrentTemplate(id));
@@ -27,6 +28,12 @@ export async function getStaticPaths() {
     <RatingOverview slot="header" />
     <KinkCheck {...template} store={template.id} client:only />
     <ClearButton store={template.id} slot="bottom-nav" client:load />
+    <SaveButton
+        template_id={template.id}
+        template_revision={template.revision}
+        slot="bottom-nav"
+        client:load
+    />
 </Layout>
 
 <style>
