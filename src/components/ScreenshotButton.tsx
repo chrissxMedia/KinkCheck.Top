@@ -9,31 +9,25 @@ export default function ScreenshotButton({ title, options = {} }: { title: strin
                 const content = document.querySelector("div#content") as HTMLElement;
                 document.body.classList.add("screenshot");
                 content.style.width = options.width + "px";
-                const scale = window.orientation !== undefined ? 1 : 2;
                 const filename = title + " " + new Date().toISOString().replace(/\....Z$/, "").replace("T", " ") + ".png";
                 await snapdom.download(content, {
+                    format: "png",
+                    type: "png",
                     backgroundColor: "#000",
-                    width: options.width ? options.width * scale : undefined,
-                    height: options.height ? options.height * scale : undefined,
+                    scale: 2,
                     localFonts: [
                         {
                             family: "Unifont",
                             src: "https://fonts.chrissx.de/fonts/unifont-14.0.03.otf",
                         }
                     ],
-                    safariWarmupAttempts: 100,
-                    //embedFonts: true,
-                    //iconFonts: [
-                    //    "Unifont"
-                    //],
+                    embedFonts: true,
                     filename,
                     cache: "disabled",
                     ...options,
                 });
                 document.body.classList.remove("screenshot");
                 content.style.width = "";
-
-                // TODO: consider if it's empty to alert instead
             }}>Take a Screenshot</a>
         </>
     );
