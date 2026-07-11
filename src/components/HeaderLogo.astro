@@ -1,6 +1,10 @@
+---
+import { GIT_REF } from "astro:env/server";
+---
 
 <h1>
     <a href="/">
+        {GIT_REF === "daddy" ? <></> : <span style={{fontSize: "0.5em"}}>Bottom.</span>}
         <span class="k">K</span>ink
         <span class="c">C</span>heck
         <span class="smol">.Top</span>
