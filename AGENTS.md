@@ -54,7 +54,7 @@ Server Actions live in `src/actions/`. They are publicly invocable by name at `/
 Database is SQLite (Drizzle ORM). Schema lives in `src/db/config.ts`. Migrations are checked into git at `migrations/` and applied automatically by the DB code at runtime. The tables are:
 - **checks**: stores Check entries with fields (`id`, `template_id`, `template_revision`, `created_at`, `user_id`, `data`). The JSON-stored `data` column holds the primary content payload (ratings). The `user_id` is optional — user accounts will be added in the future to let users own their Checks.
 
-**Connection lifecycle**: Import `db` from `src/db/index.ts` — this opens a new SQLite connection with Drizzle, seeds an initial empty row structure, backs up existing data pre-migration, then persists to disk on close via `db.close()`.
+**Connection lifecycle**: Import `db` from `src/db/index.ts` — this opens a new SQLite connection with Drizzle and performs any pending migrations. The DB is automatically persisted to disk.
 
 ## Testing
 
