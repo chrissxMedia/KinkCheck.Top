@@ -1,6 +1,6 @@
 # KinkCheck.Top
 
-A web app for creating and filling out Templates, backed by Astro + Preact + Drizzle + SQLite.
+A web app for filling out Templates, backed by Astro + Preact + Drizzle + SQLite.
 
 ## Architecture (high level)
 
