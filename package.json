@@ -11,13 +11,17 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@astrojs/alpinejs": "^1.0.0",
     "@astrojs/node": "^11.0.0",
     "@astrojs/preact": "^6.0.0",
+    "@types/alpinejs": "^3.13.11",
     "@zumer/snapdom": "^2.15.0",
+    "alpinejs": "^3.15.12",
     "astro": "^7.1.0",
     "autoprefixer": "^10.5.0",
     "cmdesigns": "^0.1.6",
     "cssnano": "^8.0.0",
+    "devalue": "^5.8.1",
     "drizzle-orm": "^1.0.0-rc.4",
     "ip-address": "^10.5.0",
     "js-yaml": "^5.2.1",
