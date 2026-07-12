@@ -1,0 +1,73 @@
+---
+import type { SnapdomOptions } from "@zumer/snapdom";
+
+export interface Props {
+    title: string;
+    options?: Partial<SnapdomOptions>;
+}
+
+const { title, options = {} } = Astro.props;
+---
+
+<screenshot-button data-title={title} data-options={JSON.stringify(options)}>
+    <a>Take a Screenshot</a>
+</screenshot-button>
+
+<script>
+    import { snapdom, type SnapdomOptions } from "@zumer/snapdom";
+
+    class KinkScreenshot extends HTMLElement {
+        connectedCallback() {
+            const link = this.querySelector("a")!;
+            link.addEventListener("click", async (event: MouseEvent) => {
+                event.preventDefault();
+                const title = this.dataset.title!;
+                let options: Partial<SnapdomOptions> = JSON.parse(this.dataset.options!);
+                options.width ??= 1440;
+
+                // TODO: be able to pass in a selector for what to screenshot
+                const content = document.querySelector(
+                    "div#content",
+                ) as HTMLElement | null;
+                if (!content) return;
+
+                document.body.classList.add("screenshot");
+                content.style.width = options.width + "px";
+                const filename =
+                    title +
+                    " " +
+                    new Date()
+                        .toISOString()
+                        .replace(/\....Z$/, "")
+                        .replace("T", " ") +
+                    ".png";
+                await snapdom.download(content, {
+                    format: "png",
+                    type: "png",
+                    backgroundColor: "#000",
+                    scale: 2,
+                    localFonts: [
+                        {
+                            family: "Unifont",
+                            src: "https://fonts.chrissx.de/fonts/unifont-14.0.03.otf",
+                        },
+                    ],
+                    embedFonts: true,
+                    filename,
+                    cache: "disabled",
+                    ...options,
+                });
+                document.body.classList.remove("screenshot");
+                content.style.width = "";
+            });
+        }
+    }
+
+    customElements.define("screenshot-button", KinkScreenshot);
+</script>
+
+<style>
+    screenshot-button {
+        display: contents;
+    }
+</style>

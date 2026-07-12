@@ -2,7 +2,7 @@
 import { BaseLayout, Footer } from "cmdesigns";
 import favicon from "../favicon.png";
 import { version } from "../../package.json";
-import ScreenshotButton from "../components/ScreenshotButton";
+import ScreenshotButton from "../components/ScreenshotButton.astro";
 import type { SnapdomOptions } from "@zumer/snapdom";
 import { GIT_REF, GIT_SHA } from "astro:env/server";
 
@@ -33,7 +33,7 @@ const build = `KinkCheck.Top (${GIT_REF ?? "unknown"}) v${version}-${GIT_SHA?.su
             <a href="/privacy">Privacy Policy</a>
             |
             <slot name="bottom-nav" />
-            <ScreenshotButton {title} options={screenshotOptions} client:idle />
+            <ScreenshotButton {title} options={screenshotOptions} />
         </nav>
     </Footer>
 </BaseLayout>
