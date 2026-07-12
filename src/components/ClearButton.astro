@@ -1,0 +1,30 @@
+---
+import gendarme from "../gendarme";
+import { uneval } from "devalue";
+import Dialog from "./Dialog.astro";
+import Button from "./Button.astro";
+
+interface Props {
+    store: string;
+}
+---
+
+<div x-data={uneval(Astro.props)}>
+    <a @click="$refs.dlg.showModal()">Clear</a>
+    <Dialog x-ref="dlg">
+        Are you sure you want to clear your ratings? This action is irreversible.
+        <Button slot="buttons" @click="$refs.dlg.close()">Cancel</Button>
+        <Button slot="buttons" x-bind={gendarme("clear", import.meta.url)} style={{ backgroundColor: "rgb(var(--cmred))" }}>Clear</Button>
+    </Dialog>
+</div>
+
+<script>
+import gendarme from "../gendarme";
+
+gendarme("clear", {
+    "@click"() {
+        localStorage.removeItem(this.store);
+        location.reload();
+    },
+});
+</script>
