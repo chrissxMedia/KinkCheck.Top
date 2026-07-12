@@ -1,12 +1,37 @@
 import { defineConfig, envField } from "astro/config";
 import preact from "@astrojs/preact";
 import node from "@astrojs/node";
+import alpinejs from "@astrojs/alpinejs";
+import gendarme from "./src/gendarme";
+
+function scopedJs() {
+  return {
+    name: "gendarme-scoping",
+    transform(code: string, file: string) {
+      if (!file.includes(".astro") || !file.includes("type=script")) return null;
+      if (!code.includes("gendarme(")) return null;
+
+      let transformed = false;
+      const result = code.replace(
+        /gendarme\(("[^"]*"|'[^']*'),/g,
+        (_match, idQuoted: string) => {
+          const scopeName = gendarme(idQuoted.slice(1, -1), file);
+          transformed = true;
+          return `gendarme.applyBind("${scopeName}",`;
+        },
+      );
+      if (!transformed) return null;
+      return { code: result, map: null };
+    },
+  };
+}
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://KinkCheck.Top",
-  integrations: [preact()],
+  integrations: [preact(), alpinejs()],
   adapter: node({ mode: "standalone", bodySizeLimit: 1024 * 1024 /* 1 MiB is plenty for now */ }),
+  vite: { plugins: [scopedJs()] },
   env: {
     schema: {
       KCT_DATABASE_FILE: envField.string({ context: "server", access: "public", default: "./.dev.db" }),
