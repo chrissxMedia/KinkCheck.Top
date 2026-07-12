@@ -1,0 +1,14 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"input"> {
+    error?: string;
+}
+
+const { error, ...attrs } = Astro.props;
+---
+
+<div class={attrs.class}>
+    <input type="text" spellcheck="false" autocorrect="false" {...attrs} />
+    {error && <span style="color: red" x-text={error} />}
+</div>
