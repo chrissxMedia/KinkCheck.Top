@@ -1,0 +1,124 @@
+---
+import Input from "./Input.astro";
+---
+
+<main
+    x-data="{ sextimes: '0 times', sexdesc: 'You absolute fucking loser...', sexmins: '0', sexpartners: '0' }">
+    <div class="settings">
+        <Input x-model="sextimes" placeholder="You had sex" class="setting" />
+        <Input x-model="sexdesc" placeholder="Description" class="setting" />
+        <Input x-model="sexmins" placeholder="Minutes had sex" class="setting" />
+        <Input x-model="sexpartners" placeholder="Partners" class="setting" />
+    </div>
+    <div class="sexrewind column">
+        <div class="column">
+            <span class="sextext1">You had sex</span>
+            <span class="sextimes" x-text="sextimes"></span>
+            <span class="sextext2">this year</span>
+        </div>
+        <span class="sexdesc" x-text="sexdesc"></span>
+        <div class="sexstats">
+            <div class="column">
+                <span class="sexminstext">Minutes had sex</span>
+                <span class="sexminsnum" x-text="sexmins"></span>
+            </div>
+            <div class="column">
+                <span class="sexminstext">Partners</span>
+                <span class="sexminsnum" x-text="sexpartners"></span>
+            </div>
+        </div>
+    </div>
+</main>
+
+<style>
+    main {
+        font-size: min(12pt, 1.5vw);
+    }
+
+    .column {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .settings {
+        display: flex;
+        flex-flow: row wrap;
+        width: 63.2em;
+        justify-content: space-between;
+        padding: 1em 0;
+    }
+
+    .settings :global(div.setting) {
+        width: 45%;
+        font-size: 12pt;
+    }
+
+    .settings :global(input) {
+        width: 100%;
+    }
+
+    @media screen and (width <= 600px) {
+        .settings {
+            flex-direction: column;
+            font-size: 2.5em;
+            width: 25.28em;
+        }
+
+        :global(.setting) {
+            width: 100%;
+        }
+
+        :global(.setting) input {
+            width: 100%;
+        }
+    }
+
+    .sexrewind {
+        width: 7.5em;
+        height: 7.5em;
+        background-color: #b6fbed;
+        color: #a9337e;
+        font-size: 8em;
+        font-family: var(--sans-serif);
+        font-weight: bold;
+        padding: 0.2em;
+        justify-content: space-between;
+    }
+
+    .sextimes {
+        font-weight: bolder;
+        color: black;
+        font-size: 1.2em;
+        text-align: center;
+    }
+
+    .sextext2 {
+        text-align: end;
+    }
+
+    .sexdesc {
+        font-size: .35em;
+        width: 100%;
+        text-align: center;
+    }
+
+    .sexstats {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .sexminstext {
+        width: 100%;
+        text-align: center;
+        font-size: .45em;
+        color: #5e9abc;
+    }
+
+    .sexminsnum {
+        width: 100%;
+        text-align: center;
+        color: #d78f52;
+        font-weight: bolder;
+    }
+</style>

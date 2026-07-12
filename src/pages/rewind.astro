@@ -1,12 +1,12 @@
 ---
 import HeaderLogo from "../components/HeaderLogo.astro";
 import Layout from "../layouts/Layout.astro";
-import Main from "../components/Rewind";
+import Main from "../components/Rewind.astro";
 ---
 
 <Layout title="Rewind" screenshotOptions={{ width: 1000 }}>
     <HeaderLogo slot="header">Rewind</HeaderLogo>
-    <Main client:load />
+    <Main />
 </Layout>
 
 <style>
