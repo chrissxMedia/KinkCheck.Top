@@ -1,0 +1,29 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Props = HTMLAttributes<"dialog">;
+---
+
+<dialog {...Astro.props} @click.self="$el.close()">
+    <p><slot /></p>
+    <div>
+        <slot name="buttons" />
+    </div>
+</dialog>
+
+<style>
+    dialog {
+        background-color: black;
+        border: 1px solid white;
+        border-radius: 0.5em;
+    }
+    p {
+        font-family: var(--sans-serif);
+        margin: 0;
+    }
+    div {
+        display: flex;
+        flex-direction: row-reverse;
+        margin-top: 0.5em;
+    }
+</style>
