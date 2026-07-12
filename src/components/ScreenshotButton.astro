@@ -1,0 +1,46 @@
+---
+import gendarme from "../gendarme";
+import { uneval } from "devalue";
+import type { SnapdomOptions } from "@zumer/snapdom";
+
+interface Props {
+    title: string;
+    options?: SnapdomOptions;
+}
+
+const props = { ...Astro.props, options: { width: 1440, ...Astro.props.options } };
+---
+
+<a x-data={uneval(props)} x-bind={gendarme("screenshot", import.meta.url)}>
+    Take a Screenshot
+</a>
+
+<script>
+import gendarme from "../gendarme";
+import { snapdom } from "@zumer/snapdom";
+
+gendarme("screenshot", {
+    async "@click.prevent"() {
+        const content = document.querySelector("div#content") as HTMLElement;
+        document.body.classList.add("screenshot");
+        content.style.width = this.options.width + "px";
+        const filename = this.title + " " + new Date().toISOString().replace(/\....Z$/, "").replace("T", " ") + ".png";
+        await snapdom.download(content, {
+            format: "png",
+            type: "png",
+            backgroundColor: "#000",
+            scale: 2,
+            localFonts: [{
+                family: "Unifont",
+                src: "https://fonts.chrissx.de/fonts/unifont-14.0.03.otf",
+            }],
+            embedFonts: true,
+            filename,
+            cache: "disabled",
+            ...this.options,
+        });
+        document.body.classList.remove("screenshot");
+        content.style.width = "";
+    },
+});
+</script>
