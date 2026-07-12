@@ -2,7 +2,7 @@
 import MarkdownLayout from "../layouts/MarkdownLayout.astro";
 import { Code } from "astro:components";
 export type Props = { error: any };
-const { error } = Astro.props;
+const { error = "" } = Astro.props;
 ---
 
 <MarkdownLayout frontmatter={{ title: "500: Internal Server Error" }}>
