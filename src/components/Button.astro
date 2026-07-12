@@ -1,0 +1,17 @@
+---
+import type { HTMLAttributes } from "astro/types";
+type Props = HTMLAttributes<"button">;
+---
+
+<button {...Astro.props}><slot /></button>
+
+<style>
+    button {
+        border: 0;
+        padding: 0.5em;
+        border-radius: 0.25em;
+        margin: 0 0.5em;
+        color: white;
+        background-color: #303030;
+    }
+</style>
