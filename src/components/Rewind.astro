@@ -1,0 +1,176 @@
+---
+import Input from "./Input.astro";
+---
+
+<kct-rewind>
+    <main>
+        <div class="settings">
+            <Input
+                data-key="sextimes"
+                placeholder="You had sex"
+                value="0 times"
+                class="setting"
+            />
+            <Input
+                data-key="sexdesc"
+                placeholder="Description"
+                value="You absolute fucking loser..."
+                class="setting"
+            />
+            <Input
+                data-key="sexmins"
+                placeholder="Minutes had sex"
+                value="0"
+                class="setting"
+            />
+            <Input
+                data-key="sexpartners"
+                placeholder="Partners"
+                value="0"
+                class="setting"
+            />
+        </div>
+        <div class="sexrewind column">
+            <div class="column">
+                <span class="sextext1">You had sex</span>
+                <span class="sextimes" data-out="sextimes">0 times</span>
+                <span class="sextext2">this year</span>
+            </div>
+            <span class="sexdesc" data-out="sexdesc">
+                You absolute fucking loser...
+            </span>
+            <div class="sexstats">
+                <div class="column">
+                    <span class="sexminstext">Minutes had sex</span>
+                    <span class="sexminsnum" data-out="sexmins">0</span>
+                </div>
+                <div class="column">
+                    <span class="sexminstext">Partners</span>
+                    <span class="sexminsnum" data-out="sexpartners">0</span>
+                </div>
+            </div>
+        </div>
+    </main>
+</kct-rewind>
+
+<script>
+    class KinkRewind extends HTMLElement {
+        connectedCallback() {
+            this.querySelectorAll<HTMLInputElement>("input[data-key]").forEach(
+                (input: HTMLInputElement) => {
+                    const update = () =>
+                        this.querySelectorAll<HTMLElement>(
+                            `[data-out="${input.dataset.key}"]`,
+                        ).forEach((el: HTMLElement) => {
+                            el.textContent = input.value;
+                        });
+                    update();
+                    input.addEventListener("input", update);
+                },
+            );
+        }
+    }
+
+    customElements.define("kct-rewind", KinkRewind);
+</script>
+
+<style>
+    kct-rewind {
+        display: contents;
+    }
+
+    main {
+        font-size: min(12pt, 1.5vw);
+    }
+
+    .column {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .settings {
+        display: flex;
+        flex-flow: row wrap;
+        width: 63.2em;
+        justify-content: space-between;
+        padding: 1em 0;
+    }
+
+    :global(.screenshot) .settings {
+        display: none;
+    }
+
+    .settings :global(div.setting) {
+        width: 45%;
+        font-size: 12pt;
+    }
+
+    .settings :global(input) {
+        width: 100%;
+    }
+
+    @media screen and (width <= 600px) {
+        .settings {
+            flex-direction: column;
+            font-size: 2.5em;
+            width: 25.28em;
+        }
+
+        :global(.setting) {
+            width: 100%;
+        }
+
+        :global(.setting) input {
+            width: 100%;
+        }
+    }
+
+    .sexrewind {
+        width: 7.5em;
+        height: 7.5em;
+        background-color: #b6fbed;
+        color: #a9337e;
+        font-size: 8em;
+        font-family: var(--sans-serif);
+        font-weight: bold;
+        padding: 0.2em;
+        justify-content: space-between;
+    }
+
+    .sextimes {
+        font-weight: bolder;
+        color: black;
+        font-size: 1.2em;
+        text-align: center;
+    }
+
+    .sextext2 {
+        text-align: end;
+    }
+
+    .sexdesc {
+        font-size: 0.35em;
+        width: 100%;
+        text-align: center;
+    }
+
+    .sexstats {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .sexminstext {
+        width: 100%;
+        text-align: center;
+        font-size: 0.45em;
+        color: #5e9abc;
+    }
+
+    .sexminsnum {
+        width: 100%;
+        text-align: center;
+        color: #d78f52;
+        font-weight: bolder;
+    }
+</style>
