@@ -1,0 +1,74 @@
+---
+import Button from "./Button.astro";
+import Dialog from "./Dialog.astro";
+
+export interface Props {
+    template_id: string;
+    template_revision: string;
+}
+
+const { template_id, template_revision } = Astro.props;
+---
+
+<save-button
+    data-template-id={template_id}
+    data-template-revision={template_revision}
+>
+    <a>Save</a>
+    <Dialog>
+        <Button slot="buttons" data-action="ok" style={{ minWidth: "8ch" }}>
+            OK
+        </Button>
+    </Dialog>
+</save-button>
+
+<script>
+    import { actions } from "astro:actions";
+
+    class SaveButton extends HTMLElement {
+        connectedCallback() {
+            const template_id = this.dataset.templateId!;
+            const template_revision = this.dataset.templateRevision!;
+            const dialog = this.querySelector("dialog")!;
+            const message = dialog.querySelector("p")!;
+            const trigger = this.querySelector("a")!;
+
+            trigger.addEventListener("click", async (event: Event) => {
+                event.preventDefault();
+
+                const saved = window.localStorage.getItem(template_id);
+                if (!saved) {
+                    message.textContent = "Couldn't load check data";
+                    dialog.showModal();
+                    return;
+                }
+
+                const { data, error } = await actions.check.save({
+                    template_id,
+                    template_revision,
+                    data: JSON.parse(saved),
+                });
+
+                if (error) {
+                    message.textContent = error.message;
+                    dialog.showModal();
+                } else {
+                    window.location.href = `/internal/checks/${data.id}`;
+                }
+            });
+
+            this.querySelector("button[data-action='ok']")!.addEventListener(
+                "click",
+                () => dialog.close(),
+            );
+        }
+    }
+
+    customElements.define("save-button", SaveButton);
+</script>
+
+<style>
+    save-button {
+        display: contents;
+    }
+</style>

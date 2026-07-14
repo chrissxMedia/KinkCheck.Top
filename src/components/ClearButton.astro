@@ -1,0 +1,62 @@
+---
+import Button from "./Button.astro";
+import Dialog from "./Dialog.astro";
+
+export interface Props {
+    store: string;
+}
+
+const { store } = Astro.props;
+---
+
+<clear-button data-store={store}>
+    <a>Clear</a>
+    <Dialog>
+        Are you sure you want to clear your ratings? This action is
+        irreversible.
+        <Button slot="buttons" data-action="cancel">Cancel</Button>
+        <Button
+            slot="buttons"
+            style={{ backgroundColor: "rgb(var(--cmred))" }}
+            data-action="clear"
+        >
+            Clear
+        </Button>
+    </Dialog>
+</clear-button>
+
+<script>
+    class ClearButton extends HTMLElement {
+        connectedCallback() {
+            const dialog = this.querySelector("dialog");
+
+            this.querySelector("a")?.addEventListener(
+                "click",
+                (event: Event) => {
+                    event.preventDefault();
+                    dialog?.showModal();
+                },
+            );
+
+            this.querySelector(
+                "button[data-action='cancel']",
+            )?.addEventListener("click", () => dialog?.close());
+
+            this.querySelector("button[data-action='clear']")?.addEventListener(
+                "click",
+                () => {
+                    window.localStorage.removeItem(this.dataset.store!);
+                    window.location.reload();
+                },
+            );
+        }
+    }
+
+    customElements.define("clear-button", ClearButton);
+</script>
+
+<style>
+    clear-button {
+        display: contents;
+    }
+</style>
