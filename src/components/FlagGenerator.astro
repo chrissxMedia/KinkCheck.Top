@@ -1,0 +1,60 @@
+<flag-generator>
+    <input
+        type="text"
+        placeholder="trans, rat, ant, ..."
+        spellcheck="false"
+        autocomplete="off"
+    />
+    <div style={{ backgroundColor: "transparent", height: "20em" }}></div>
+</flag-generator>
+
+<script>
+    class FlagGeneratorElement extends HTMLElement {
+        connectedCallback() {
+            const colors: { [k: string]: string } = {
+                t: "rgb(var(--transblue))",
+                r: "rgb(var(--transpink))",
+                a: "white",
+                n: "rgb(var(--transpink))",
+                s: "rgb(var(--transblue))",
+            };
+            const toColors = (s: string) =>
+                [...s].map((c) => colors[c]).filter((c) => c);
+            const input = this.querySelector("input")!;
+
+            input.addEventListener("input", () => {
+                let cs = toColors(input.value.toLowerCase());
+                if (!cs.length) cs = ["transparent"];
+                const height = 20 / cs.length;
+
+                this.querySelectorAll("div").forEach((node) => node.remove());
+                for (const c of cs) {
+                    const div = document.createElement("div");
+                    div.style.cssText = `background-color: ${c}; height: ${height}em`;
+                    this.appendChild(div);
+                }
+            });
+            input.focus();
+        }
+    }
+
+    customElements.define("flag-generator", FlagGeneratorElement);
+</script>
+
+<style>
+    flag-generator {
+        display: contents;
+    }
+    input {
+        margin: 0.5em 0;
+        border: 0;
+        padding: 0.25em;
+        font-size: 2em;
+        width: 14.5em;
+        background-color: rgb(var(--cmblack));
+        color: white;
+    }
+    flag-generator :global(div) {
+        width: 30em;
+    }
+</style>
