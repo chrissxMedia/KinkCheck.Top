@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import HeaderLogo from "../../components/HeaderLogo.astro";
-import KinkCheck from "../../components/KinkCheck";
+import KinkCheck from "../../components/KinkCheck.astro";
 import RatingOverview from "../../components/RatingOverview.astro";
 import { getCurrentTemplate } from "../../db";
 
@@ -16,7 +16,7 @@ if (!template) {
         <span class="smol">v{template.revision}</span>
     </HeaderLogo>
     <RatingOverview slot="header" />
-    <KinkCheck kinks={template.kinks} client:load />
+    <KinkCheck {...template} />
 </Layout>
 
 <style>

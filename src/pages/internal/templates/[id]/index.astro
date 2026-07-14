@@ -1,12 +1,12 @@
 ---
 import { getCollection } from "astro:content";
 import HeaderLogo from "../../../../components/HeaderLogo.astro";
-import KinkCheck from "../../../../components/KinkCheck";
+import KinkCheck from "../../../../components/KinkCheck.astro";
 import RatingOverview from "../../../../components/RatingOverview.astro";
 import { getCurrentTemplate } from "../../../../db";
 import Layout from "../../../../layouts/Layout.astro";
-import ClearButton from "../../../../components/ClearButton";
-import SaveButton from "../../../../components/SaveButton";
+import ClearButton from "../../../../components/ClearButton.astro";
+import SaveButton from "../../../../components/SaveButton.astro";
 
 const { id } = Astro.params;
 const template = id && (await getCurrentTemplate(id));
@@ -26,13 +26,12 @@ export async function getStaticPaths() {
         <span class="smol">{template.name}&nbsp;v{template.revision}</span>
     </HeaderLogo>
     <RatingOverview slot="header" />
-    <KinkCheck kinks={template.kinks} store={template.id} client:load />
-    <ClearButton store={template.id} slot="bottom-nav" client:load />
+    <KinkCheck kinks={template.kinks} store={template.id} />
+    <ClearButton store={template.id} slot="bottom-nav" />
     <SaveButton
         template_id={template.id}
         template_revision={template.revision}
         slot="bottom-nav"
-        client:load
     />
 </Layout>
 

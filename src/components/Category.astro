@@ -1,0 +1,56 @@
+---
+import type { kink } from "../base";
+import Kink from "./Kink.astro";
+
+interface Props {
+    cat: string;
+    kinks: kink[];
+    ratings: number[][];
+    interactive?: boolean;
+}
+
+const { cat, kinks, ratings, interactive, ...props } = Astro.props;
+---
+
+<div class="cat">
+    <h2>{cat}</h2>
+    <table>
+        <tbody>
+            {
+                kinks.map((kink, idx) => (
+                    <Kink
+                        {kink}
+                        ratings={ratings[idx]}
+                        {interactive}
+                        data-kink={interactive ? idx : undefined}
+                        {...props}
+                    />
+                ))
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    table {
+        border: 1px solid #303030;
+        border-collapse: collapse;
+        font-size: 1.35em;
+    }
+
+    h2 {
+        margin-bottom: 0.25em;
+        margin-top: 0.375em;
+    }
+
+    .cat {
+        min-width: 28%;
+    }
+
+    @media screen and (width <= 900px) {
+        :global(body:not(.screenshot)) .cat,
+        :global(body:not(.screenshot)) table {
+            width: 100%;
+        }
+    }
+</style>

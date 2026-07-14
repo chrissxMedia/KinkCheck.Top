@@ -1,0 +1,75 @@
+---
+import type { kink } from "../base";
+import Rater from "./Rater.astro";
+
+interface Props {
+    kink: kink;
+    ratings: number[];
+    interactive?: boolean;
+}
+
+const {
+    kink: [name, pos, , desc],
+    ratings,
+    interactive,
+    ...props
+} = Astro.props;
+---
+
+<tr>
+    <td>
+        <span>{name}</span>
+        {desc && <span class="desc">{desc}</span>}
+    </td>
+    {
+        pos.map((position, idx) => (
+            <td>
+                <Rater
+                    rating={ratings[idx]}
+                    {interactive}
+                    data-pos={interactive ? idx : undefined}
+                    {...props}
+                >
+                    {position}
+                </Rater>
+            </td>
+        ))
+    }
+    {pos.length === 1 && <td />}
+</tr>
+
+<style>
+    tr {
+        border: 1px solid #303030;
+    }
+
+    td {
+        padding: 0.1em 0.05em 0.1em 0.4em;
+        position: relative;
+    }
+
+    td:last-child {
+        padding-right: 0.4em;
+    }
+
+    .desc {
+        background-color: rgb(var(--cmblack));
+        color: white;
+        visibility: hidden;
+        width: 300px;
+        text-align: center;
+        border-radius: 0.5em;
+        position: absolute;
+        z-index: 1;
+        top: 100%;
+        left: 0;
+    }
+
+    td:hover .desc {
+        visibility: visible;
+    }
+
+    td:hover .desc:hover {
+        visibility: hidden;
+    }
+</style>

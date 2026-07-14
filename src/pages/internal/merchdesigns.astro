@@ -1,6 +1,6 @@
 ---
 import HeaderLogo from "../../components/HeaderLogo.astro";
-import Rater from "../../components/Rater";
+import Rater from "../../components/Rater.astro";
 import Layout from "../../layouts/Layout.astro";
 ---
 
@@ -11,11 +11,11 @@ import Layout from "../../layouts/Layout.astro";
     <div class="c">
         <HeaderLogo />
         <div class="b">
-            <Rater text="" rating={1} />
+            <Rater rating={1} />
         </div>
     </div>
-    <Rater text="bottom" rating={2} />
-    <Rater text="top" rating={2.5} />
+    <Rater rating={2}>bottom</Rater>
+    <Rater rating={2.5}>top</Rater>
 </Layout>
 
 <style>

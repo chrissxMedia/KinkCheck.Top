@@ -1,0 +1,135 @@
+---
+import { defaultKinkcheck, type kinkcheck, type kinklist } from "../base";
+import Category from "./Category.astro";
+
+type Props = { kinks: kinklist } & (
+    | { readonly: true; init: kinkcheck; store?: undefined }
+    | { readonly?: false; init?: kinkcheck; store?: string }
+);
+
+const { kinks, init, store, readonly = false } = Astro.props;
+const check = init ?? defaultKinkcheck(kinks);
+---
+
+{
+    readonly ? (
+        <main>
+            {kinks.map(([cat, kinks], idx) => (
+                <Category {cat} {kinks} ratings={check.ratings[idx]} />
+            ))}
+        </main>
+    ) : (
+        <kink-check
+            data-kinks={JSON.stringify(kinks)}
+            data-init={init && JSON.stringify(init)}
+            data-store={store}
+        >
+            <main>
+                {kinks.map(([cat, kinks], idx) => (
+                    <Category
+                        {cat}
+                        {kinks}
+                        ratings={check.ratings[idx]}
+                        data-cat={idx}
+                        interactive
+                    />
+                ))}
+            </main>
+        </kink-check>
+    )
+}
+
+<script>
+    import {
+        decodeKinkCheck,
+        defaultKinkcheck,
+        encodeKinkCheck,
+        ratings,
+        raterBackground,
+        type kinkcheck,
+        type kinklist,
+    } from "../base";
+
+    function nextRating(rating: number, e: MouseEvent): number {
+        const step = e.shiftKey || e.altKey ? 0.5 : 1;
+        let newRating = e.button ? rating - step : rating + step;
+        const max = ratings.length - 1;
+
+        if (newRating === 0.5) newRating = e.button ? 0 : 1;
+        else if (newRating > max) newRating = 0;
+        else if (newRating < 0) newRating = max;
+
+        return newRating;
+    }
+
+    function updateRater(rater: HTMLElement, rating: number) {
+        rater.dataset.rating = String(rating);
+        const button = rater.querySelector("button");
+        if (button) button.style.background = raterBackground(rating);
+    }
+
+    function indexes(data: { [k: string]: any }): { [k: string]: number } {
+        Object.keys(data).forEach((k) => (data[k] = Number(data[k])));
+        return data;
+    }
+
+    class KinkCheckElement extends HTMLElement {
+        check: kinkcheck = { ratings: [] };
+        kinks: kinklist = [];
+
+        rating({ cat, kink, pos }: { [k: string]: number }) {
+            return this.check.ratings[cat][kink][pos];
+        }
+
+        connectedCallback() {
+            if (!this.dataset.kinks) return;
+            this.kinks = JSON.parse(this.dataset.kinks!) as kinklist;
+            const store = this.dataset.store;
+            const saved = store && window.localStorage.getItem(store);
+            this.check = saved
+                ? decodeKinkCheck(this, JSON.parse(saved))
+                : this.dataset.init
+                  ? (JSON.parse(this.dataset.init) as kinkcheck)
+                  : defaultKinkcheck(this.kinks);
+
+            if (saved) {
+                this.querySelectorAll<HTMLElement>("[data-rating]").forEach(
+                    (r) => updateRater(r, this.rating(indexes(r.dataset))),
+                );
+            }
+
+            this.addEventListener("click", this.handleClick);
+            this.addEventListener("contextmenu", this.handleClick);
+        }
+
+        handleClick = (event: MouseEvent) => {
+            if (!(event.target instanceof Element)) return;
+            const rater = event.target.closest<HTMLElement>("[data-rating]");
+            if (!rater || !this.contains(rater)) return;
+            event.preventDefault();
+
+            const idx = indexes(rater.dataset);
+            const next = nextRating(this.rating(idx), event);
+            this.check.ratings[idx.cat][idx.kink][idx.pos] = next;
+            updateRater(rater, next);
+
+            if (!this.dataset.store) return;
+            const ch = encodeKinkCheck(this, this.check);
+            window.localStorage.setItem(this.dataset.store, JSON.stringify(ch));
+        };
+    }
+
+    customElements.define("kink-check", KinkCheckElement);
+</script>
+
+<style>
+    kink-check {
+        display: contents;
+    }
+    main {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-evenly;
+        column-gap: 2ch;
+    }
+</style>

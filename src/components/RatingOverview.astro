@@ -1,14 +1,14 @@
 ---
 import { ratings } from "../base";
-import Rater from "./Rater";
+import Rater from "./Rater.astro";
 ---
 
-<div>
-    {ratings.map(([text], rating) => <Rater {text} {rating} />)}
+<div class="rc">
+    {ratings.map(([n], i) => <Rater rating={i}>{n}</Rater>)}
 </div>
 
 <style>
-    div {
+    div.rc {
         flex-grow: 1;
         display: flex;
         flex-flow: row wrap;
@@ -18,7 +18,7 @@ import Rater from "./Rater";
         font-size: 1.35em;
     }
     @media screen and (width <= 800px) {
-        :global(body:not(.screenshot)) div {
+        :global(body:not(.screenshot)) div.rc {
             justify-content: space-between;
         }
     }

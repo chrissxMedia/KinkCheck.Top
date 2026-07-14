@@ -1,0 +1,46 @@
+---
+import { raterBackground } from "../base";
+import type { HTMLAttributes } from "astro/types";
+
+type Props = HTMLAttributes<"div"> & {
+    rating: number;
+    interactive?: boolean;
+};
+
+const { rating, interactive = false, class: className, ...props } = Astro.props;
+---
+
+<div
+    data-rating={interactive ? rating : undefined}
+    {...props}
+    class:list={[{ interactive }, className]}
+>
+    <button style={{ background: raterBackground(rating) }}></button>
+    <span><slot /></span>
+</div>
+
+<style>
+    div {
+        display: flex;
+        flex-direction: row;
+    }
+
+    button {
+        width: 1em;
+        height: 1em;
+        border: none;
+        border-radius: 0;
+        margin-right: 0.1875em;
+        padding: 0 0.5em;
+    }
+
+    .interactive,
+    .interactive * {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    span {
+        margin-top: -0.05em;
+    }
+</style>
