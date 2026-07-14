@@ -1,11 +1,6 @@
 import { useRef } from "preact/hooks";
-import { ratings } from "../base";
+import { ratings, raterBackground } from "../base";
 import styles from "./Rater.module.css";
-
-function background(rating: number): string {
-    if (rating % 1 === 0) return ratings[rating][1];
-    return `linear-gradient(135deg, ${ratings[rating - 0.5][1]} 0%, ${ratings[rating + 0.5][1]} 100%)`;
-}
 
 export default function Rater({ text, rating, setRating }:
     { text?: string, rating: number, setRating?: (r: number) => void }) {
@@ -38,7 +33,7 @@ export default function Rater({ text, rating, setRating }:
         <div class={setRating ? styles.clickable : styles.noclick}
             onClick={handleClick} onContextMenu={handleClick}
             onKeyDown={handleKey} onMouseEnter={focus} onMouseLeave={unfocus}>
-            <button style={{ background: background(rating) }} ref={btn} />
+            <button style={{ background: raterBackground(rating) }} ref={btn} />
             {text && <span>{text}</span>}
         </div>
     );

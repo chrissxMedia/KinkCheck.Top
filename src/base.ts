@@ -9,6 +9,11 @@ export const ratings: [string, string][] = [
     ["hard limit", "#303030"],
 ];
 
+export function raterBackground(rating: number): string {
+    if (rating % 1 === 0) return ratings[rating][1];
+    return `linear-gradient(135deg, ${ratings[rating - 0.5][1]} 0%, ${ratings[rating + 0.5][1]} 100%)`;
+}
+
 const valueForAllKinks = <T>({ kinks }: TRData, x: T) =>
     kinks.map<T[][]>((c) => c[1].map((k) => k[1].map(() => x)));
 
