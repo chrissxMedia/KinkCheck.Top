@@ -1,8 +1,8 @@
-import { defineCollection } from 'astro:content';
+import { defineCollection } from "astro:content";
 import * as yaml from "js-yaml";
-import { basename } from 'node:path';
-import { readdir, readFile } from 'node:fs/promises';
-import type { template } from './base';
+import { basename } from "node:path";
+import { readdir, readFile } from "node:fs/promises";
+import type { template } from "./base";
 
 const tMeta: Partial<template>[] = [
   { id: "kcc", name: "Classic", type: "full" },
@@ -17,8 +17,8 @@ const templates = defineCollection({
       const rs = await Promise.all(files.map((f) =>
         readFile(`templates/${id}/${f}`, "utf-8").then(yaml.load)
           .then(y => ({ revision: basename(f, ".yaml"), ...y as object })))) as any[];
-      const revisions = rs.map(x => ({ created: new Date(x.created), ...x }))
-        .toSorted((a, b) => b.created.getUTCMilliseconds() - a.created.getUTCMilliseconds());
+      const revisions = rs.map(x => ({ ...x, created: new Date(x.created) }))
+        .toSorted((a, b) => b.created.getTime() - a.created.getTime());
       return { id, name, type, revisions } as template;
     }));
   },
