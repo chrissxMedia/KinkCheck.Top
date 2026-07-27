@@ -57,20 +57,16 @@ export function encodeKinkCheck({ kinks }: template_revision, { ratings }: kinkc
 
 export function decodeKinkCheck({ kinks }: template_revision, s: checkData): kinkcheck {
     const ratings = defaultRatings(kinks);
-    s.ratings.forEach((rat: number[] | undefined, id: number) => {
-        if (!rat) return;
-        let r: number[] = rat; // ← dumb hack bc apparently typescript can't figure it out
-        ratings.forEach((_, cat) => {
-            ratings[cat].forEach((_, i) => {
-                const [, pos, kid] = kinks[cat][1][i];
-                if (kid === id) {
-                    if (r.length === pos.length) {
-                        ratings[cat][i] = r;
-                    } else if (new Set(r).size === 1) {
-                        ratings[cat][i] = Array(pos.length).fill(r[0]);
-                    }
-                }
-            });
+    ratings.forEach((_, cat) => {
+        ratings[cat].forEach((_, i) => {
+            const [, pos, kid] = kinks[cat][1][i];
+            const r = s.ratings[kid];
+            if (!r) return;
+            if (r.length === pos.length) {
+                ratings[cat][i] = r;
+            } else if (new Set(r).size === 1) {
+                ratings[cat][i] = Array(pos.length).fill(r[0]);
+            }
         });
     });
     return { ratings };
