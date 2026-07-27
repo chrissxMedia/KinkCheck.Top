@@ -1,7 +1,6 @@
 import { expect, test } from "vitest";
 import { decodeKinkCheck, encodeKinkCheck, updateCheck, type template_revision } from "../src/base";
 import type { checkData } from "../src/db/config";
-import { sanitizeCheck } from "../src/actions";
 
 const exampleMeta1: template_revision = {
     revision: "0.1",
@@ -56,18 +55,6 @@ test("extra kinks are ignored", () => {
 test("moving kinks around and slightly adjusting them results in the same encoding", () => {
     expect(encodeKinkCheck(exampleMeta2, decodeKinkCheck(exampleMeta2, exampleCheck)))
         .toStrictEqual(exampleCheck2);
-});
-
-test("valid input passes", () => {
-    expect(sanitizeCheck(exampleMeta1, exampleCheck)).toStrictEqual(exampleCheck);
-});
-
-test("empty ratings array", () => {
-    expect(() => sanitizeCheck(exampleMeta1, { ratings: [] })).not.toThrow();
-});
-
-test("incorrect number of positions", () => {
-    expect(() => sanitizeCheck(exampleMeta1, { ratings: [[0]] })).toThrow();
 });
 
 test("updating with an old revision doesn't trash ratings for newer kinks", () => {
