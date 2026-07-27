@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { decodeKinkCheck, encodeKinkCheck, updateCheck, type template_revision } from "../src/base";
-import type { checkData } from "../src/db/config";
+import type { checkData } from "../src/zod";
 
 const exampleMeta1: template_revision = {
     revision: "0.1",
