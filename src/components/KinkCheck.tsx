@@ -1,5 +1,5 @@
-import { useState } from "preact/hooks";
-import { decodeKinkCheck, defaultKinkcheck, encodeKinkCheck, type kink, type kinkcheck, type template_revision } from "../base";
+import { useEffect, useState } from "preact/hooks";
+import { decodeKinkCheck, defaultKinkcheck, encodeKinkCheck, updateCheck, type kink, type kinkcheck, type template_revision } from "../base";
 import Kink from "./Kink";
 import styles from "./KinkCheck.module.css";
 
@@ -40,17 +40,22 @@ export function Category({ cat, kinks, ratings, setRating }: {
 }
 
 export default function KinkCheck(meta: template_revision & { init?: kinkcheck, store?: string, readonly?: boolean }) {
-    if (!meta.init) {
-        const saved = meta.store && window.localStorage.getItem(meta.store);
-        meta.init = saved ? decodeKinkCheck(meta, JSON.parse(saved)) : defaultKinkcheck(meta.kinks);
+    if (!meta.init && meta.store) {
+        useEffect(() => {
+            const saved = meta.store && window.localStorage.getItem(meta.store);
+            if (saved) setRatings(decodeKinkCheck(meta, JSON.parse(saved)).ratings);
+        }, []);
     }
-    const [ratings, setRatings] = useState((meta.init as kinkcheck).ratings);
+    const [ratings, setRatings] = useState((meta.init ?? defaultKinkcheck(meta.kinks)).ratings);
     const setRating = (cat: number) => (kink: number) => (pos: number) => (rat: number) => {
         const r = [...ratings!];
         r[cat][kink][pos] = rat;
         setRatings(r);
         if (meta.store) {
-            window.localStorage.setItem(meta.store, JSON.stringify(encodeKinkCheck(meta, { ratings: r })));
+            const old = window.localStorage.getItem(meta.store);
+            const x = encodeKinkCheck(meta, { ratings: r });
+            const data = old ? updateCheck(JSON.parse(old), x) : x;
+            window.localStorage.setItem(meta.store, JSON.stringify(data));
         }
     };
     return <main class={styles.catcontainer}>

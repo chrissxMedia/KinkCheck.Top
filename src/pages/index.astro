@@ -4,6 +4,7 @@ import HeaderLogo from "../components/HeaderLogo.astro";
 import KinkCheck from "../components/KinkCheck";
 import RatingOverview from "../components/RatingOverview.astro";
 import { getCurrentTemplate } from "../db";
+import ClearButton from "../components/ClearButton";
 
 const template = await getCurrentTemplate("kcc");
 if (!template) {
@@ -16,7 +17,8 @@ if (!template) {
 		<span class="smol">v{template.revision}</span>
 	</HeaderLogo>
 	<RatingOverview slot="header" />
-	<KinkCheck {...template} client:load />
+	<KinkCheck {...template} store={template.id} client:load />
+    <ClearButton store={template.id} slot="bottom-nav" client:load />
 </Layout>
 
 <style>
@@ -24,4 +26,7 @@ if (!template) {
 		min-width: 500px;
 		max-width: 1800px;
 	}
+    :global(dialog::backdrop) {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
 </style>
