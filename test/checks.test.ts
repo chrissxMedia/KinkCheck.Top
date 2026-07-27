@@ -70,6 +70,6 @@ test("incorrect number of positions", () => {
     expect(() => sanitizeCheck(exampleMeta1, { ratings: [[0]] })).toThrow();
 });
 
-test("updating with an old reversion doesn't trash ratings for newer kinks", () => {
+test("updating with an old revision doesn't trash ratings for newer kinks", () => {
     expect(updateCheck(exampleCheck2, exampleCheck)).toStrictEqual(exampleCheck15);
 });
