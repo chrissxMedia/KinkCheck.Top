@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { decodeKinkCheck, defaultKinkcheck, encodeKinkCheck, type kink, type kinkcheck, type template_revision } from "../base";
+import { decodeKinkCheck, defaultKinkcheck, encodeKinkCheck, updateCheck, type kink, type kinkcheck, type template_revision } from "../base";
 import Kink from "./Kink";
 import styles from "./KinkCheck.module.css";
 
@@ -52,7 +52,10 @@ export default function KinkCheck(meta: template_revision & { init?: kinkcheck, 
         r[cat][kink][pos] = rat;
         setRatings(r);
         if (meta.store) {
-            window.localStorage.setItem(meta.store, JSON.stringify(encodeKinkCheck(meta, { ratings: r })));
+            const old = window.localStorage.getItem(meta.store);
+            const x = encodeKinkCheck(meta, { ratings: r });
+            const data = old ? updateCheck(JSON.parse(old), x) : x;
+            window.localStorage.setItem(meta.store, JSON.stringify(data));
         }
     };
     return <main class={styles.catcontainer}>

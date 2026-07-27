@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { decodeKinkCheck, encodeKinkCheck, type template_revision } from "../src/base";
+import { decodeKinkCheck, encodeKinkCheck, updateCheck, type template_revision } from "../src/base";
 import type { checkData } from "../src/db/config";
 import { sanitizeCheck } from "../src/actions";
 
@@ -29,12 +29,14 @@ const exampleMeta2: template_revision = {
         ]],
         ["Category 3", [
             ["Kink A'", ["top", "bottom"], 0],
+            ["Kink D", [""], 3],
         ]],
     ],
 };
 
 const exampleCheck: checkData = { ratings: [[1, 2], [3, 4], [1.5]] };
-const exampleCheck2: checkData = { ratings: [[1, 2], [3, 4], [1.5, 1.5]] };
+const exampleCheck15: checkData = { ratings: [[1, 2], [3, 4], [1.5], [0]] };
+const exampleCheck2: checkData = { ratings: [[1, 2], [3, 4], [1.5, 1.5], [0]] };
 
 test("re-encoding", () => {
     expect(encodeKinkCheck(exampleMeta1, decodeKinkCheck(exampleMeta1, exampleCheck)))
@@ -66,4 +68,8 @@ test("empty ratings array", () => {
 
 test("incorrect number of positions", () => {
     expect(() => sanitizeCheck(exampleMeta1, { ratings: [[0]] })).toThrow();
+});
+
+test("updating with an old reversion doesn't trash ratings for newer kinks", () => {
+    expect(updateCheck(exampleCheck2, exampleCheck)).toStrictEqual(exampleCheck15);
 });
