@@ -15,7 +15,6 @@ export default function Kink({ kink: [kink, positions, , description], ratings, 
                     <Rater text={pos} rating={ratings[p]} setRating={setRating && setRating(p)} clickable={!!setRating} />
                 </td>
             ))}
-            {positions.length === 1 && <td />}
         </tr>
     );
 }
