@@ -40,6 +40,15 @@ function packIndexedValues<T>(indexedValues: [number, T][]): T[] {
     }, Array(Math.max(...indexedValues.map(([idx]) => idx))));
 }
 
+export function updateCheck(oldCheck: checkData, newCheck: checkData): checkData {
+    const ratings = Array(Math.max(oldCheck.ratings.length, newCheck.ratings.length));
+    for (let i = 0; i < ratings.length; i++) {
+        const a = oldCheck.ratings[i], b = newCheck.ratings[i];
+        ratings[i] = !a || !b ? a || b : b.length ? b : a.length ? a : undefined;
+    }
+    return { ratings };
+}
+
 export function encodeKinkCheck({ kinks }: template_revision, { ratings }: kinkcheck): checkData {
     const r = packIndexedValues(ratings.flatMap((_, cat) =>
         kinks[cat][1].map<[number, number[]]>(([, , id], i) => [id, ratings[cat][i]])));
@@ -55,7 +64,7 @@ export function decodeKinkCheck({ kinks }: template_revision, s: checkData): kin
             ratings[cat].forEach((_, i) => {
                 const [, pos, kid] = kinks[cat][1][i];
                 if (kid === id) {
-                    if(r.length === pos.length) {
+                    if (r.length === pos.length) {
                         ratings[cat][i] = r;
                     } else if (new Set(r).size === 1) {
                         ratings[cat][i] = Array(pos.length).fill(r[0]);
