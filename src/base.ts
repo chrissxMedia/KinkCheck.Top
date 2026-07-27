@@ -1,4 +1,4 @@
-import type { checkData } from "./db/config";
+import type { checkData, kinklist, template_revision } from "./zod";
 
 export const ratings: [string, string][] = [
     ["i dont know", "#d0d0d0"],
@@ -9,20 +9,7 @@ export const ratings: [string, string][] = [
     ["hard limit", "#303030"],
 ];
 
-export type positions = [string, string] | [""];
-export type kink = [string, positions, number] | [string, positions, number, string];
-export type kinklist = [string, kink[]][];
-export type template_revision = {
-    revision: string;
-    created: Date;
-    kinks: kinklist;
-};
-export type template = {
-    id: string;
-    type: "full";
-    name: string;
-    revisions: template_revision[];
-};
+export type { positions, kink, kinklist, template_revision, template } from "./zod";
 
 const valueForAllKinks = <T>(kinks: kinklist, x: T) =>
     kinks.map<T[][]>((c) => c[1].map((k) => k[1].map(() => x)));

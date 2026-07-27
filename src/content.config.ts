@@ -2,7 +2,7 @@ import { defineCollection } from "astro:content";
 import * as yaml from "js-yaml";
 import { basename } from "node:path";
 import { readdir, readFile } from "node:fs/promises";
-import type { template } from "./base";
+import { template } from "./zod";
 
 const tMeta: Partial<template>[] = [
   { id: "kcc", name: "Classic", type: "full" },
@@ -22,6 +22,7 @@ const templates = defineCollection({
       return { id, name, type, revisions } as template;
     }));
   },
+  schema: template,
 });
 
 export const collections = { templates };
