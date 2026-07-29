@@ -27,7 +27,7 @@ export function Category({ cat, kinks, ratings, setRating }: {
 }) {
     return (
         <div class={styles.category}>
-            <h2 class={styles.catname}>{cat}</h2>
+            <h2>{cat}</h2>
             <table class={styles.table}>
                 <tbody>
                     {kinks.map((kink, i) => (
