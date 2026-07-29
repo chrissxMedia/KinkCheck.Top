@@ -1,6 +1,6 @@
 import { type check, Check, checkSelectSchema } from "./config";
 import { eq, type EmptyRelations } from "drizzle-orm";
-import type { template, template_revision } from "../base";
+import type { template, template_revision } from "../zod";
 import { getEntry } from "astro:content";
 import { drizzle, type NodeSQLiteDatabase } from "drizzle-orm/node-sqlite";
 import { migrate } from "drizzle-orm/node-sqlite/migrator";
