@@ -26,7 +26,7 @@ export async function getStaticPaths() {
         </span>
     </HeaderLogo>
     <RatingOverview slot="header" />
-    <Main {...template} client:load />
+    <Main kinks={template.kinks} client:load />
 </Layout>
 
 <style>

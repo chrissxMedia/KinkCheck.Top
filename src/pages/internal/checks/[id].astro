@@ -31,7 +31,7 @@ if (!template) {
     </HeaderLogo>
     <RatingOverview slot="header" />
     <KinkCheck
-        {...template}
+        kinks={template.kinks}
         init={decodeKinkCheck(template, check.data)}
         readonly
     />

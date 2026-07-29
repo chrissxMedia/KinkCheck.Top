@@ -1,10 +1,8 @@
 import { expect, test } from "vitest";
 import { decodeKinkCheck, encodeKinkCheck, updateCheck } from "../src/base";
-import type { template_revision, checkData } from "../src/zod";
+import type { checkData, TRData } from "../src/zod";
 
-const exampleMeta1: template_revision = {
-    revision: "0.1",
-    created: new Date(),
+const exampleMeta1: TRData = {
     kinks: [
         ["Category 1", [
             ["Kink A", ["top", "bottom"], 0],
@@ -16,9 +14,7 @@ const exampleMeta1: template_revision = {
     ],
 };
 
-const exampleMeta2: template_revision = {
-    revision: "0.2",
-    created: new Date(),
+const exampleMeta2: TRData = {
     kinks: [
         ["Category 1", [
             ["Kink B", ["give", "receive"], 1],

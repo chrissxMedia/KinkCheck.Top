@@ -1,4 +1,4 @@
-import type { checkData, kinklist, template_revision } from "./zod";
+import type { checkData, TRData } from "./zod";
 
 export const ratings: [string, string][] = [
     ["i dont know", "#d0d0d0"],
@@ -9,16 +9,12 @@ export const ratings: [string, string][] = [
     ["hard limit", "#303030"],
 ];
 
-export type { positions, kink, kinklist, template_revision, template } from "./zod";
-
-const valueForAllKinks = <T>(kinks: kinklist, x: T) =>
+const valueForAllKinks = <T>({ kinks }: TRData, x: T) =>
     kinks.map<T[][]>((c) => c[1].map((k) => k[1].map(() => x)));
 
-export type ratings = number[][][];
-const defaultRatings = (kinks: kinklist): ratings => valueForAllKinks(kinks, 0);
 /** The runtime / template-specific representation of a check */
-export type kinkcheck = { ratings: ratings };
-export const defaultKinkcheck = (kinks: kinklist): kinkcheck => ({ ratings: defaultRatings(kinks) });
+export type kinkcheck = { ratings: number[][][] };
+export const defaultKinkcheck = (t: TRData): kinkcheck => ({ ratings: valueForAllKinks(t, 0) });
 
 function packIndexedValues<T>(indexedValues: [number, T][]): T[] {
     return indexedValues.reduce<T[]>((arr, [idx, val]) => {
@@ -36,14 +32,14 @@ export function updateCheck(oldCheck: checkData, newCheck: checkData): checkData
     return { ratings };
 }
 
-export function encodeKinkCheck({ kinks }: template_revision, { ratings }: kinkcheck): checkData {
+export function encodeKinkCheck({ kinks }: TRData, { ratings }: kinkcheck): checkData {
     const r = packIndexedValues(ratings.flatMap((_, cat) =>
         kinks[cat][1].map<[number, number[]]>(([, , id], i) => [id, ratings[cat][i]])));
     return { ratings: r } as checkData;
 }
 
-export function decodeKinkCheck({ kinks }: template_revision, s: checkData): kinkcheck {
-    const ratings = defaultRatings(kinks);
+export function decodeKinkCheck({ kinks }: TRData, s: checkData): kinkcheck {
+    const { ratings } = defaultKinkcheck({ kinks });
     ratings.forEach((_, cat) => {
         ratings[cat].forEach((_, i) => {
             const [, pos, kid] = kinks[cat][1][i];

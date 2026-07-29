@@ -1,7 +1,8 @@
 import { useEffect, useState } from "preact/hooks";
-import { decodeKinkCheck, defaultKinkcheck, encodeKinkCheck, updateCheck, type kink, type kinkcheck, type template_revision } from "../base";
+import { decodeKinkCheck, defaultKinkcheck, encodeKinkCheck, updateCheck, type kinkcheck } from "../base";
 import Kink from "./Kink";
 import styles from "./KinkCheck.module.css";
+import type { kink, TRData } from "../zod";
 
 export function ExampleTable({ kinks }: { kinks: kink[] }) {
     const [ratings, setRatings] = useState(kinks.map(([, positions]) => positions.map(() => 0)));
@@ -39,14 +40,14 @@ export function Category({ cat, kinks, ratings, setRating }: {
     );
 }
 
-export default function KinkCheck(meta: template_revision & { init?: kinkcheck, store?: string, readonly?: boolean }) {
+export default function KinkCheck(meta: TRData & { init?: kinkcheck, store?: string, readonly?: boolean }) {
     if (!meta.init && meta.store) {
         useEffect(() => {
             const saved = meta.store && window.localStorage.getItem(meta.store);
             if (saved) setRatings(decodeKinkCheck(meta, JSON.parse(saved)).ratings);
         }, []);
     }
-    const [ratings, setRatings] = useState((meta.init ?? defaultKinkcheck(meta.kinks)).ratings);
+    const [ratings, setRatings] = useState((meta.init ?? defaultKinkcheck(meta)).ratings);
     const setRating = (cat: number) => (kink: number) => (pos: number) => (rat: number) => {
         const r = [...ratings!];
         r[cat][kink][pos] = rat;

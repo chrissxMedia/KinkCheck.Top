@@ -17,7 +17,7 @@ if (!template) {
 		<span class="smol">v{template.revision}</span>
 	</HeaderLogo>
 	<RatingOverview slot="header" />
-	<KinkCheck {...template} store={template.id} client:load />
+	<KinkCheck kinks={template.kinks} store={template.id} client:load />
     <ClearButton store={template.id} slot="bottom-nav" client:load />
 </Layout>
 

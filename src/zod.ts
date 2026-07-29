@@ -18,6 +18,7 @@ export const template_revision = z.object({
     kinks: kinklist,
 });
 export type template_revision = z.infer<typeof template_revision>;
+export type TRData = Pick<template_revision, "kinks">;
 
 export const template = z.object({
     id: z.string(),
