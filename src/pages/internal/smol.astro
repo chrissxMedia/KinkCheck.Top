@@ -16,7 +16,7 @@ if (!template) {
         <span class="smol">v{template.revision}</span>
     </HeaderLogo>
     <RatingOverview slot="header" />
-    <KinkCheck {...template} client:load />
+    <KinkCheck kinks={template.kinks} client:load />
 </Layout>
 
 <style>
