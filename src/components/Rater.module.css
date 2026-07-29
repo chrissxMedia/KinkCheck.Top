@@ -23,10 +23,3 @@
 .position {
     margin-top: -.05em;
 }
-
-/* Horrible hack */
-:global(body.screenshot) .noclick button,
-:global(body.screenshot) .clickable button {
-    width: 16pt;
-    height: 16pt;
-}
