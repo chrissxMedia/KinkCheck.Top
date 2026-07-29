@@ -1,6 +1,6 @@
 import { getCollection } from "astro:content";
 import { assert, test } from "vitest";
-import type { template } from "../src/base";
+import type { template } from "../src/zod";
 
 const templates: template[] = await getCollection("templates").then(x => x.map(t => t.data));
 
