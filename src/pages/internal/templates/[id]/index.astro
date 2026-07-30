@@ -21,7 +21,7 @@ export async function getStaticPaths() {
 }
 ---
 
-<Layout title={`${template.name} ${template.revision}`}>
+<Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }}>
     <HeaderLogo slot="header">
         <span class="smol">{template.name}&nbsp;v{template.revision}</span>
     </HeaderLogo>
