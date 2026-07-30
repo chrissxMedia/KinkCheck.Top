@@ -24,7 +24,7 @@ if (!template) {
 }
 ---
 
-<Layout title={`${template.name} ${template.revision}`}>
+<Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }}>
     <HeaderLogo slot="header">
         {template.name}
         <span class="smol">&nbsp;v{template.revision} check&nbsp;{id}</span>
