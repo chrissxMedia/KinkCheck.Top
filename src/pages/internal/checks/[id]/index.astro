@@ -1,10 +1,10 @@
 ---
-import { decodeKinkCheck } from "../../../base";
-import HeaderLogo from "../../../components/HeaderLogo.astro";
-import KinkCheck from "../../../components/KinkCheck";
-import RatingOverview from "../../../components/RatingOverview.astro";
-import { getCheck, getTemplateVersion } from "../../../db";
-import Layout from "../../../layouts/Layout.astro";
+import { decodeKinkCheck } from "../../../../base";
+import HeaderLogo from "../../../../components/HeaderLogo.astro";
+import KinkCheck from "../../../../components/KinkCheck";
+import RatingOverview from "../../../../components/RatingOverview.astro";
+import { getCheck, getTemplateVersion } from "../../../../db";
+import Layout from "../../../../layouts/Layout.astro";
 
 export const prerender = false;
 const { id } = Astro.params;

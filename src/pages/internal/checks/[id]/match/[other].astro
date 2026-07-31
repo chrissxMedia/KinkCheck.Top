@@ -1,0 +1,78 @@
+---
+import Layout from "../../../../../layouts/Layout.astro";
+import HeaderLogo from "../../../../../components/HeaderLogo.astro";
+import RatingOverview from "../../../../../components/RatingOverview.astro";
+import { getCheck, getTemplateVersion } from "../../../../../db";
+import { decodeKinkCheck, type kinkcheck } from "../../../../../base";
+import KinkCheck from "../../../../../components/KinkCheck";
+
+export const prerender = false;
+const { id, other } = Astro.params;
+const a = id && (await getCheck(id));
+const b = other && (await getCheck(other));
+
+if (!a || !b) {
+    return new Response("The check does not exist.", { status: 404 });
+}
+
+if (a.template_id != b.template_id) {
+    return new Response("Incompatible checks (different templates)", {
+        status: 400,
+    });
+}
+
+const template = await getTemplateVersion(a.template_id, a.template_revision);
+
+if (!template) {
+    return new Response("Template not found", { status: 404 });
+}
+
+function matchRating(a: number, b: number): number {
+    if (!a || !b) return a + b;
+    if (a == 5 || b == 5) return 5;
+    return Math.round(a + b) / 2;
+}
+
+// TODO: testing
+function match(
+    { ratings: a }: kinkcheck,
+    { ratings: b }: kinkcheck,
+): kinkcheck {
+    return {
+        ratings: a.map((rA, cat) =>
+            rA.map((rsA, kink) =>
+                rsA.map((ratA, pos) => matchRating(ratA, b[cat][kink][pos])),
+            ),
+        ),
+    };
+}
+
+const kcA = decodeKinkCheck(template, a.data);
+const kcB = decodeKinkCheck(template, b.data);
+kcB.ratings = kcB.ratings.map((ks) => ks.map((rs) => rs.toReversed()));
+const matched = match(kcA, kcB);
+---
+
+<Layout title="Matcher">
+    {/* FIXME: the header has really bad spacing issues apparent here */}
+    <HeaderLogo slot="header">
+        <span class="smol">
+            {template.name}&nbsp;v{template.revision}
+            {" "}{a.id}&nbsp;matched&nbsp;with&nbsp;{b.id}
+        </span>
+    </HeaderLogo>
+    <RatingOverview slot="header" />
+    <p>The resulting KinkCheck is written from {a.id}'s perspective.</p>
+    <KinkCheck kinks={template.kinks} init={matched} readonly />
+</Layout>
+
+<style>
+    :global(div#content) {
+        min-width: 475px;
+        max-width: 1800px;
+    }
+    p {
+        width: fit-content;
+        margin: 1em auto;
+    }
+</style>
