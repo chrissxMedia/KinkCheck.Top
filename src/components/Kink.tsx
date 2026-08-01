@@ -12,7 +12,7 @@ export default function Kink({ kink: [kink, positions, , description], ratings, 
             </td>
             {positions.map((pos, p) => (
                 <td class={styles.td}>
-                    <Rater text={pos} rating={ratings[p]} setRating={setRating && setRating(p)} clickable={!!setRating} />
+                    <Rater text={pos} rating={ratings[p]} setRating={setRating && setRating(p)} />
                 </td>
             ))}
         </tr>

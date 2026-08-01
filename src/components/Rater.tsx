@@ -6,8 +6,8 @@ function background(rating: number): string {
     return `linear-gradient(135deg, ${ratings[rating - 0.5][1]} 0%, ${ratings[rating + 0.5][1]} 100%)`;
 }
 
-export default function Rater({ text, rating, setRating, clickable }:
-    { text: string, rating: number, setRating?: (r: number) => void, clickable: boolean }) {
+export default function Rater({ text, rating, setRating }:
+    { text: string, rating: number, setRating?: (r: number) => void }) {
     const handleClick = !setRating ? undefined : (e: MouseEvent) => {
         e.preventDefault();
         const step = e.shiftKey || e.altKey ? 0.5 : 1;
@@ -19,7 +19,7 @@ export default function Rater({ text, rating, setRating, clickable }:
         setRating(newRating);
     };
     return (
-        <div class={clickable ? styles.clickable : styles.noclick}
+        <div class={setRating ? styles.clickable : styles.noclick}
             onClick={handleClick} onContextMenu={handleClick}>
             <button style={{ background: background(rating) }} />
             <span>{text}</span>
