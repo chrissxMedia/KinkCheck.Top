@@ -22,13 +22,22 @@ export default function Rater({ text, rating, setRating }:
         const step = e.shiftKey || e.altKey ? 0.5 : 1;
         updateRating(e.button ? -step : +step);
     });
+    const handleKey = setRating && updateRating && ((e: KeyboardEvent) => {
+        console.log("Key press: " + e.code);
+        const x = Number(e.key);
+        if (Number.isFinite(x)) {
+            setRating(x && (x + 1) / 2);
+        } else if (e.code === "Equal" || e.code === "Minus") {
+            updateRating(e.code === "Equal" ? +0.5 : -0.5);
+        }
+    });
     const btn = setRating && useRef<HTMLButtonElement>(null);
     const focus = btn && (() => btn.current?.focus({ focusVisible: false, preventScroll: true }));
     const unfocus = btn && (() => btn.current?.blur());
     return (
         <div class={setRating ? styles.clickable : styles.noclick}
             onClick={handleClick} onContextMenu={handleClick}
-            onMouseEnter={focus} onMouseLeave={unfocus}>
+            onKeyDown={handleKey} onMouseEnter={focus} onMouseLeave={unfocus}>
             <button style={{ background: background(rating) }} ref={btn} />
             <span>{text}</span>
         </div>
