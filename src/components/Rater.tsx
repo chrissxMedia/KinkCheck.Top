@@ -1,3 +1,4 @@
+import { useRef } from "preact/hooks";
 import { ratings } from "../base";
 import styles from "./Rater.module.css";
 
@@ -21,10 +22,14 @@ export default function Rater({ text, rating, setRating }:
         const step = e.shiftKey || e.altKey ? 0.5 : 1;
         updateRating(e.button ? -step : +step);
     });
+    const btn = setRating && useRef<HTMLButtonElement>(null);
+    const focus = btn && (() => btn.current?.focus({ focusVisible: false, preventScroll: true }));
+    const unfocus = btn && (() => btn.current?.blur());
     return (
         <div class={setRating ? styles.clickable : styles.noclick}
-            onClick={handleClick} onContextMenu={handleClick}>
-            <button style={{ background: background(rating) }} />
+            onClick={handleClick} onContextMenu={handleClick}
+            onMouseEnter={focus} onMouseLeave={unfocus}>
+            <button style={{ background: background(rating) }} ref={btn} />
             <span>{text}</span>
         </div>
     );
