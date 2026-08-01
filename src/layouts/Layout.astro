@@ -33,7 +33,7 @@ const build = `KinkCheck.Top (${GIT_REF ?? "unknown"}) v${version}-${GIT_SHA?.su
             <a href="/privacy">Privacy Policy</a>
             |
             <slot name="bottom-nav" />
-            <ScreenshotButton {title} options={screenshotOptions} client:load />
+            <ScreenshotButton {title} options={screenshotOptions} client:idle />
         </nav>
     </Footer>
 </BaseLayout>
