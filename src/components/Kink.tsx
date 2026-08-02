@@ -1,4 +1,4 @@
-import { type kink } from "../zod";
+import type { kink } from "../zod";
 import Rater from "./Rater";
 import styles from "./Kink.module.css";
 
