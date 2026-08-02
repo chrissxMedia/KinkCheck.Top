@@ -4,7 +4,7 @@ import HeaderLogo from "../../../../../components/HeaderLogo.astro";
 import RatingOverview from "../../../../../components/RatingOverview.astro";
 import { getCheck, getTemplateVersion } from "../../../../../db";
 import { decodeKinkCheck, type kinkcheck } from "../../../../../base";
-import KinkCheck from "../../../../../components/KinkCheck";
+import { Check } from "../../../../../components/KinkCheck";
 
 export const prerender = false;
 const { id, other } = Astro.params;
@@ -63,7 +63,7 @@ const matched = match(kcA, kcB);
     </HeaderLogo>
     <RatingOverview slot="header" />
     <p>The resulting KinkCheck is written from {a.id}'s perspective.</p>
-    <KinkCheck kinks={template.kinks} init={matched} readonly />
+    <Check kinks={template.kinks} {...matched} />
 </Layout>
 
 <style>

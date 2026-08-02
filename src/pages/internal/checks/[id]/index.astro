@@ -1,7 +1,7 @@
 ---
 import { decodeKinkCheck } from "../../../../base";
 import HeaderLogo from "../../../../components/HeaderLogo.astro";
-import KinkCheck from "../../../../components/KinkCheck";
+import { Check } from "../../../../components/KinkCheck";
 import RatingOverview from "../../../../components/RatingOverview.astro";
 import { getCheck, getTemplateVersion } from "../../../../db";
 import Layout from "../../../../layouts/Layout.astro";
@@ -34,11 +34,7 @@ if (!template) {
         </span>
     </HeaderLogo>
     <RatingOverview slot="header" />
-    <KinkCheck
-        kinks={template.kinks}
-        init={decodeKinkCheck(template, check.data)}
-        readonly
-    />
+    <Check kinks={template.kinks} {...decodeKinkCheck(template, check.data)} />
 </Layout>
 
 <style>
