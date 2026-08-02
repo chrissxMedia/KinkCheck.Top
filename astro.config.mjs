@@ -4,6 +4,7 @@ import node from "@astrojs/node";
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://Bottom.KinkCheck.Top",
   integrations: [preact()],
   adapter: node({ mode: "standalone", bodySizeLimit: 1024 * 1024 /* 1 MiB is plenty for now */ }),
   env: {
