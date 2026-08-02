@@ -7,32 +7,24 @@ import type { kink, TRData } from "../zod";
 export function ExampleTable({ kinks }: { kinks: kink[] }) {
     const [ratings, setRatings] = useState(kinks.map(([, positions]) => positions.map(() => 0)));
     const setRating = (kink: number) => (pos: number) => (rat: number) => {
-        const p = ratings[kink];
-        p[pos] = rat;
-        const r = ratings;
-        r[kink] = p;
-        console.log(r);
+        const r = [...ratings];
+        r[kink][pos] = rat;
         setRatings(r);
     };
-    console.log(ratings);
-    return <table class={styles.table}>
-        <tbody>
-            {kinks.map((kink, i) => <Kink kink={kink} ratings={ratings[i]} setRating={setRating(i)} />)}
-        </tbody>
-    </table>;
+    return <Category kinks={kinks} ratings={ratings} setRating={setRating} />;
 }
 
 export function Category({ cat, kinks, ratings, setRating }: {
-    cat: string, kinks: kink[], ratings: number[][],
+    cat?: string, kinks: kink[], ratings: number[][],
     setRating?: (k: number) => (p: number) => (r: number) => void
 }) {
     return (
         <div class={styles.category}>
-            <h2>{cat}</h2>
+            {cat && <h2>{cat}</h2>}
             <table class={styles.table}>
                 <tbody>
                     {kinks.map((kink, i) => (
-                        <Kink kink={kink} ratings={ratings[i]} setRating={setRating && setRating(i)} />
+                        <Kink kink={kink} ratings={ratings[i]} setRating={setRating?.(i)} />
                     ))}
                 </tbody>
             </table>
