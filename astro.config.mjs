@@ -13,4 +13,20 @@ export default defineConfig({
       GIT_REF: envField.string({ context: "server", access: "public", optional: true }),
     },
   },
+  prerenderConflictBehavior: "error",
+  security: {
+    csp: {
+      directives: [
+        "font-src https://fonts.chrissx.de https://fonts.gstatic.com https://db.onlinewebfonts.com",
+        "frame-src https://w.soundcloud.com",
+      ],
+      styleDirective: {
+        resources: [
+          { resource: "'self'", kind: "element" },
+          { resource: "https://fonts.chrissx.de", kind: "element" },
+          { resource: "'unsafe-inline'", kind: "attribute" },
+        ],
+      },
+    },
+  },
 });
