@@ -33,15 +33,13 @@ export function Category({ cat, kinks, ratings, setRating }: {
 }
 
 export default function KinkCheck(meta: TRData & { init?: kinkcheck, store?: string, readonly?: boolean }) {
-    if (!meta.init && meta.store) {
-        useEffect(() => {
-            const saved = meta.store && window.localStorage.getItem(meta.store);
-            if (saved) setRatings(decodeKinkCheck(meta, JSON.parse(saved)).ratings);
-        }, []);
-    }
+    useEffect(() => {
+        const saved = meta.store && window.localStorage.getItem(meta.store);
+        if (saved) setRatings(decodeKinkCheck(meta, JSON.parse(saved)).ratings);
+    }, []);
     const [ratings, setRatings] = useState((meta.init ?? defaultKinkcheck(meta)).ratings);
-    const setRating = (cat: number) => (kink: number) => (pos: number) => (rat: number) => {
-        const r = [...ratings!];
+    const setRating = meta.readonly ? undefined : (cat: number) => (kink: number) => (pos: number) => (rat: number) => {
+        const r = [...ratings];
         r[cat][kink][pos] = rat;
         setRatings(r);
         if (meta.store) {
@@ -54,8 +52,7 @@ export default function KinkCheck(meta: TRData & { init?: kinkcheck, store?: str
     return <main class={styles.catcontainer}>
         {
             meta.kinks.map(([cat, kinks], i) => (
-                <Category cat={cat} kinks={kinks} ratings={ratings[i]}
-                    setRating={meta.readonly ? undefined : setRating(i)} />
+                <Category cat={cat} kinks={kinks} ratings={ratings[i]} setRating={setRating?.(i)} />
             ))
         }
     </main>;
