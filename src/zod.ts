@@ -3,10 +3,7 @@ import { z } from "astro/zod";
 export const positions = z.union([z.tuple([z.literal("")]), z.tuple([z.string(), z.string()])]);
 export type positions = z.infer<typeof positions>;
 
-export const kink = z.union([
-    z.tuple([z.string(), positions, z.number()]),
-    z.tuple([z.string(), positions, z.number(), z.string()]),
-]);
+export const kink = z.tuple([z.string(), positions, z.number(), z.string()]);
 export type kink = z.infer<typeof kink>;
 
 export const kinklist = z.array(z.tuple([z.string(), z.array(kink)]));
@@ -29,8 +26,8 @@ export const template = z.object({
 export type template = z.infer<typeof template>;
 
 export const validRating = z.union([
-  z.literal(0), z.literal(1), z.literal(1.5), z.literal(2), z.literal(2.5),
-  z.literal(3), z.literal(3.5), z.literal(4), z.literal(4.5), z.literal(5),
+    z.literal(0), z.literal(1), z.literal(1.5), z.literal(2), z.literal(2.5),
+    z.literal(3), z.literal(3.5), z.literal(4), z.literal(4.5), z.literal(5),
 ]);
 export type validRating = z.infer<typeof validRating>;
 
