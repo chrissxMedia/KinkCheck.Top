@@ -5,11 +5,11 @@ import type { checkData, TRData } from "../src/zod";
 const exampleMeta1: TRData = {
     kinks: [
         ["Category 1", [
-            ["Kink A", ["top", "bottom"], 0],
-            ["Kink B", ["dom", "sub"], 1],
+            ["Kink A", ["top", "bottom"], 0, ""],
+            ["Kink B", ["dom", "sub"], 1, ""],
         ]],
         ["Category 2", [
-            ["Kink C", [""], 2],
+            ["Kink C", [""], 2, ""],
         ]],
     ],
 };
@@ -17,21 +17,20 @@ const exampleMeta1: TRData = {
 const exampleMeta2: TRData = {
     kinks: [
         ["Category 1", [
-            ["Kink B", ["give", "receive"], 1],
+            ["Kink B", ["give", "receive"], 1, ""],
         ]],
         ["Category 2", [
-            ["Kink C", ["dom", "sub"], 2],
+            ["Kink C", ["dom", "sub"], 2, ""],
         ]],
         ["Category 3", [
-            ["Kink A'", ["top", "bottom"], 0],
-            ["Kink D", [""], 3],
+            ["Kink A'", ["top", "bottom"], 0, ""],
+            ["Kink D", [""], 3, ""],
         ]],
     ],
 };
 
-const exampleCheck: checkData = { ratings: [[1, 2], [3, 4], [1.5]] };
-const exampleCheck15: checkData = { ratings: [[1, 2], [3, 4], [1.5], [0]] };
-const exampleCheck2: checkData = { ratings: [[1, 2], [3, 4], [1.5, 1.5], [0]] };
+const exampleCheck: checkData = { ratings: [[1, 2], [3, 4], 1.5] };
+const exampleCheck2: checkData = { ratings: [[1, 2], [3, 4], 1.5, 0] };
 
 test("re-encoding", () => {
     expect(encodeKinkCheck(exampleMeta1, decodeKinkCheck(exampleMeta1, exampleCheck)))
@@ -54,5 +53,5 @@ test("moving kinks around and slightly adjusting them results in the same encodi
 });
 
 test("updating with an old revision doesn't trash ratings for newer kinks", () => {
-    expect(updateCheck(exampleCheck2, exampleCheck)).toStrictEqual(exampleCheck15);
+    expect(updateCheck(exampleCheck2, exampleCheck)).toStrictEqual(exampleCheck2);
 });

@@ -31,5 +31,7 @@ export const validRating = z.union([
 ]);
 export type validRating = z.infer<typeof validRating>;
 
-export const checkData = z.object({ ratings: z.array(z.array(validRating).nullish()) });
+export const checkData = z.object({
+    ratings: z.array(z.union([z.array(validRating).nonempty(), validRating]).nullish()),
+});
 export type checkData = z.infer<typeof checkData>;

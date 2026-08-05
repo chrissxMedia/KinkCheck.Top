@@ -16,7 +16,7 @@ const valueForAllKinks = <T>({ kinks }: TRData, x: T) =>
 export type kinkcheck = { ratings: number[][][] };
 export const defaultKinkcheck = (t: TRData): kinkcheck => ({ ratings: valueForAllKinks(t, 0) });
 
-function packIndexedValues<T>(indexedValues: [number, T][]): T[] {
+function packIndexedValues<T>(indexedValues: [number, T][]): (T | undefined)[] {
     return indexedValues.reduce<T[]>((arr, [idx, val]) => {
         arr[idx] = val;
         return arr;
@@ -27,14 +27,15 @@ export function updateCheck(oldCheck: checkData, newCheck: checkData): checkData
     const ratings = Array(Math.max(oldCheck.ratings.length, newCheck.ratings.length));
     for (let i = 0; i < ratings.length; i++) {
         const a = oldCheck.ratings[i], b = newCheck.ratings[i];
-        ratings[i] = !a || !b ? a || b : b.length ? b : a.length ? a : undefined;
+        ratings[i] = typeof b === "number" || (b && b.length) ? b : a;
     }
     return { ratings };
 }
 
 export function encodeKinkCheck({ kinks }: TRData, { ratings }: kinkcheck): checkData {
     const r = packIndexedValues(ratings.flatMap((_, cat) =>
-        kinks[cat][1].map<[number, number[]]>(([, , id], i) => [id, ratings[cat][i]])));
+        kinks[cat][1].map<[number, number | number[]]>(([, , id], i) =>
+            [id, new Set(ratings[cat][i]).size === 1 ? ratings[cat][i][0] : ratings[cat][i]])));
     return { ratings: r } as checkData;
 }
 
@@ -44,10 +45,11 @@ export function decodeKinkCheck({ kinks }: TRData, s: checkData): kinkcheck {
         ratings[cat].forEach((_, i) => {
             const [, pos, kid] = kinks[cat][1][i];
             const r = s.ratings[kid];
-            if (!r) return;
-            if (r.length === pos.length) {
+            if (typeof r === "number") {
+                ratings[cat][i] = Array(pos.length).fill(r);
+            } else if (r && r.length === pos.length) {
                 ratings[cat][i] = r;
-            } else if (new Set(r).size === 1) {
+            } else if (r && new Set(r).size === 1) {
                 ratings[cat][i] = Array(pos.length).fill(r[0]);
             }
         });
