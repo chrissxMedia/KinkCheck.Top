@@ -8,7 +8,7 @@ function background(rating: number): string {
 }
 
 export default function Rater({ text, rating, setRating }:
-    { text: string, rating: number, setRating?: (r: number) => void }) {
+    { text?: string, rating: number, setRating?: (r: number) => void }) {
     const updateRating = setRating && ((x: number) => {
         let newRating = rating + x;
         const max = ratings.length - 1;
@@ -39,7 +39,7 @@ export default function Rater({ text, rating, setRating }:
             onClick={handleClick} onContextMenu={handleClick}
             onKeyDown={handleKey} onMouseEnter={focus} onMouseLeave={unfocus}>
             <button style={{ background: background(rating) }} ref={btn} />
-            <span>{text}</span>
+            {text && <span>{text}</span>}
         </div>
     );
 }
