@@ -34,9 +34,8 @@ export function updateCheck(oldCheck: checkData, newCheck: checkData): checkData
 
 export function encodeKinkCheck({ kinks }: TRData, { ratings }: kinkcheck): checkData {
     const r = packIndexedValues(ratings.flatMap((_, cat) =>
-        kinks[cat][1].map<[number, number | number[]]>(([, , id], i) =>
-            [id, new Set(ratings[cat][i]).size === 1 ? ratings[cat][i][0] : ratings[cat][i]])));
-    return { ratings: r } as checkData;
+        kinks[cat][1].map<[number, number[]]>(([, , id], i) => [id, ratings[cat][i]])));
+    return { ratings: r.map(x => x ? (new Set(x).size === 1 ? x[0] : x) : []) } as checkData;
 }
 
 export function decodeKinkCheck({ kinks }: TRData, s: checkData): kinkcheck {
@@ -44,12 +43,12 @@ export function decodeKinkCheck({ kinks }: TRData, s: checkData): kinkcheck {
     ratings.forEach((_, cat) => {
         ratings[cat].forEach((_, i) => {
             const [, pos, kid] = kinks[cat][1][i];
-            const r = s.ratings[kid];
+            const r = s.ratings[kid] ?? [];
             if (typeof r === "number") {
                 ratings[cat][i] = Array(pos.length).fill(r);
-            } else if (r && r.length === pos.length) {
+            } else if (r.length === pos.length) {
                 ratings[cat][i] = r;
-            } else if (r && new Set(r).size === 1) {
+            } else if (new Set(r).size === 1) {
                 ratings[cat][i] = Array(pos.length).fill(r[0]);
             }
         });
