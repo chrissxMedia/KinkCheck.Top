@@ -1,3 +1,8 @@
+.astro/
 .DS_Store
-node_modules
-dist
+.git/
+.github/
+.vscode/
+dist/
+node_modules/
+test/

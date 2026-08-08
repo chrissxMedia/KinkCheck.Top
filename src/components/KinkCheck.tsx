@@ -1,37 +1,30 @@
-import { useState } from "preact/hooks";
-import { decodeKinkCheck, defaultKinkcheck, encodeKinkCheck, type kink, type kinkcheck, type template_revision } from "../base";
+import { useEffect, useState } from "preact/hooks";
+import { decodeKinkCheck, defaultKinkcheck, encodeKinkCheck, updateCheck, type kinkcheck } from "../base";
 import Kink from "./Kink";
 import styles from "./KinkCheck.module.css";
+import type { kink, TRData } from "../zod";
 
 export function ExampleTable({ kinks }: { kinks: kink[] }) {
     const [ratings, setRatings] = useState(kinks.map(([, positions]) => positions.map(() => 0)));
     const setRating = (kink: number) => (pos: number) => (rat: number) => {
-        const p = ratings[kink];
-        p[pos] = rat;
-        const r = ratings;
-        r[kink] = p;
-        console.log(r);
+        const r = [...ratings];
+        r[kink][pos] = rat;
         setRatings(r);
     };
-    console.log(ratings);
-    return <table class={styles.table}>
-        <tbody>
-            {kinks.map((kink, i) => <Kink kink={kink} ratings={ratings[i]} setRating={setRating(i)} />)}
-        </tbody>
-    </table>;
+    return <Category kinks={kinks} ratings={ratings} setRating={setRating} />;
 }
 
 export function Category({ cat, kinks, ratings, setRating }: {
-    cat: string, kinks: kink[], ratings: number[][],
+    cat?: string, kinks: kink[], ratings: number[][],
     setRating?: (k: number) => (p: number) => (r: number) => void
 }) {
     return (
         <div class={styles.category}>
-            <h2 class={styles.catname}>{cat}</h2>
+            {cat && <h2>{cat}</h2>}
             <table class={styles.table}>
                 <tbody>
                     {kinks.map((kink, i) => (
-                        <Kink kink={kink} ratings={ratings[i]} setRating={setRating && setRating(i)} />
+                        <Kink kink={kink} ratings={ratings[i]} setRating={setRating?.(i)} />
                     ))}
                 </tbody>
             </table>
@@ -39,25 +32,32 @@ export function Category({ cat, kinks, ratings, setRating }: {
     );
 }
 
-export default function KinkCheck(meta: template_revision & { init?: kinkcheck, store?: string, readonly?: boolean }) {
-    if (!meta.init) {
+export default function KinkCheck(meta: TRData & { init?: kinkcheck, store?: string }) {
+    useEffect(() => {
         const saved = meta.store && window.localStorage.getItem(meta.store);
-        meta.init = saved ? decodeKinkCheck(meta, JSON.parse(saved)) : defaultKinkcheck(meta.kinks);
-    }
-    const [ratings, setRatings] = useState((meta.init as kinkcheck).ratings);
+        if (saved) setRatings(decodeKinkCheck(meta, JSON.parse(saved)).ratings);
+    }, []);
+    const [ratings, setRatings] = useState((meta.init ?? defaultKinkcheck(meta)).ratings);
     const setRating = (cat: number) => (kink: number) => (pos: number) => (rat: number) => {
-        const r = [...ratings!];
+        const r = [...ratings];
         r[cat][kink][pos] = rat;
         setRatings(r);
         if (meta.store) {
-            window.localStorage.setItem(meta.store, JSON.stringify(encodeKinkCheck(meta, { ratings: r })));
+            const old = window.localStorage.getItem(meta.store);
+            const x = encodeKinkCheck(meta, { ratings: r });
+            const data = old ? updateCheck(JSON.parse(old), x) : x;
+            window.localStorage.setItem(meta.store, JSON.stringify(data));
         }
     };
+    return <Check kinks={meta.kinks} ratings={ratings} setRating={setRating} />;
+}
+
+export function Check({ kinks, ratings, setRating }: TRData &
+{ ratings: number[][][], setRating?: (c: number) => (k: number) => (p: number) => (r: number) => void }) {
     return <main class={styles.catcontainer}>
         {
-            meta.kinks.map(([cat, kinks], i) => (
-                <Category cat={cat} kinks={kinks} ratings={ratings[i]}
-                    setRating={meta.readonly ? undefined : setRating(i)} />
+            kinks.map(([cat, kinks], i) => (
+                <Category cat={cat} kinks={kinks} ratings={ratings[i]} setRating={setRating?.(i)} />
             ))
         }
     </main>;

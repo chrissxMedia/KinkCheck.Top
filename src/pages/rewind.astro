@@ -4,8 +4,8 @@ import Layout from "../layouts/Layout.astro";
 import Main from "../components/Rewind";
 ---
 
-<Layout title="Rewind" screenshotOptions={{ windowWidth: 1000 }}>
-    <header><HeaderLogo>Rewind</HeaderLogo></header>
+<Layout title="Rewind" screenshotOptions={{ width: 1000 }}>
+    <HeaderLogo slot="header">Rewind</HeaderLogo>
     <Main client:load />
 </Layout>
 

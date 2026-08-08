@@ -6,16 +6,16 @@ import Layout from "../../layouts/Layout.astro";
 
 <Layout
     title="Merch Designs"
-    screenshotOptions={{ windowWidth: 200, scale: 20, backgroundColor: null }}
+    screenshotOptions={{ width: 200, scale: 20 }}
 >
     <div class="c">
-        <HeaderLogo includeVersion={false} />
+        <HeaderLogo />
         <div class="b">
-            <Rater text="" rating={1} clickable={false} />
+            <Rater text="" rating={1} />
         </div>
     </div>
-    <Rater text="bottom" rating={2} clickable={false} />
-    <Rater text="top" rating={2.5} clickable={false} />
+    <Rater text="bottom" rating={2} />
+    <Rater text="top" rating={2.5} />
 </Layout>
 
 <style>

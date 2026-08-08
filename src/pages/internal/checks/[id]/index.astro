@@ -1,0 +1,45 @@
+---
+import { decodeKinkCheck } from "../../../../base";
+import HeaderLogo from "../../../../components/HeaderLogo.astro";
+import { Check } from "../../../../components/KinkCheck";
+import RatingOverview from "../../../../components/RatingOverview.astro";
+import { getCheck, getTemplateVersion } from "../../../../db";
+import Layout from "../../../../layouts/Layout.astro";
+
+export const prerender = false;
+const { id } = Astro.params;
+const check = id && (await getCheck(id));
+
+if (!check) {
+    return new Response("The check does not exist.", { status: 404 });
+}
+
+const template = await getTemplateVersion(
+    check.template_id,
+    check.template_revision,
+);
+
+if (!template) {
+    return new Response("Broken check, template doesnt exist", { status: 500 });
+}
+---
+
+<Layout
+    title={`${template.name} ${template.revision} check ${id}`}
+    screenshotOptions={{ width: 1500 }}
+>
+    <HeaderLogo slot="header">
+        <span class="smol">
+            {template.name}&nbsp;v{template.revision} check&nbsp;{id}
+        </span>
+    </HeaderLogo>
+    <RatingOverview slot="header" />
+    <Check kinks={template.kinks} {...decodeKinkCheck(template, check.data)} />
+</Layout>
+
+<style>
+    :global(div#content) {
+        min-width: 475px;
+        max-width: 1800px;
+    }
+</style>

@@ -4,7 +4,7 @@ import Rater from "./Rater";
 ---
 
 <div>
-    {ratings.map(([n], i) => <Rater text={n} rating={i} clickable={false} />)}
+    {ratings.map(([text], rating) => <Rater {text} {rating} />)}
 </div>
 
 <style>
