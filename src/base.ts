@@ -33,8 +33,10 @@ export function updateCheck(oldCheck: checkData, newCheck: checkData): checkData
 }
 
 export function encodeKinkCheck({ kinks }: TRData, { ratings }: kinkcheck): checkData {
-    const r = packIndexedValues(ratings.flatMap((_, cat) =>
-        kinks[cat][1].map<[number, number[]]>(([, , id], i) => [id, ratings[cat][i]])));
+    const r = packIndexedValues(kinks.flatMap(([, ks], cat) =>
+        ks.flatMap(([, , kid], i): [number, number[]][] => kid.length === 1
+            ? [[kid[0], ratings[cat][i]]]
+            : kid.map((id, p) => [id, [ratings[cat][i][p]]]))));
     return { ratings: r.map(x => x ? (new Set(x).size === 1 ? x[0] : x) : []) } as checkData;
 }
 
@@ -43,13 +45,15 @@ export function decodeKinkCheck({ kinks }: TRData, s: checkData): kinkcheck {
     ratings.forEach((_, cat) => {
         ratings[cat].forEach((_, i) => {
             const [, pos, kid] = kinks[cat][1][i];
-            const r = s.ratings[kid] ?? [];
-            if (typeof r === "number") {
-                ratings[cat][i] = Array(pos.length).fill(r);
-            } else if (r.length === pos.length) {
-                ratings[cat][i] = r;
-            } else if (new Set(r).size === 1) {
-                ratings[cat][i] = Array(pos.length).fill(r[0]);
+            for (let p = 0; p < pos.length; p++) {
+                const r = s.ratings[kid.length === 1 ? kid[0] : kid[p]] ?? [];
+                if (typeof r === "number") {
+                    ratings[cat][i][p] = r;
+                } else if (new Set(r).size === 1) {
+                    ratings[cat][i][p] = r[0];
+                } else if (kid.length === 1 && r.length === pos.length) {
+                    ratings[cat][i] = r;
+                }
             }
         });
     });
