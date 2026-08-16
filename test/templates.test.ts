@@ -15,7 +15,7 @@ for (const t of templates) {
 
 test("kink ids are unique", () => {
     for (const t of templates.flatMap(t => t.revisions.map(r => ({ ...t, ...r })))) {
-        const ids = t.kinks.flatMap(([, ks]) => ks.map(([, , id]) => id));
+        const ids = t.kinks.flatMap(([, ks]) => ks.flatMap(([, , id]) => id));
         for (const id of ids) {
             assert(ids.filter(i => i === id).length === 1, `${t.id}@${t.revision}: id ${id} is used twice`);
         }
