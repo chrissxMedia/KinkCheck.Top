@@ -17,6 +17,7 @@ export type kinkcheck = { ratings: number[][][] };
 export const defaultKinkcheck = (t: TRData): kinkcheck => ({ ratings: valueForAllKinks(t, 0) });
 
 function packIndexedValues<T>(indexedValues: [number, T][]): (T | undefined)[] {
+    if (!indexedValues.length) return [];
     return indexedValues.reduce<T[]>((arr, [idx, val]) => {
         arr[idx] = val;
         return arr;
