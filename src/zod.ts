@@ -3,7 +3,8 @@ import { z } from "astro/zod";
 export const positions = z.union([z.tuple([z.literal("")]), z.tuple([z.string(), z.string()])]);
 export type positions = z.infer<typeof positions>;
 
-export const kink = z.tuple([z.string(), positions, z.number(), z.string()]);
+export const kink = z.tuple([z.string(), positions, z.array(z.number()).nonempty(), z.string()])
+    .refine(([, pos, ids]) => ids.length === 1 || ids.length === pos.length);
 export type kink = z.infer<typeof kink>;
 
 export const kinklist = z.array(z.tuple([z.string(), z.array(kink)]));

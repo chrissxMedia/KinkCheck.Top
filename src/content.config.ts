@@ -11,8 +11,8 @@ const tMeta: Pick<template, "id" | "name" | "type">[] = [
 ];
 
 const fixKinks = (ks: any[]): kinklist => ks.map(([cat, kinks]: any[]) => [cat,
-  kinks.map(([kink, pos, id, desc]: [string, string[], number, string | undefined]) =>
-    [kink, pos && pos.length ? pos : [""], /*typeof id === "number" ? [id] :*/ id, desc ?? ""])]);
+  kinks.map(([kink, pos, id, desc]: [string, string[], number | number[], string | undefined]) =>
+    [kink, pos && pos.length ? pos : [""], typeof id === "number" ? [id] : id, desc ?? ""])]);
 
 const templates = defineCollection({
   loader: async () => {
