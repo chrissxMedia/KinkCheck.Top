@@ -4,6 +4,13 @@ import { GIT_REF } from "astro:env/server";
 
 const rateLimitMap = new Map<string, number[]>();
 
+function compactRlMap() {
+    const now = Date.now();
+    rateLimitMap.entries().toArray()
+        .filter(([, ts]) => !ts.filter(t => now - t < 600_000).length)
+        .forEach(([ip]) => rateLimitMap.delete(ip));
+}
+
 function checkRateLimit(ip: string): boolean {
     const now = Date.now();
     const timestamps = rateLimitMap.get(ip) ?? [];
@@ -11,6 +18,7 @@ function checkRateLimit(ip: string): boolean {
     const ok = windowed.length < 5;
     if (ok) windowed.push(now);
     rateLimitMap.set(ip, windowed);
+    if (rateLimitMap.size > 100_000) compactRlMap();
     return ok;
 }
 
