@@ -11,6 +11,7 @@ ENV NODE_ENV=production
 ENV ASTRO_TELEMETRY_DISABLED=1
 RUN --mount=type=tmpfs,target=/data npm ci --omit=dev && npm run build && rm -rf /root/.npm
 
+USER node:node
 ENV HOST=0.0.0.0
 ENV PORT=4321
 EXPOSE 4321
