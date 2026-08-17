@@ -39,7 +39,6 @@ kinks: [
     ["Masturbation Instructions", ["give", "receive"], 34],
     ["Servitude", ["dom", "sub"], 35, "sub serves dom's needs (not only sexually)"],
     ["Sensation Play", ["dom", "sub"], 36],
-    ["Electric Stimulation", ["dom", "sub"], 37, "dom uses electricity to stimulate/shock sub"],
     ["Breathing Play", ["dom", "sub"], 38, "dom restricts sub's breathing"],
     ["Choking", ["dom", "sub"], 39],
     ["Gags", ["dom", "sub"], 40],
@@ -83,6 +82,7 @@ kinks: [
     ["Vagina Slapping", ["give", "receive"], 74],
     ["Clothespins", ["give", "receive"], 75],
     ["Needles", ["give", "receive"], 76, "giver inserts needles into receiver's body"],
+    ["Electric Stimulation", ["give", "receive"], 37, "dom uses electricity to stimulate/shock sub"],
   ]],
   ["Clothing", [
     ["Clothed Sex", [""], 77],
