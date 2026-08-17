@@ -9,8 +9,7 @@ ENV GIT_SHA=$GIT_SHA GIT_REF=$GIT_REF
 ENV KCT_DATABASE_FILE=/data/kct_v1.db
 ENV NODE_ENV=production
 ENV ASTRO_TELEMETRY_DISABLED=1
-RUN npm ci
-RUN --mount=type=tmpfs,target=/data npm run build
+RUN --mount=type=tmpfs,target=/data npm ci --omit=dev && npm run build && rm -rf /root/.npm
 
 ENV HOST=0.0.0.0
 ENV PORT=4321
