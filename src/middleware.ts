@@ -18,6 +18,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const { action } = getActionContext(context);
 
     if (action) {
+        console.log(`Action ${action.name} called from ${context.clientAddress}`);
         if (GIT_REF === "daddy") {
             return new Response("This feature is not available in prod yet.", { status: 400 });
         }
