@@ -29,11 +29,6 @@ function normalizeClientKey(raw: string): string {
     return addr;
 }
 
-function getClientKey(context: APIContext): string {
-    const forwarded = context.request.headers.get("X-Real-IP")?.trim();
-    return normalizeClientKey(forwarded || context.clientAddress);
-}
-
 type RateLimitResult = { ok: true; retryAfter?: undefined } | { ok: false; retryAfter: number };
 
 function checkRateLimit(ip: string): RateLimitResult {
@@ -63,7 +58,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
         if (GIT_REF === "daddy") {
             return new Response("This feature is not available in prod yet.", { status: 400 });
         }
-        const key = getClientKey(context);
+        const ip = context.request.headers.get("X-Real-IP")?.trim() || context.clientAddress;
+        const key = normalizeClientKey(ip);
         const result = checkRateLimit(key);
 
         if (!result.ok) {
@@ -74,7 +70,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
             });
         }
 
-        console.log(`Action ${action.name} called from ${key} (${context.clientAddress})`);
+        console.log(`Action ${action.name} called from ${key} (${ip})`);
     }
 
     return next();
