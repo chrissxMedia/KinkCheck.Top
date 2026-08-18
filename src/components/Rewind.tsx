@@ -1,6 +1,11 @@
-import { useState } from "preact/hooks";
+import { useState, type Dispatch, type StateUpdater } from "preact/hooks";
 import styles from "./Rewind.module.css";
-import Input from "./Input";
+
+function Input({ placeholder, value, setValue }:
+    { placeholder: string, value: string, setValue: Dispatch<StateUpdater<string>> }) {
+    return <input type="text" spellcheck={false} autocorrect="false"
+            placeholder={placeholder} value={value} onInput={(e) => setValue(e.target.value)} />;
+}
 
 export default function Rewind() {
     const [sextimes, setSextimes] = useState("0 times");
@@ -9,10 +14,10 @@ export default function Rewind() {
     const [sexpartners, setSexpartners] = useState("0");
     return <main class={styles.main}>
         <div class={styles.settings}>
-            <Input className={styles.setting} placeholder="You had sex" value={sextimes} setValue={setSextimes} />
-            <Input className={styles.setting} placeholder="Description" value={sexdesc} setValue={setSexdesc} />
-            <Input className={styles.setting} placeholder="Minutes had sex" value={sexmins} setValue={setSexmins} />
-            <Input className={styles.setting} placeholder="Partners" value={sexpartners} setValue={setSexpartners} />
+            <Input placeholder="You had sex" value={sextimes} setValue={setSextimes} />
+            <Input placeholder="Description" value={sexdesc} setValue={setSexdesc} />
+            <Input placeholder="Minutes had sex" value={sexmins} setValue={setSexmins} />
+            <Input placeholder="Partners" value={sexpartners} setValue={setSexpartners} />
         </div>
         <div class={styles.sexrewind + " " + styles.column}>
             <div class={styles.column}>
