@@ -74,7 +74,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
             });
         }
 
-        console.log(`Action ${action.name} called from ${key}`);
+        console.log(`Action ${action.name} called from ${key} (${context.clientAddress})`);
     }
 
     return next();
