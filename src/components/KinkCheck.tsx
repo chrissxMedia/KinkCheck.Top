@@ -33,11 +33,11 @@ export function Category({ cat, kinks, ratings, setRating }: {
 }
 
 export default function KinkCheck(meta: TRData & { init?: kinkcheck, store?: string }) {
+    const [ratings, setRatings] = useState((meta.init ?? defaultKinkcheck(meta)).ratings);
     useEffect(() => {
         const saved = meta.store && window.localStorage.getItem(meta.store);
         if (saved) setRatings(decodeKinkCheck(meta, JSON.parse(saved)).ratings);
     }, []);
-    const [ratings, setRatings] = useState((meta.init ?? defaultKinkcheck(meta)).ratings);
     const setRating = (cat: number) => (kink: number) => (pos: number) => (rat: number) => {
         const r = [...ratings];
         r[cat][kink][pos] = rat;
