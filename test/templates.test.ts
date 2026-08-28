@@ -1,6 +1,14 @@
 import { getCollection } from "astro:content";
-import { assert, test } from "vitest";
+import { assert, expect, test } from "vitest";
 import type { template } from "../src/zod";
+import { tMeta } from "../src/content.config";
+import { readdir } from "node:fs/promises";
+
+test("every template directory has tMeta metadata and vice versa", async () => {
+    const ids = (await readdir("templates", { withFileTypes: true }))
+        .filter((e) => e.isDirectory()).map((e) => e.name);
+    expect(ids.toSorted()).toStrictEqual(tMeta.map(({ id }) => id).toSorted());
+});
 
 const templates: template[] = await getCollection("templates").then(x => x.map(t => t.data));
 
@@ -13,6 +21,7 @@ for (const t of templates) {
     });
 }
 
+// TODO: test across revisions
 test("kink ids are unique", () => {
     for (const t of templates.flatMap(t => t.revisions.map(r => ({ ...t, ...r })))) {
         const ids = t.kinks.flatMap(([, ks]) => ks.flatMap(([, , id]) => id));
