@@ -15,13 +15,9 @@
     padding: 1em 0;
 }
 
-.setting {
+.settings input {
     width: 45%;
     font-size: 12pt;
-}
-
-.setting input {
-    width: 100%;
 }
 
 @media screen and (width <= 600px) {
@@ -31,11 +27,7 @@
         width: 25.28em;
     }
 
-    .setting {
-        width: 100%;
-    }
-
-    .setting input {
+    .settings input {
         width: 100%;
     }
 }

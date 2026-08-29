@@ -29,8 +29,9 @@ await db.insert(Check).values([
     },
 ]).onConflictDoNothing();
 
-export async function getTemplate(id: string): Promise<template | undefined> {
-    return getEntry("templates", id)?.then(({ data }) => data);
+export async function getTemplate(id: string): Promise<template | null> {
+    const e = await getEntry("templates", id);
+    return e ? e.data : null;
 }
 
 export async function getCurrentTemplate(id: string): Promise<template & template_revision | null> {

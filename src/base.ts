@@ -21,7 +21,7 @@ function packIndexedValues<T>(indexedValues: [number, T][]): (T | undefined)[] {
     return indexedValues.reduce<T[]>((arr, [idx, val]) => {
         arr[idx] = val;
         return arr;
-    }, Array(Math.max(...indexedValues.map(([idx]) => idx)) + 1));
+    }, Array(indexedValues.map(([i]) => i).reduce((a, b) => a > b ? a : b) + 1));
 }
 
 export function updateCheck(oldCheck: checkData, newCheck: checkData): checkData {

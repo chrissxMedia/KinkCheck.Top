@@ -4,7 +4,7 @@ import { basename } from "node:path";
 import { readdir, readFile } from "node:fs/promises";
 import { type kinklist, template } from "./zod";
 
-const tMeta: Pick<template, "id" | "name" | "type">[] = [
+export const tMeta: Pick<template, "id" | "name" | "type">[] = [
   { id: "kcc", name: "Classic", type: "full" },
   { id: "april-fools", name: "AF", type: "full" },
   { id: "unhealthy-stimming", name: "(unhealthy) Stimming & Coping Mechanisms", type: "full" },

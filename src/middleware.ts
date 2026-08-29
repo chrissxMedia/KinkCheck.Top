@@ -14,7 +14,7 @@ function pruneStale<T>(map: Map<string, T>, stale: (v: T) => boolean) {
     for (const [key, value] of map) if (stale(value)) map.delete(key);
 }
 
-function compactRlMap() {
+function compactRlMaps() {
     const now = Date.now();
     pruneStale(rateLimitMap, ts => ts.every(t => now - t >= WINDOW_MS));
     pruneStale(firstBlockMap, t => now - t >= WINDOW_MS);
@@ -29,11 +29,6 @@ function normalizeClientKey(raw: string): string {
     return addr;
 }
 
-function getClientKey(context: APIContext): string {
-    const forwarded = context.request.headers.get("X-Real-IP")?.trim();
-    return normalizeClientKey(forwarded || context.clientAddress);
-}
-
 type RateLimitResult = { ok: true; retryAfter?: undefined } | { ok: false; retryAfter: number };
 
 function checkRateLimit(ip: string): RateLimitResult {
@@ -43,7 +38,6 @@ function checkRateLimit(ip: string): RateLimitResult {
     const ok = windowed.length < MAX_REQUESTS;
     if (ok) windowed.push(now);
     rateLimitMap.set(ip, windowed);
-    if (rateLimitMap.size > 100_000) compactRlMap();
     return ok ? { ok } : { ok, retryAfter: Math.ceil((windowed[0] + WINDOW_MS - now) / 1000) };
 }
 
@@ -62,8 +56,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
     if (action) {
         if (GIT_REF === "daddy") {
             return new Response("This feature is not available in prod yet.", { status: 400 });
+        } else if (rateLimitMap.size > 100_000 || firstBlockMap.size > 100_000) {
+            compactRlMaps();
         }
-        const key = getClientKey(context);
+        const ip = context.request.headers.get("X-Real-IP")?.trim() || context.clientAddress;
+        const key = normalizeClientKey(ip);
         const result = checkRateLimit(key);
 
         if (!result.ok) {
@@ -74,7 +71,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
             });
         }
 
-        console.log(`Action ${action.name} called from ${key} (${context.clientAddress})`);
+        console.log(`Action ${action.name} called from ${key} (${ip})`);
     }
 
     return next();
