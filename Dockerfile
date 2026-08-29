@@ -1,13 +1,17 @@
-FROM node:lts
+FROM node:lts-alpine
 WORKDIR /app
 
 COPY . .
 
-ENV ASTRO_DATABASE_FILE=/data/kinkcheck.db
+ARG GIT_SHA GIT_REF
+ENV GIT_SHA=$GIT_SHA GIT_REF=$GIT_REF
 
-RUN npm ci
-RUN --mount=type=tmpfs,target=/data npm run build
+ENV KCT_DATABASE_FILE=/data/kct_v1.db
+ENV NODE_ENV=production
+ENV ASTRO_TELEMETRY_DISABLED=1
+RUN --mount=type=tmpfs,target=/data npm ci --omit=dev && npm run build && rm -rf /root/.npm
 
+USER node:node
 ENV HOST=0.0.0.0
 ENV PORT=4321
 EXPOSE 4321

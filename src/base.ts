@@ -1,3 +1,5 @@
+import type { checkData, TRData } from "./zod";
+
 export const ratings: [string, string][] = [
     ["i dont know", "#d0d0d0"],
     ["favorite", "#00e0e0"],
@@ -7,59 +9,53 @@ export const ratings: [string, string][] = [
     ["hard limit", "#303030"],
 ];
 
-export type positions = [string, string] | [""];
-export type kink = [string, positions, number] | [string, positions, number, string];
-export type kinklist = [string, kink[]][];
-// TODO: rename
-export type template_revision = { kinks: kinklist };
-// TODO: check whether astro:db can handle this
-export type template = {
-    id: string;
-    revision: string;
-    created_at: Date;
-    type: "full";
-    name: string;
-    data: template_revision;
-};
-export type check = {
-    id: string;
-    template_id: string;
-    template_revision: string;
-    created_at: Date;
-    data: { ratings: any };
-};
-
-const valueForAllKinks = <T>(kinks: kinklist, x: T) =>
+const valueForAllKinks = <T>({ kinks }: TRData, x: T) =>
     kinks.map<T[][]>((c) => c[1].map((k) => k[1].map(() => x)));
 
-export type ratings = number[][][];
-export const defaultRatings = (kinks: kinklist): ratings => valueForAllKinks(kinks, 0);
-export type kinkcheck = { ratings: ratings };
-export const defaultKinkcheck = (kinks: kinklist): kinkcheck => ({ ratings: defaultRatings(kinks) });
+/** The runtime / template-specific representation of a check */
+export type kinkcheck = { ratings: number[][][] };
+export const defaultKinkcheck = (t: TRData): kinkcheck => ({ ratings: valueForAllKinks(t, 0) });
 
-function packIndexedValues<T>(indexedValues: [number, T][]): T[] {
+function packIndexedValues<T>(indexedValues: [number, T][]): (T | undefined)[] {
+    if (!indexedValues.length) return [];
     return indexedValues.reduce<T[]>((arr, [idx, val]) => {
         arr[idx] = val;
         return arr;
-    }, Array(Math.max(...indexedValues.map(([idx]) => idx))));
+    }, Array(indexedValues.map(([i]) => i).reduce((a, b) => a > b ? a : b) + 1));
 }
 
-export function encodeKinkCheck({ kinks }: template_revision, { ratings }: kinkcheck): { ratings: any } {
-    const r = packIndexedValues(ratings.flatMap((_, cat) =>
-        kinks[cat][1].map<[number, number[]]>(([, , id], i) => [id, ratings[cat][i]])));
-    return { ratings: r };
+export function updateCheck(oldCheck: checkData, newCheck: checkData): checkData {
+    const ratings = Array(Math.max(oldCheck.ratings.length, newCheck.ratings.length));
+    for (let i = 0; i < ratings.length; i++) {
+        const a = oldCheck.ratings[i], b = newCheck.ratings[i];
+        ratings[i] = typeof b === "number" || (b && b.length) ? b : a;
+    }
+    return { ratings };
 }
 
-export function decodeKinkCheck({ kinks }: template_revision, s: { ratings: any }): kinkcheck {
-    const ratings = defaultRatings(kinks);
-    s.ratings.forEach((rat: number[] | undefined, id: number) => {
-        if (!rat) return;
-        ratings.forEach((_, cat) => {
-            ratings[cat].forEach((_, i) => {
-                if (kinks[cat][1][i][2] === id) {
-                    ratings[cat][i] = rat;
+export function encodeKinkCheck({ kinks }: TRData, { ratings }: kinkcheck): checkData {
+    const r = packIndexedValues(kinks.flatMap(([, ks], cat) =>
+        ks.flatMap(([, , kid], i): [number, number[]][] => kid.length === 1
+            ? [[kid[0], ratings[cat][i]]]
+            : kid.map((id, p) => [id, [ratings[cat][i][p]]]))));
+    return { ratings: r.map(x => x ? (new Set(x).size === 1 ? x[0] : x) : []) } as checkData;
+}
+
+export function decodeKinkCheck({ kinks }: TRData, s: checkData): kinkcheck {
+    const { ratings } = defaultKinkcheck({ kinks });
+    ratings.forEach((_, cat) => {
+        ratings[cat].forEach((_, i) => {
+            const [, pos, kid] = kinks[cat][1][i];
+            for (let p = 0; p < pos.length; p++) {
+                const r = s.ratings[kid.length === 1 ? kid[0] : kid[p]] ?? [];
+                if (typeof r === "number") {
+                    ratings[cat][i][p] = r;
+                } else if (new Set(r).size === 1) {
+                    ratings[cat][i][p] = r[0];
+                } else if (kid.length === 1 && r.length === pos.length) {
+                    ratings[cat][i] = r;
                 }
-            });
+            }
         });
     });
     return { ratings };

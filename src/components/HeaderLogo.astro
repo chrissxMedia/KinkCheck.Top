@@ -1,20 +1,14 @@
 ---
-import { version } from "../../package.json";
-
-export interface Props {
-    includeVersion?: boolean;
-}
-
-const { includeVersion = true } = Astro.props;
-const v = includeVersion ? " v" + version : "";
+import { GIT_REF } from "astro:env/server";
 ---
 
 <h1>
     <a href="/">
-        <span class="k">K</span>ink<span class="c">C</span>heck<span
-            class="smol">.Top{v}</span
-        >
-    </a><slot />
+        {GIT_REF === "daddy" ? <></> : <span style={{fontSize: "0.5em"}}>Bottom.</span>}
+        <span class="k">K</span>ink
+        <span class="c">C</span>heck
+        <span class="smol">.Top</span>
+    </a> <slot />
 </h1>
 
 <style>

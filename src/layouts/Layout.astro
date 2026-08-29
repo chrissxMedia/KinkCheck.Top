@@ -3,35 +3,38 @@ import { BaseLayout, Footer } from "cmdesigns";
 import favicon from "../favicon.png";
 import { version } from "../../package.json";
 import ScreenshotButton from "../components/ScreenshotButton";
-import type { Options } from "html2canvas";
+import type { SnapdomOptions } from "@zumer/snapdom";
+import { GIT_REF, GIT_SHA } from "astro:env/server";
 
 export interface Props {
     title?: string;
-    screenshotOptions?: Partial<Options>;
+    screenshotOptions?: Partial<SnapdomOptions>;
 }
 
 const kc = `KinkCheck.Top v${version}`;
 let { title = kc, screenshotOptions } = Astro.props;
 if (!title.includes(kc)) title += " | " + kc;
+let link = "https://github.com/chrissxMedia/KinkCheck.Top";
+if (GIT_SHA) link += `/tree/${GIT_SHA}`;
+const build = `KinkCheck.Top (${GIT_REF ?? "unknown"}) v${version}-${GIT_SHA?.substring(0, 7) ?? "???????"}`;
 ---
 
 <BaseLayout lang="en" {title} {favicon}>
     <div id="content">
+        <header><slot name="header" /></header>
         <slot />
     </div>
-    <Footer start={2023} link="https://github.com/chrissxMedia/KinkCheck.Top">
+    <Footer start={2023} {link} {build}>
         <nav>
-            <!--<a href="/tutorial">Overview & Tutorial</a>-->
+            {/* <a href="/tutorial">Overview & Tutorial</a> */}
             <a href="/tlcc">Trans Lesbian Badges</a>
             <a href="/flag">Flag Generator</a>
             <a href="/rewind">Rewind</a>
             <a href="/privacy">Privacy Policy</a>
             |
-            <!-- TODO: <a href="?">Merch</a> -->
-            <ScreenshotButton {title} options={screenshotOptions} client:load />
+            <slot name="bottom-nav" />
+            <ScreenshotButton {title} options={screenshotOptions} client:idle />
         </nav>
-        <!-- TODO: find a way to put this in the cmdesigns footer element well -->
-        <p>{kc}</p>
     </Footer>
 </BaseLayout>
 
@@ -39,6 +42,11 @@ if (!title.includes(kc)) title += " | " + kc;
     div#content {
         padding: 12px calc(0.666vw - 4px) 0 calc(0.666vw - 4px);
         margin: auto;
+    }
+    header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
     }
     @media screen and (width <= 600px) {
         div#content {
@@ -50,16 +58,13 @@ if (!title.includes(kc)) title += " | " + kc;
         column-gap: 1.25ch;
         justify-content: center;
         flex-wrap: wrap;
+        margin-bottom: 0.5em;
         /* TODO: figure out an appropriate padding (or margin) in part based on vw */
     }
     nav :global(a),
-    nav :global:visited {
+    nav :global(:visited) {
         color: #c0c0c0;
         text-decoration: underline;
         cursor: pointer;
-    }
-    p {
-        margin: 0;
-        margin-top: 0.5em;
     }
 </style>

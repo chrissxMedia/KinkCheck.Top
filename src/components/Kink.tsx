@@ -1,4 +1,4 @@
-import { type kink } from "../base";
+import type { kink } from "../zod";
 import Rater from "./Rater";
 import styles from "./Kink.module.css";
 
@@ -12,10 +12,9 @@ export default function Kink({ kink: [kink, positions, , description], ratings, 
             </td>
             {positions.map((pos, p) => (
                 <td class={styles.td}>
-                    <Rater text={pos} rating={ratings[p]} setRating={setRating && setRating(p)} clickable={!!setRating} />
+                    <Rater text={pos} rating={ratings[p]} setRating={setRating && setRating(p)} />
                 </td>
             ))}
-            {positions.length === 1 && <td />}
         </tr>
     );
 }
