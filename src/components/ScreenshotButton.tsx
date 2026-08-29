@@ -9,7 +9,7 @@ export default function ScreenshotButton({ title, options = {} }: { title: strin
                 const content = document.querySelector("div#content") as HTMLElement;
                 document.body.classList.add("screenshot");
                 content.style.width = options.width + "px";
-                const filename = title + " " + new Date().toISOString().replace(/\....Z$/, "").replace("T", " ") + ".png";
+                const filename = title + " " + new Date().toISOString().slice(0, 19).replace("T", " ") + ".png";
                 await snapdom.download(content, {
                     format: "png",
                     type: "png",
