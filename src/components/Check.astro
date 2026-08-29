@@ -1,0 +1,29 @@
+---
+import type { kinklist } from "../base";
+import Category from "./Category.astro";
+
+type Props = { kinks: kinklist, ratings: number[][][], interactive?: boolean };
+
+const { kinks, ratings, interactive } = Astro.props;
+---
+
+<main>
+    {kinks.map(([cat, kinks], idx) => (
+        <Category
+            {cat}
+            {kinks}
+            ratings={ratings[idx]}
+            {interactive}
+            data-cat={interactive ? idx : undefined}
+        />
+    ))}
+</main>
+
+<style>
+    main {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-evenly;
+        column-gap: 2ch;
+    }
+</style>

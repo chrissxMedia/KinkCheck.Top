@@ -1,43 +1,20 @@
 ---
 import { defaultKinkcheck, type kinkcheck, type kinklist } from "../base";
-import Category from "./Category.astro";
+import Check from "./Check.astro";
 
-type Props = { kinks: kinklist } & (
-    | { readonly: true; init: kinkcheck; store?: undefined }
-    | { readonly?: false; init?: kinkcheck; store?: string }
-);
+type Props = { kinks: kinklist, init?: kinkcheck, store?: string };
 
-const { kinks, init, store, readonly = false } = Astro.props;
+const { kinks, init, store } = Astro.props;
 const check = init ?? defaultKinkcheck(kinks);
 ---
 
-{
-    readonly ? (
-        <main>
-            {kinks.map(([cat, kinks], idx) => (
-                <Category {cat} {kinks} ratings={check.ratings[idx]} />
-            ))}
-        </main>
-    ) : (
-        <kink-check
-            data-kinks={JSON.stringify(kinks)}
-            data-init={init && JSON.stringify(init)}
-            data-store={store}
-        >
-            <main>
-                {kinks.map(([cat, kinks], idx) => (
-                    <Category
-                        {cat}
-                        {kinks}
-                        ratings={check.ratings[idx]}
-                        data-cat={idx}
-                        interactive
-                    />
-                ))}
-            </main>
-        </kink-check>
-    )
-}
+<kink-check
+    data-kinks={JSON.stringify(kinks)}
+    data-init={init && JSON.stringify(init)}
+    data-store={store}
+>
+    <Check {kinks} ratings={check.ratings} interactive />
+</kink-check>
 
 <script>
     import {
@@ -125,11 +102,5 @@ const check = init ?? defaultKinkcheck(kinks);
 <style>
     kink-check {
         display: contents;
-    }
-    main {
-        display: flex;
-        flex-flow: row wrap;
-        justify-content: space-evenly;
-        column-gap: 2ch;
     }
 </style>
