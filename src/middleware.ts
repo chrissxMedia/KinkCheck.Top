@@ -14,7 +14,7 @@ function pruneStale<T>(map: Map<string, T>, stale: (v: T) => boolean) {
     for (const [key, value] of map) if (stale(value)) map.delete(key);
 }
 
-function compactRlMap() {
+function compactRlMaps() {
     const now = Date.now();
     pruneStale(rateLimitMap, ts => ts.every(t => now - t >= WINDOW_MS));
     pruneStale(firstBlockMap, t => now - t >= WINDOW_MS);
@@ -38,7 +38,6 @@ function checkRateLimit(ip: string): RateLimitResult {
     const ok = windowed.length < MAX_REQUESTS;
     if (ok) windowed.push(now);
     rateLimitMap.set(ip, windowed);
-    if (rateLimitMap.size > 100_000) compactRlMap();
     return ok ? { ok } : { ok, retryAfter: Math.ceil((windowed[0] + WINDOW_MS - now) / 1000) };
 }
 
@@ -57,6 +56,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     if (action) {
         if (GIT_REF === "daddy") {
             return new Response("This feature is not available in prod yet.", { status: 400 });
+        } else if (rateLimitMap.size > 100_000 || firstBlockMap.size > 100_000) {
+            compactRlMaps();
         }
         const ip = context.request.headers.get("X-Real-IP")?.trim() || context.clientAddress;
         const key = normalizeClientKey(ip);
