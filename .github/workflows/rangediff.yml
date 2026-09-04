@@ -1,0 +1,76 @@
+name: PR force-push range-diff
+on: push
+permissions:
+  contents: read
+  pull-requests: read
+  issues: write
+
+jobs:
+  range-diff:
+    if: github.event.forced
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Find PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          PR=$(gh api \
+                "repos/${{ github.repository }}/commits/${{ github.event.after }}/pulls" \
+            --jq 'map(select(.state == "open")) | sort_by(.number)
+                  | if length > 0 then last.number else empty end' \
+            2>/dev/null || true)
+          if [ -n "${PR:-}" ]; then
+            echo "number=${PR}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Range-diff and post
+        if: steps.pr.outputs.number
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          set -euo pipefail
+          git init -q .
+          git remote add origin "https://github.com/${{ github.repository }}.git"
+          git fetch -q --no-tags \
+            origin \
+            "${{ github.event.before }}" \
+            "${{ github.event.after }}"
+
+          BASE_REF=$(gh api \
+            "repos/${{ github.repository }}/pulls/${PR}" \
+            --jq '.base.ref')
+          git fetch -q --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+
+          OLD_TIP="${{ github.event.before }}"
+          NEW_TIP="${{ github.event.after }}"
+          OLD_BASE=$(git merge-base "origin/${BASE_REF}" "${OLD_TIP}")
+          NEW_BASE=$(git merge-base "origin/${BASE_REF}" "${NEW_TIP}")
+
+          git range-diff "${OLD_BASE}..${OLD_TIP}" "${NEW_BASE}..${NEW_TIP}" > range-diff.txt
+          cat range-diff.txt
+
+          {
+            echo '### 🔄 Force-push range-diff'
+            echo
+            if [ -s range-diff.txt ]; then
+              printf '`%s` → `%s`\n' "${OLD_TIP:0:12}" "${NEW_TIP:0:12}"
+            else
+              echo 'No patch-series changes between the two force-pushes.'
+            fi
+            echo
+            echo '<details>'
+            echo '<summary>Show range-diff</summary>'
+            echo
+            echo '```diff'
+            cat range-diff.txt
+            echo '```'
+            echo
+            echo '</details>'
+          } > comment.md
+
+          gh api "repos/${{ github.repository }}/issues/${PR}/comments" \
+            -F body=@comment.md
