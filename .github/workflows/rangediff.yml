@@ -1,0 +1,91 @@
+name: PR force-push range-diff
+on:
+  pull_request_target:
+    types: [synchronize]
+permissions:
+  contents: read
+  pull-requests: read
+  issues: write
+
+jobs:
+  range-diff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: range-diff-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Range-diff and post
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.number }}
+          OLD_TIP: ${{ github.event.before }}
+          NEW_TIP: ${{ github.event.after }}
+          HEAD_URL: ${{ github.event.pull_request.head.repo.clone_url }}
+          BASE_URL: ${{ github.event.pull_request.base.repo.clone_url }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          set -euo pipefail
+          git init -q .
+          git remote add origin "${BASE_URL}"
+          git remote add head "${HEAD_URL}"
+
+          AUTH_B64=$(printf 'x-access-token:%s' "${GH_TOKEN}" | base64 | tr -d '\n')
+          export GIT_CONFIG_COUNT=1
+          export GIT_CONFIG_KEY_0='http.https://github.com/.extraheader'
+          export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_B64}"
+
+          git fetch -q --no-tags head "${OLD_TIP}" "${NEW_TIP}"
+          git fetch -q --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+
+          if git merge-base --is-ancestor "${OLD_TIP}" "${NEW_TIP}"; then
+            echo "Fast-forward update, no force-push range-diff to post."
+            exit 0
+          fi
+
+          OLD_BASE=$(git merge-base "origin/${BASE_REF}" "${OLD_TIP}")
+          NEW_BASE=$(git merge-base "origin/${BASE_REF}" "${NEW_TIP}")
+
+          git range-diff "${OLD_BASE}..${OLD_TIP}" "${NEW_BASE}..${NEW_TIP}" | tee range-diff.txt
+
+          {
+            echo '### 🔄 Force-push range-diff'
+            echo
+            if [ -s range-diff.txt ]; then
+              printf '`%s` → `%s`\n' "${OLD_TIP:0:12}" "${NEW_TIP:0:12}"
+            else
+              echo 'No patch-series changes between the two force-pushes.'
+            fi
+            echo
+            echo '<details>'
+            if [ "$(wc -c < range-diff.txt)" -gt 50000 ]; then
+              echo '<summary>Show range-diff summary (full diff too large for a comment)</summary>'
+              echo
+              echo '```diff'
+              git range-diff --summary "${OLD_BASE}..${OLD_TIP}" "${NEW_BASE}..${NEW_TIP}"
+              echo '```'
+              echo
+              echo 'The full range-diff is attached to this workflow run as an artifact.'
+            else
+              echo '<summary>Show range-diff</summary>'
+              echo
+              echo '```diff'
+              cat range-diff.txt
+              echo '```'
+            fi
+            echo
+            echo '</details>'
+          } > comment.md
+
+          gh api "repos/${{ github.repository }}/issues/${PR}/comments" \
+            -F body=@comment.md
+
+      - name: Upload full range-diff
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: range-diff-pr-${{ github.event.number }}-${{ github.event.after }}
+          path: range-diff.txt
+          if-no-files-found: ignore
+          retention-days: 14
