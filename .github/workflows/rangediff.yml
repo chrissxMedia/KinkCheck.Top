@@ -19,7 +19,6 @@ jobs:
       - name: Range-diff and post
         env:
           GH_TOKEN: ${{ github.token }}
-          PR: ${{ github.event.number }}
           OLD_TIP: ${{ github.event.before }}
           NEW_TIP: ${{ github.event.after }}
           HEAD_URL: ${{ github.event.pull_request.head.repo.clone_url }}
@@ -27,7 +26,7 @@ jobs:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           set -euo pipefail
-          git init -q .
+          git init .
           git remote add origin "${BASE_URL}"
           git remote add head "${HEAD_URL}"
 
@@ -36,8 +35,8 @@ jobs:
           export GIT_CONFIG_KEY_0='http.https://github.com/.extraheader'
           export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_B64}"
 
-          git fetch -q --no-tags head "${OLD_TIP}" "${NEW_TIP}"
-          git fetch -q --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+          git fetch --no-tags head "${OLD_TIP}" "${NEW_TIP}"
+          git fetch --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
 
           if git merge-base --is-ancestor "${OLD_TIP}" "${NEW_TIP}"; then
             echo "Fast-forward update, no force-push range-diff to post."
@@ -78,14 +77,13 @@ jobs:
             echo '</details>'
           } > comment.md
 
-          gh api "repos/${{ github.repository }}/issues/${PR}/comments" \
+          gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
             -F body=@comment.md
 
       - name: Upload full range-diff
-        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: range-diff-pr-${{ github.event.number }}-${{ github.event.after }}
+          name: range-diff-pr-${{ github.event.pull_request.number }}-${{ github.event.after }}
           path: range-diff.txt
           if-no-files-found: ignore
           retention-days: 14
