@@ -21,19 +21,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           OLD_TIP: ${{ github.event.before }}
           NEW_TIP: ${{ github.event.after }}
-          HEAD_URL: ${{ github.event.pull_request.head.repo.clone_url }}
-          BASE_URL: ${{ github.event.pull_request.base.repo.clone_url }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           set -euo pipefail
           git init .
-          git remote add origin "${BASE_URL}"
-          git remote add head "${HEAD_URL}"
-
-          AUTH_B64=$(printf 'x-access-token:%s' "${GH_TOKEN}" | base64 | tr -d '\n')
-          export GIT_CONFIG_COUNT=1
-          export GIT_CONFIG_KEY_0='http.https://github.com/.extraheader'
-          export GIT_CONFIG_VALUE_0="AUTHORIZATION: basic ${AUTH_B64}"
+          git remote add origin gh:${{ github.event.pull_request.base.repo.full_name }}
+          git remote add head gh:${{ github.event.pull_request.head.repo.full_name }}
 
           git fetch --no-tags head "${OLD_TIP}" "${NEW_TIP}"
           git fetch --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
