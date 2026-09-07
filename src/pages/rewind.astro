@@ -6,6 +6,7 @@ import Layout from "../layouts/Layout.astro";
 <Layout title="Rewind" screenshotOptions={{ width: 1000 }}>
     <HeaderLogo slot="header">Rewind</HeaderLogo>
     <main>
+        <p>Click on the text to edit it.</p>
         <div class="sexrewind column">
             <div class="column">
                 <span class="sextext1">You had sex</span>
@@ -30,6 +31,12 @@ import Layout from "../layouts/Layout.astro";
 <style>
     main {
         font-size: min(12pt, 1.5vw);
+    }
+
+    p {
+        text-align: center;
+        color: gray;
+        padding-bottom: 0.5em;
     }
 
     .column {
