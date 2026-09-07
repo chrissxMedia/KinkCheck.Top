@@ -24,9 +24,10 @@ jobs:
           BASE_REF: ${{ github.event.pull_request.base.ref }}
         run: |
           set -euo pipefail
+          gh auth setup-git
           git init .
-          git remote add origin gh:${{ github.event.pull_request.base.repo.full_name }}
-          git remote add head gh:${{ github.event.pull_request.head.repo.full_name }}
+          git remote add origin https://github.com/${{ github.event.pull_request.base.repo.full_name }}.git
+          git remote add head https://github.com/${{ github.event.pull_request.head.repo.full_name }}.git
 
           git fetch --no-tags head "${OLD_TIP}" "${NEW_TIP}"
           git fetch --no-tags origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
