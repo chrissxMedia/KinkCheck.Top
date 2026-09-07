@@ -1,0 +1,26 @@
+<main x-data="{
+    flag: '',
+    colors: { t: 'rgb(var(--transblue))', r: 'rgb(var(--transpink))', a: 'white', n: 'rgb(var(--transpink))', s: 'rgb(var(--transblue))' },
+    get chars() {
+        return [...this.flag.toLowerCase()].filter(x => 'trans'.includes(x));
+    }
+}" x-init="$refs.input.focus()">
+    <input type="text" placeholder="trans, rat, ant, ..." spellcheck="false" autocorrect="off"
+        x-ref="input" x-model="flag" />
+    <div x-show="chars.length === 0" style="width: 30em; background-color: transparent; height: 20em"></div>
+    <template x-for="(x, i) in chars" :key="x + i">
+        <div :style="{ width: '30em', backgroundColor: colors[x], height: (20 / chars.length) + 'em' }"></div>
+    </template>
+</main>
+
+<style>
+    input {
+        margin: 0.5em 0;
+        border: 0;
+        padding: 0.25em;
+        font-size: 2em;
+        width: 14.5em;
+        background-color: rgb(var(--cmblack));
+        color: white;
+    }
+</style>
