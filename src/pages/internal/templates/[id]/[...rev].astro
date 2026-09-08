@@ -3,13 +3,13 @@ import { getCollection } from "astro:content";
 import HeaderLogo from "../../../../components/HeaderLogo.astro";
 import KinkCheck from "../../../../components/KinkCheck";
 import RatingOverview from "../../../../components/RatingOverview.astro";
-import { getCurrentTemplate } from "../../../../db";
+import { getTemplateVersion } from "../../../../db";
 import Layout from "../../../../layouts/Layout.astro";
 import ClearButton from "../../../../components/ClearButton";
 import SaveButton from "../../../../components/SaveButton";
 
-const { id } = Astro.params;
-const template = id && (await getCurrentTemplate(id));
+const { id, rev } = Astro.params;
+const template = id && (await getTemplateVersion(id, rev));
 
 if (!template) {
     return new Response("Template not found", { status: 404 });
@@ -17,7 +17,10 @@ if (!template) {
 
 export async function getStaticPaths() {
     const templates = await getCollection("templates");
-    return templates.map(({ id }) => ({ params: { id } }));
+    return templates.flatMap((t) => [
+        { params: { id: t.id } },
+        ...t.data.revisions.map(({ revision }) => ({ params: { id: t.id, rev: revision } })),
+    ]);
 }
 ---
 
@@ -25,6 +28,18 @@ export async function getStaticPaths() {
     <HeaderLogo slot="header">
         <span class="smol">{template.name}&nbsp;v{template.revision}</span>
     </HeaderLogo>
+    <select class="versionselector" slot="header" aria-label="Template version">
+        <option value={`/internal/templates/${template.id}/`} selected={!rev}>
+            latest ({template.revisions[0].revision})
+        </option>
+        <optgroup label="Versions">
+            {template.revisions.map(({ revision }) => (
+                <option value={`/internal/templates/${template.id}/${revision}/`} selected={rev === revision}>
+                    {revision}
+                </option>
+            ))}
+        </optgroup>
+    </select>
     <RatingOverview slot="header" />
     <KinkCheck kinks={template.kinks} store={template.id} client:load />
     <ClearButton store={template.id} slot="bottom-nav" client:load />
@@ -36,6 +51,12 @@ export async function getStaticPaths() {
     />
 </Layout>
 
+<script>
+    document.querySelector<HTMLSelectElement>("select.versionselector")?.addEventListener("change", (event) => {
+        window.location.href = (event.currentTarget as HTMLSelectElement).value;
+    });
+</script>
+
 <style>
     :global(div#content) {
         min-width: 475px;
@@ -43,5 +64,8 @@ export async function getStaticPaths() {
     }
     :global(dialog::backdrop) {
         background-color: rgba(0, 0, 0, 0.5);
+    }
+    select {
+        margin: auto 0;
     }
 </style>
