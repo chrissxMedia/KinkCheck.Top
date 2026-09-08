@@ -12,6 +12,10 @@ test("every template directory has tMeta metadata and vice versa", async () => {
 
 const templates: template[] = await getCollection("templates").then(x => x.map(t => t.data));
 
+test("collection loads every template in tMeta", () => {
+    expect(templates.map(({ id }) => id).toSorted()).toStrictEqual(tMeta.map(({ id }) => id).toSorted());
+});
+
 for (const t of templates) {
     test(`${t.id} revisions are unique`, () => {
         const rs = t.revisions.map(r => r.revision);
