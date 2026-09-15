@@ -1,0 +1,38 @@
+---
+import { defaultKinkcheck, type kinkcheck } from "../base";
+import type { kink, template, template_revision } from "../zod";
+import { Check } from "./KinkCheck";
+import LinkCard from "./LinkCard.astro";
+
+export type Props = { href: string } & Partial<kinkcheck> &
+    template &
+    template_revision;
+
+const { href, name } = Astro.props;
+const kinks = Astro.props.kinks.map<[string, kink[]]>(([cat, kinks]) => [
+    cat,
+    kinks.map<kink>(([kink, pos, id]) => [kink, pos, id, ""]),
+]);
+const { ratings } = { ...defaultKinkcheck({ kinks }), ...Astro.props };
+---
+
+<LinkCard {href} background="#101010">
+    <h3>{name}</h3>
+    <div>
+        {
+            /* TODO: read ratings from localStorage
+            (probably requires messy half-rework of Check+KinkCheck) */
+        }
+        <Check {kinks} {ratings} />
+    </div>
+</LinkCard>
+
+<style>
+    h3 {
+        margin: 0;
+    }
+    div {
+        width: 100%;
+        font-size: min(0.55em, calc(1vw - 0.5px));
+    }
+</style>
