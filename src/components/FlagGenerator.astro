@@ -1,0 +1,56 @@
+<main>
+    <input
+        type="text"
+        placeholder="trans, rat, ant, ..."
+        spellcheck="false"
+        autocorrect="off"
+    />
+    <template>
+        <div style="width: 30em"></div>
+    </template>
+    <div class="stripes">
+        <div style="width: 30em; background-color: transparent; height: 20em"></div>
+    </div>
+</main>
+
+<script>
+    import { me } from "astro-surreal";
+
+    const colors: { [k: string]: string } = {
+        "t": "rgb(var(--transblue))",
+        "r": "rgb(var(--transpink))",
+        "a": "white",
+        "n": "rgb(var(--transpink))",
+        "s": "rgb(var(--transblue))",
+    };
+
+    const input = me("input")!;
+    const stripes = me(".stripes")!;
+    const template = me("template")!;
+
+    function render(value: string) {
+        const cs = [...value.toLowerCase()]
+            .filter((x) => "trans".includes(x))
+            .map((x) => colors[x])
+            .filter((c) => c);
+        const height = 20 / (cs.length || 1);
+        stripes.each(cs.length ? cs : ["transparent"], template, (clone, c) => {
+            clone.styles({ backgroundColor: c, height: `${height}em` });
+        });
+    }
+
+    input.on("input", () => render(input.value));
+    input.focus();
+</script>
+
+<style>
+    input {
+        margin: 0.5em 0;
+        border: 0;
+        padding: 0.25em;
+        font-size: 2em;
+        width: 14.5em;
+        background-color: rgb(var(--cmblack));
+        color: white;
+    }
+</style>
