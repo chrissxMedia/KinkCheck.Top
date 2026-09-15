@@ -1,0 +1,37 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type Props = HTMLAttributes<"dialog">;
+---
+
+<dialog {...Astro.props}>
+    <p><slot /></p>
+    <div>
+        <slot name="buttons" />
+    </div>
+</dialog>
+
+<script>
+    import { me } from "astro-surreal";
+
+    me()?.on("click", (event, element) => {
+        if (event.target === element) element.close();
+    });
+</script>
+
+<style>
+    dialog {
+        background-color: black;
+        border: 1px solid white;
+        border-radius: 0.5em;
+    }
+    p {
+        font-family: var(--sans-serif);
+        margin: 0;
+    }
+    div {
+        display: flex;
+        flex-direction: row-reverse;
+        margin-top: 0.5em;
+    }
+</style>
