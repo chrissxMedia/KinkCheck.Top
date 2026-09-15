@@ -1,0 +1,57 @@
+---
+import { passProps } from "astro-surreal/plugins/props";
+import Button from "./Button.astro";
+import Dialog from "./Dialog.astro";
+
+export interface Props {
+    template_id: string;
+    template_revision: string;
+}
+
+const { template_id, template_revision } = Astro.props;
+---
+
+<div {...passProps({ template_id, template_revision })}>
+    <a>Save</a>
+    <Dialog>
+        <Button slot="buttons" data-action="ok" style={{ minWidth: "8ch" }}>
+            OK
+        </Button>
+    </Dialog>
+</div>
+
+<script>
+    import { actions } from "astro:actions";
+    import { me } from "astro-surreal";
+
+    const dialog = me("dialog")!;
+    const message = dialog.querySelector("p")!;
+    const { template_id, template_revision } = me()!.props<{
+        template_id: string;
+        template_revision: string;
+    }>();
+
+    me("a")?.onPrevent("click", async () => {
+        const saved = window.localStorage.getItem(template_id);
+        if (!saved) {
+            message.textContent = "Couldn't load check data";
+            dialog.showModal();
+            return;
+        }
+
+        const { data, error } = await actions.check.save({
+            template_id,
+            template_revision,
+            data: JSON.parse(saved),
+        });
+
+        if (error) {
+            message.textContent = error.message;
+            dialog.showModal();
+        } else {
+            window.location.href = `/internal/checks/${data.id}`;
+        }
+    });
+
+    me("button[data-action='ok']")?.on("click", () => dialog.close());
+</script>
