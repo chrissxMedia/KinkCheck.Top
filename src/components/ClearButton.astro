@@ -1,0 +1,41 @@
+---
+import { passProps } from "astro-surreal/plugins/props";
+import Button from "./Button.astro";
+import Dialog from "./Dialog.astro";
+
+export interface Props {
+    store: string;
+}
+
+const { store } = Astro.props;
+---
+
+<div {...passProps({ store })}>
+    <a>Clear</a>
+    <Dialog>
+        Are you sure you want to clear your ratings? This action is
+        irreversible.
+        <Button slot="buttons" data-action="cancel">Cancel</Button>
+        <Button
+            slot="buttons"
+            style={{ backgroundColor: "rgb(var(--cmred))" }}
+            data-action="clear"
+        >
+            Clear
+        </Button>
+    </Dialog>
+</div>
+
+<script>
+    import { me } from "astro-surreal";
+
+    const dialog = me("dialog")!;
+    const root = me()!;
+
+    me("a")?.onPrevent("click", () => dialog.showModal());
+    me("button[data-action='cancel']")?.on("click", () => dialog.close());
+    me("button[data-action='clear']")?.on("click", () => {
+        window.localStorage.removeItem(root.props<{ store: string }>().store);
+        window.location.reload();
+    });
+</script>
