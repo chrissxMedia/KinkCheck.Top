@@ -26,7 +26,6 @@ for (const t of templates) {
     });
 }
 
-// TODO: test across revisions
 test("kink ids are unique", () => {
     for (const t of templates.flatMap(t => t.revisions.map(r => ({ ...t, ...r })))) {
         const ids = t.kinks.flatMap(([, ks]) => ks.flatMap(([, , id]) => id));
@@ -67,6 +66,24 @@ test("every alias group only contains names that occur in the template", () => {
             }
         }
     }
+});
+
+test("a kink id implies an equivalent name across revisions", () => {
+    const canonical = (tid: string, name: string) =>
+        aliases[tid]?.find(g => g.includes(name))?.join("\0") ?? name;
+    const groups = new Map<string, { names: Set<string>; lines: string[] }>();
+    for (const { tid, id, name, rev, cat } of templates.flatMap(t =>
+        t.revisions.flatMap(r =>
+            r.kinks.flatMap(([cat, ks]) =>
+                ks.flatMap(([name, , ids]) => ids.map(id => ({ tid: t.id, id, name, rev: r.revision, cat }))))))) {
+        const g = groups.get(`${tid}:${id}`) ?? { names: new Set(), lines: [] };
+        g.names.add(canonical(tid, name));
+        g.lines.push(`  ${rev} (${cat}): ${name}`);
+        groups.set(`${tid}:${id}`, g);
+    }
+    const problems = [...groups].filter(([, { names }]) => names.size > 1)
+        .map(([k, { lines }]) => `${k.replace(":", ", ID ")}\n${lines.join("\n")}`);
+    assert(problems.length === 0, `\n${problems.join("\n")}`);
 });
 
 test("getTemplateVersion resolves falsy revisions to the current one", async () => {
