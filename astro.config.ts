@@ -1,11 +1,12 @@
 import { defineConfig, envField } from "astro/config";
 import preact from "@astrojs/preact";
 import node from "@astrojs/node";
+import surreal from "astro-surreal";
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://KinkCheck.Top",
-  integrations: [preact()],
+  integrations: [preact(), surreal()],
   // Keep the content data-store in the project .astro so `astro sync` (build mode)
   // and vitest (dev mode, root/.astro) read the same store instead of sync writing
   // to node_modules/.astro while tests read an empty root/.astro.

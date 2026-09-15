@@ -15,6 +15,7 @@
     "@astrojs/preact": "^6.0.0",
     "@zumer/snapdom": "^2.15.0",
     "astro": "^7.3.2",
+    "astro-surreal": "^0.0.2",
     "autoprefixer": "^10.5.0",
     "cmdesigns": "^0.1.6",
     "cssnano": "^8.0.0",
