@@ -36,6 +36,39 @@ test("kink ids are unique", () => {
     }
 });
 
+// Equivalent names across all KCC revisions, matched exactly.
+const aliases: Record<string, string[][]> = {
+    kcc: [
+        ["Fingering", "Vaginal Fingering"],
+        ["Fisting", "Vaginal Fisting"],
+        ["Anal Sex", "Anal Penetration"],
+        ["Daddy/Little", "Little/Daddy*Mommy", "Little/Caregiver"],
+        ["Master/Slave", "Slave/Master*Mistress"],
+        ["Master/Pet", "Pet/Owner"],
+        ["Power Exchange", "Power Exchange (24/7)"],
+        ["Encasement", "Encasement/Cages"],
+        ["Rape", "Rape/CNC", "CNC/Rapeplay"],
+        ["Diapers", "Diapers/ABDL"],
+        ["Feminization", "Feminization/Sissy"],
+        ["Stockings", "Stockings/Pantyhose"],
+        ["Furry-Roleplay", "Furry"],
+        ["Cutting", "Cutting/Knifeplay"],
+    ],
+};
+
+test("every alias group only contains names that occur in the template", () => {
+    for (const [tid, groups] of Object.entries(aliases)) {
+        const names = new Set(templates.find(t => t.id === tid)!.revisions
+            .flatMap(r => r.kinks.flatMap(([, ks]) => ks.map(([name]) => name))));
+        for (const group of groups) {
+            assert(group.length >= 2, `${tid}: alias group is a singleton: ${group}`);
+            for (const name of group) {
+                assert(names.has(name), `${tid}: alias ${name} does not occur`);
+            }
+        }
+    }
+});
+
 test("getTemplateVersion resolves falsy revisions to the current one", async () => {
     for (const t of templates) {
         for (const rev of [undefined, null, ""] as const) {
