@@ -1,0 +1,47 @@
+---
+import CheckCard from "../../components/CheckCard.astro";
+import HeaderLogo from "../../components/HeaderLogo.astro";
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const templates = (await getCollection("templates"))
+    .map((t) => ({ ...t.data, ...t.data.revisions[0] }))
+    .toSorted((a, b) => b.created.getTime() - a.created.getTime());
+---
+
+<Layout>
+    <HeaderLogo slot="header" />
+    <div>
+        <h2>Templates</h2>
+        {/* <a href="/templates">Templates &rarr;</a> */}
+        <ul role="list">
+            {
+                templates.map((t) => (
+                    <CheckCard {...t} href={`/internal/templates/${t.id}/`} />
+                ))
+            }
+        </ul>
+    </div>
+</Layout>
+
+<style>
+    :global(div#content) {
+        max-width: 1000px;
+    }
+    ul {
+        display: flex;
+        flex-direction: row;
+        row-gap: 1em;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        padding: 0;
+    }
+    {/* TODO: @container/@media magic to make CheckCards full-width on mobile */}
+    a {
+        font-size: 1.5em;
+        color: white;
+    }
+    h2 {
+        margin: 0;
+    }
+</style>
