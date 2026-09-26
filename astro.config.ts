@@ -22,7 +22,7 @@ export default defineConfig({
   security: {
     csp: {
       directives: [
-        "font-src https://fonts.chrissx.de https://fonts.gstatic.com https://db.onlinewebfonts.com",
+        "font-src https://fonts.chrissx.de https://fonts.gstatic.com https://db.onlinewebfonts.com https://www.minecraftplot.com",
         "frame-src https://w.soundcloud.com",
       ],
       styleDirective: {
