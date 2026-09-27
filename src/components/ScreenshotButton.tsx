@@ -23,8 +23,8 @@ export default function ScreenshotButton({ title, options = {} }: { title: strin
                     ],
                     embedFonts: true,
                     filename,
-                    cache: "disabled",
                     ...options,
+                    width: options.width! * (options.scale ?? 2),
                 });
                 document.body.classList.remove("screenshot");
                 content.style.width = "";

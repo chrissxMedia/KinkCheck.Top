@@ -13,7 +13,7 @@
   "dependencies": {
     "@astrojs/node": "^11.1.5",
     "@astrojs/preact": "^6.0.0",
-    "@zumer/snapdom": "^2.15.0",
+    "@zumer/snapdom": "^3.1.1",
     "astro": "^7.3.2",
     "autoprefixer": "^10.5.0",
     "cmdesigns": "^0.1.6",
