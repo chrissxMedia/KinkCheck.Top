@@ -14,26 +14,62 @@ jobs:
       - run: npx drizzle-kit generate
       - run: sh -c '[ -z "$(git status --porcelain)" ] || (echo "Git is dirty." ; git status --porcelain ; exit 1)'
   docker:
-    if: github.ref_name == 'daddy' || github.ref_name == 'bottom'
     runs-on: ubuntu-latest
     needs: test
+    env:
+      DOCKER_IMAGE: chrissx/kinkcheck.top:${{ github.ref_name == 'daddy' && 'latest' || github.ref_name == 'bottom' && 'bottom' || 'ci' }}
     steps:
-      - run: echo "DOCKER_TAG=bottom" >> $GITHUB_ENV
-        if: github.ref_name == 'bottom'
-      - run: echo "DOCKER_TAG=latest" >> $GITHUB_ENV
-        if: github.ref_name == 'daddy'
       - uses: actions/checkout@v7
+      - uses: docker/setup-docker-action@v5
+        with:
+          daemon-config: |
+            { "features": { "containerd-snapshotter": true } }
       - uses: docker/setup-qemu-action@v4
       - uses: docker/setup-buildx-action@v4
-      - uses: docker/login-action@v4
+      - uses: docker/build-push-action@v7
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/build-push-action@v6
-        with:
-          push: true
+          push: false
+          load: true
           platforms: linux/amd64,linux/arm64
-          tags: chrissx/kinkcheck.top:${{ env.DOCKER_TAG }}
+          tags: ${{ env.DOCKER_IMAGE }}
           build-args: |
             GIT_SHA=${{ github.sha }}
             GIT_REF=${{ github.ref_name }}
+      - name: Smoke test both image platforms
+        shell: bash
+        run: |
+          cleanup() {
+            docker logs kinkcheck-smoke || true
+            docker rm -fv kinkcheck-smoke || true
+          }
+          trap cleanup EXIT
+          for platform in linux/amd64 linux/arm64; do
+            docker run -d --name kinkcheck-smoke --platform "$platform" \
+              --tmpfs /data:uid=1000,gid=1000,mode=0700 \
+              -p 127.0.0.1:4321:4321 "$DOCKER_IMAGE"
+            deadline=$((SECONDS + 30))
+            for path in / /internal/checks/test/; do
+              while true; do
+                test "$(docker inspect -f '{{.State.Running}}' kinkcheck-smoke)" = true
+                if test "$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 "http://127.0.0.1:4321$path")" = 200; then
+                  break
+                fi
+                if (( SECONDS >= deadline )); then
+                  echo "Timed out waiting for $platform $path"
+                  exit 1
+                fi
+                sleep 1
+              done
+            done
+            test "$(docker inspect -f '{{.State.Running}}' kinkcheck-smoke)" = true
+            cleanup
+          done
+          trap - EXIT
+      - uses: docker/login-action@v4
+        if: github.ref_name == 'daddy' || github.ref_name == 'bottom'
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Push tested image
+        if: github.ref_name == 'daddy' || github.ref_name == 'bottom'
+        run: docker push "$DOCKER_IMAGE"
