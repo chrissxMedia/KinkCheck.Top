@@ -2,6 +2,7 @@
 import { BaseLayout, Footer } from "cmdesigns";
 import favicon from "../favicon.png";
 import { version } from "../../package.json";
+import Sidebar from "../components/Sidebar.astro";
 import ScreenshotButton from "../components/ScreenshotButton";
 import type { SnapdomOptions } from "@zumer/snapdom";
 import { GIT_REF, GIT_SHA } from "astro:env/server";
@@ -17,15 +18,25 @@ if (!title.includes(kc)) title += " | " + kc;
 let link = "https://github.com/chrissxMedia/KinkCheck.Top";
 if (GIT_SHA) link += `/tree/${GIT_SHA}`;
 const build = `KinkCheck.Top (${GIT_REF ?? "unknown"}) v${version}-${GIT_SHA?.substring(0, 7) ?? "???????"}`;
+const internal = Astro.url.pathname.startsWith("/internal/");
 ---
 
 <BaseLayout lang="en" {title} {favicon}>
-    <div id="content">
-        <header><slot name="header" /></header>
-        <slot />
+    <div class:list={{ page: internal }}>
+        <div id="content">
+            <header class:list={{ "with-sidebar": internal }}>
+                <slot name="header" />
+                {internal && <button id="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="sidebar" aria-expanded="false"></button>}
+            </header>
+            <slot />
+        </div>
+        {internal && <Sidebar>
+            <slot name="bottom-nav" />
+            <ScreenshotButton {title} options={screenshotOptions} client:idle />
+        </Sidebar>}
     </div>
     <Footer start={2023} {link} {build}>
-        <nav>
+        {!internal && <nav class="footer-nav">
             {/* <a href="/tutorial">Overview & Tutorial</a> */}
             <a href="/tlcc">Trans Lesbian Badges</a>
             <a href="/flag">Flag Generator</a>
@@ -34,7 +45,7 @@ const build = `KinkCheck.Top (${GIT_REF ?? "unknown"}) v${version}-${GIT_SHA?.su
             |
             <slot name="bottom-nav" />
             <ScreenshotButton {title} options={screenshotOptions} client:idle />
-        </nav>
+        </nav>}
     </Footer>
 </BaseLayout>
 
@@ -49,30 +60,44 @@ const build = `KinkCheck.Top (${GIT_REF ?? "unknown"}) v${version}-${GIT_SHA?.su
     :global(html::-webkit-scrollbar-thumb) {
         background: #666;
     }
+    .page {
+        display: flex;
+        align-items: flex-start;
+    }
     div#content {
+        flex: 1;
+        min-width: 0;
         padding: 12px calc(0.666vw - 4px) 0 calc(0.666vw - 4px);
-        margin: auto;
+        margin: 0 auto;
+    }
+    :global(body.screenshot) div#content {
+        flex: none;
     }
     header {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
     }
+    header.with-sidebar {
+        padding-right: 2.5rem;
+    }
+    :global(body.screenshot) header {
+        padding-right: 0;
+    }
     @media screen and (width <= 600px) {
         div#content {
             padding: 0;
         }
     }
-    nav {
+    nav.footer-nav {
         display: flex;
         column-gap: 1.25ch;
         justify-content: center;
         flex-wrap: wrap;
         margin-bottom: 0.5em;
-        /* TODO: figure out an appropriate padding (or margin) in part based on vw */
     }
-    nav :global(a),
-    nav :global(:visited) {
+    nav.footer-nav :global(a),
+    nav.footer-nav :global(a:visited) {
         color: #c0c0c0;
         text-decoration: underline;
         cursor: pointer;

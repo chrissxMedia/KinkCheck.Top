@@ -1,0 +1,137 @@
+---
+import { getCollection } from "astro:content";
+
+const templates = (await getCollection("templates"))
+    .toSorted((a, b) => b.data.revisions[0].created.getTime() - a.data.revisions[0].created.getTime());
+---
+
+<aside id="sidebar" aria-label="Navigation" hidden>
+    <nav>
+        <h2>Templates</h2>
+        {templates.map((template) => (
+            <a href={`/internal/templates/${template.id}/`}>{template.data.name}</a>
+        ))}
+        <hr />
+        <h2>Checks</h2>
+        <form id="check-nav">
+            <input id="check-id" name="id" type="text" placeholder="Enter Check ID..." aria-label="Check ID" required />
+        </form>
+        <hr />
+        {/* <a href="/tutorial">Overview & Tutorial</a> */}
+        <a href="/tlcc">Trans Lesbian Badges</a>
+        <a href="/flag">Flag Generator</a>
+        <a href="/rewind">Rewind</a>
+        <a href="/privacy">Privacy Policy</a>
+        <hr />
+        <slot />
+    </nav>
+</aside>
+
+<script>
+    const toggle = document.querySelector<HTMLButtonElement>("#menu-toggle");
+    const sidebar = document.querySelector<HTMLElement>("#sidebar");
+    if (toggle && sidebar) {
+        const desktop = window.matchMedia("(min-width: 1500px)");
+        let preferredOpen: boolean | undefined;
+        const setOpen = (open: boolean, remember = false) => {
+            if (remember) preferredOpen = open;
+            sidebar.hidden = !open;
+            toggle.setAttribute("aria-expanded", String(open));
+        };
+        setOpen(desktop.matches);
+        desktop.addEventListener("change", () => setOpen(preferredOpen ?? desktop.matches));
+        toggle.addEventListener("click", () => setOpen(sidebar.hidden, true));
+        document.addEventListener("keydown", (event) => {
+            if (event.key !== "Escape" || sidebar.hidden || document.querySelector("dialog[open]")) return;
+            const wasInside = sidebar.contains(document.activeElement);
+            setOpen(false, true);
+            if (wasInside) toggle.focus();
+        });
+    }
+    document.querySelector<HTMLFormElement>("#check-nav")?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const id = document.querySelector<HTMLInputElement>("#check-id")?.value.trim();
+        if (id) window.location.href = `/internal/checks/${encodeURIComponent(id)}/`;
+    });
+</script>
+
+<style>
+    :global(#menu-toggle) {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        z-index: 11;
+        border: 0;
+        background: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+    :global(#menu-toggle::before) {
+        content: "☰";
+    }
+    :global(#menu-toggle[aria-expanded="true"]::before) {
+        content: "×";
+    }
+    :global(body.screenshot #menu-toggle) {
+        display: none;
+    }
+    #sidebar {
+        box-sizing: border-box;
+        width: 250px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        flex: none;
+        overflow-y: auto;
+        padding: 3.5rem 1rem 1rem;
+        border-left: 1px solid white;
+        background: black;
+    }
+    nav {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+    nav h2 {
+        margin: 0;
+        font-size: 1rem;
+    }
+    nav hr {
+        width: 100%;
+        margin: 0.5rem 0;
+        border: 0;
+        border-top: 1px solid #444;
+    }
+    form, input {
+        box-sizing: border-box;
+        width: 100%;
+    }
+    input {
+        padding: 0.5rem;
+        border: 1px solid #777;
+        background: black;
+        color: white;
+        font: inherit;
+    }
+    nav :global(a),
+    nav :global(a:visited) {
+        display: block;
+        color: #c0c0c0;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    nav :global(a:hover) {
+        text-decoration: underline;
+    }
+    @media screen and (width < 1500px) {
+        #sidebar {
+            position: fixed;
+            right: 0;
+            z-index: 10;
+            max-width: 85vw;
+            box-shadow: -8px 0 24px #0009;
+        }
+    }
+</style>
