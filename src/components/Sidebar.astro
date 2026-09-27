@@ -1,14 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import type { SnapdomOptions } from "@zumer/snapdom";
-import ScreenshotButton from "./ScreenshotButton";
 
-export interface Props {
-    title: string;
-    screenshotOptions?: Partial<SnapdomOptions>;
-}
-
-const { title, screenshotOptions } = Astro.props;
 const templates = (await getCollection("templates"))
     .toSorted((a, b) => b.data.revisions[0].created.getTime() - a.data.revisions[0].created.getTime());
 ---
@@ -32,7 +24,6 @@ const templates = (await getCollection("templates"))
         <a href="/privacy">Privacy Policy</a>
         <hr />
         <slot />
-        <ScreenshotButton {title} options={screenshotOptions} client:idle />
     </nav>
 </aside>
 
@@ -96,9 +87,6 @@ const templates = (await getCollection("templates"))
         padding: 3.5rem 1rem 1rem;
         border-left: 1px solid white;
         background: black;
-    }
-    #sidebar[hidden] {
-        display: none;
     }
     nav {
         display: flex;

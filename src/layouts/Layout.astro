@@ -30,8 +30,9 @@ const internal = Astro.url.pathname.startsWith("/internal/");
             </header>
             <slot />
         </div>
-        {internal && <Sidebar {title} {screenshotOptions}>
+        {internal && <Sidebar>
             <slot name="bottom-nav" />
+            <ScreenshotButton {title} options={screenshotOptions} client:idle />
         </Sidebar>}
     </div>
     <Footer start={2023} {link} {build}>
