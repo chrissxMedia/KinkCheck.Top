@@ -39,6 +39,16 @@ const build = `KinkCheck.Top (${GIT_REF ?? "unknown"}) v${version}-${GIT_SHA?.su
 </BaseLayout>
 
 <style>
+    /* TODO: Move scrollbar styling to cmdesigns. */
+    :global(html) {
+        scrollbar-color: #666 #000;
+    }
+    :global(html::-webkit-scrollbar-track) {
+        background: #000;
+    }
+    :global(html::-webkit-scrollbar-thumb) {
+        background: #666;
+    }
     div#content {
         padding: 12px calc(0.666vw - 4px) 0 calc(0.666vw - 4px);
         margin: auto;
