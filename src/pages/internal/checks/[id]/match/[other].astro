@@ -16,11 +16,11 @@ const template = a && b && a.template_id == b.template_id
     ? await getTemplateVersion(a.template_id, a.template_revision)
     : undefined;
 const err = !a || !b
-    ? { status: 404, title: "404: Check not found", detail: "The check does not exist." }
+    ? { status: 404, title: "Check not found", detail: "The check does not exist." }
     : a.template_id != b.template_id
-      ? { status: 400, title: "400: Incompatible checks", detail: "Incompatible checks (different templates)" }
+      ? { status: 400, title: "Incompatible checks", detail: "Incompatible checks (different templates)" }
       : !template
-        ? { status: 404, title: "404: Template not found", detail: "Template not found" }
+        ? { status: 404, title: "Template not found", detail: "Template not found" }
         : undefined;
 if (err) Astro.response.status = err.status;
 

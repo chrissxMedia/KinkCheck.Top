@@ -48,7 +48,7 @@ export async function getStaticPaths() {
         slot="bottom-nav"
         client:load
     />
-</Layout> : <ErrorPage title="404: Template not found" detail="Template not found"><a href="/">Start a new check</a></ErrorPage>}
+</Layout> : <ErrorPage title="Template not found" detail="Template not found"><a href="/">Start a new check</a></ErrorPage>}
 
 <script>
     document.querySelector<HTMLSelectElement>("select.versionselector")?.addEventListener("change", (event) => {

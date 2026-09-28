@@ -16,9 +16,9 @@ const template = check && await getTemplateVersion(
     check.template_revision,
 );
 const err = !check
-    ? { status: 404, title: "404: Check not found", detail: "The check does not exist." }
+    ? { status: 404, title: "Check not found", detail: "The check does not exist." }
     : !template
-      ? { status: 500, title: "500: Broken check", detail: "Broken check, template doesnt exist" }
+      ? { status: 500, title: "Broken check", detail: "Broken check, template doesnt exist" }
       : undefined;
 if (err) Astro.response.status = err.status;
 
