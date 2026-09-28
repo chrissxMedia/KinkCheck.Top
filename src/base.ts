@@ -1,12 +1,12 @@
 import type { checkData, TRData } from "./zod";
 
-export const ratings: [string, string][] = [
-    ["i dont know", "#d0d0d0"],
-    ["favorite", "#00e0e0"],
-    ["want to do", "#00c020"],
-    ["could be convinced", "#eeee20"],
-    ["not interested", "#d02000"],
-    ["hard limit", "#303030"],
+export const ratings: string[] = [
+    "i dont know",
+    "favorite",
+    "want to do",
+    "could be convinced",
+    "not interested",
+    "hard limit",
 ];
 
 const valueForAllKinks = <T>({ kinks }: TRData, x: T) =>

@@ -3,7 +3,7 @@ import { ratings } from "../base";
 import styles from "./Rater.module.css";
 
 function background(rating: number): string {
-    const color = (value: number) => `var(--rating-${value}, ${ratings[value][1]})`;
+    const color = (value: number) => `var(--rating-${value})`;
     if (rating % 1 === 0) return color(rating);
     return `linear-gradient(135deg, ${color(rating - 0.5)} var(--rater-first-stop, 0%), ${color(rating + 0.5)} var(--rater-second-stop, 100%))`;
 }
