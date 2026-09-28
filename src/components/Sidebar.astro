@@ -19,11 +19,11 @@ const templates = (await getCollection("templates"))
         </form>
         <hr />
         <h2>Settings</h2>
-        <SettingTabs id="rater-palette" label="Color scheme" attribute="raterPalette" options={[
+        <SettingTabs id="rater-palette" label="Color scheme" options={[
             ["classic", "Classic"],
             ["okabe-ito", "Okabe-Ito"],
         ]} />
-        <SettingTabs id="rater-half-step" label="Half-steps" attribute="raterHalfStep" options={[
+        <SettingTabs id="rater-half-step" label="Half-steps" options={[
             ["gradient", "Gradient"],
             ["split", "Split"],
         ]} />

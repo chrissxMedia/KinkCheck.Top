@@ -2,14 +2,13 @@
 interface Props {
     id: string;
     label: string;
-    attribute: string;
     options: [[string, string], [string, string]];
 }
 
-const { id, label, attribute, options } = Astro.props;
+const { id, label, options } = Astro.props;
 ---
 
-<div class="setting-tabs" {id} data-attribute={attribute}>
+<div class="setting-tabs" {id}>
     <span id={`${id}-label`}>{label}</span>
     <div class="tabs" role="radiogroup" aria-labelledby={`${id}-label`}>
         {options.map(([value, option], index) => (
@@ -26,10 +25,10 @@ const { id, label, attribute, options } = Astro.props;
         const inputs = Array.from(setting.querySelectorAll<HTMLInputElement>('input[type="radio"]'));
         const selected = inputs.find((input) => input.value === localStorage.getItem(setting.id)) ?? inputs[0];
         selected.checked = true;
-        document.documentElement.dataset[setting.dataset.attribute!] = selected.value;
+        document.documentElement.setAttribute("data-" + setting.id, selected.value);
         setting.addEventListener("change", (event) => {
             if (!(event.target instanceof HTMLInputElement)) return;
-            document.documentElement.dataset[setting.dataset.attribute!] = event.target.value;
+            document.documentElement.setAttribute("data-" + setting.id, event.target.value);
             localStorage.setItem(setting.id, event.target.value);
         });
     });
