@@ -7,13 +7,12 @@ import { getTemplateVersion } from "../../../../db";
 import Layout from "../../../../layouts/Layout.astro";
 import ClearButton from "../../../../components/ClearButton";
 import SaveButton from "../../../../components/SaveButton";
+import ErrorPage from "../../../../layouts/ErrorPage.astro";
 
 const { id, rev } = Astro.params;
 const template = id && (await getTemplateVersion(id, rev));
 
-if (!template) {
-    return new Response("Template not found", { status: 404 });
-}
+if (!template) Astro.response.status = 404;
 
 export async function getStaticPaths() {
     const templates = await getCollection("templates");
@@ -24,7 +23,7 @@ export async function getStaticPaths() {
 }
 ---
 
-<Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }}>
+{template ? <Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }}>
     <HeaderLogo slot="header">
         <span class="smol">{template.name}&nbsp;v{template.revision}</span>
     </HeaderLogo>
@@ -49,7 +48,7 @@ export async function getStaticPaths() {
         slot="bottom-nav"
         client:load
     />
-</Layout>
+</Layout> : <ErrorPage title="Template not found" detail="Template not found"><a href="/">Start a new check</a></ErrorPage>}
 
 <script>
     document.querySelector<HTMLSelectElement>("select.versionselector")?.addEventListener("change", (event) => {
