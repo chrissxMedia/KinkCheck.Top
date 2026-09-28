@@ -5,27 +5,24 @@ import RatingOverview from "../../../../../components/RatingOverview.astro";
 import { getCheck, getTemplateVersion } from "../../../../../db";
 import { decodeKinkCheck, type kinkcheck } from "../../../../../base";
 import { Check } from "../../../../../components/KinkCheck";
+import ErrorPage from "../../../../../layouts/ErrorPage.astro";
 
 export const prerender = false;
 const { id, other } = Astro.params;
 const a = id && (await getCheck(id));
 const b = other && (await getCheck(other));
 
-if (!a || !b) {
-    return new Response("The check does not exist.", { status: 404 });
-}
-
-if (a.template_id != b.template_id) {
-    return new Response("Incompatible checks (different templates)", {
-        status: 400,
-    });
-}
-
-const template = await getTemplateVersion(a.template_id, a.template_revision);
-
-if (!template) {
-    return new Response("Template not found", { status: 404 });
-}
+const template = a && b && a.template_id == b.template_id
+    ? await getTemplateVersion(a.template_id, a.template_revision)
+    : undefined;
+const err = !a || !b
+    ? { status: 404, title: "404: Check not found", detail: "The check does not exist." }
+    : a.template_id != b.template_id
+      ? { status: 400, title: "400: Incompatible checks", detail: "Incompatible checks (different templates)" }
+      : !template
+        ? { status: 404, title: "404: Template not found", detail: "Template not found" }
+        : undefined;
+if (err) Astro.response.status = err.status;
 
 function matchRating(a: number, b: number): number {
     if (!a || !b) return a + b;
@@ -47,13 +44,16 @@ function match(
     };
 }
 
-const kcA = decodeKinkCheck(template, a.data);
-const kcB = decodeKinkCheck(template, b.data);
-kcB.ratings = kcB.ratings.map((ks) => ks.map((rs) => rs.toReversed()));
-const matched = match(kcA, kcB);
+let matched: kinkcheck | undefined;
+if (a && b && template) {
+    const kcA = decodeKinkCheck(template, a.data);
+    const kcB = decodeKinkCheck(template, b.data);
+    kcB.ratings = kcB.ratings.map((ks) => ks.map((rs) => rs.toReversed()));
+    matched = match(kcA, kcB);
+}
 ---
 
-<Layout title="Matcher">
+{err ? <ErrorPage {...err}><a href="/">Start a new check</a></ErrorPage> : a && b && template && matched && <Layout title="Matcher">
     {/* FIXME: the header has really bad spacing issues apparent here */}
     <HeaderLogo slot="header">
         <span class="smol">
@@ -64,7 +64,7 @@ const matched = match(kcA, kcB);
     <RatingOverview slot="header" />
     <p>The resulting KinkCheck is written from {a.id}'s perspective.</p>
     <Check kinks={template.kinks} {...matched} />
-</Layout>
+</Layout>}
 
 <style>
     :global(div#content) {

@@ -1,9 +1,9 @@
 ---
-import MarkdownLayout from "../layouts/MarkdownLayout.astro";
+import ErrorPage from "../layouts/ErrorPage.astro";
 ---
 
-<MarkdownLayout frontmatter={{ title: "404: Not Found" }}>
-    <p>
+<ErrorPage title="404: Not Found">
+    <p slot="detail">
         The path <code>{Astro.url.pathname}</code> could not be found. If you believe
         this is an error, i.e. a dead link, please <a
             href="https://github.com/chrissxMedia/KinkCheck.Top/issues/new"
@@ -11,7 +11,7 @@ import MarkdownLayout from "../layouts/MarkdownLayout.astro";
             file an issue on GitHub
         </a>.
     </p>
-</MarkdownLayout>
+</ErrorPage>
 
 <style>
     :global(html) {
