@@ -1,3 +1,12 @@
+:global(:root) {
+    --rating-0: #d0d0d0;
+    --rating-1: #00e0e0;
+    --rating-2: #00c020;
+    --rating-3: #eeee20;
+    --rating-4: #d02000;
+    --rating-5: #303030;
+}
+
 .clickable,
 .noclick {
     display: flex;
