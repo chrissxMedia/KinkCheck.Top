@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import SettingTabs from "./SettingTabs.astro";
 
 const templates = (await getCollection("templates"))
     .toSorted((a, b) => b.data.revisions[0].created.getTime() - a.data.revisions[0].created.getTime());
@@ -16,6 +17,16 @@ const templates = (await getCollection("templates"))
         <form id="check-nav">
             <input id="check-id" name="id" type="text" placeholder="Enter Check ID..." aria-label="Check ID" required />
         </form>
+        <hr />
+        <h2>Settings</h2>
+        <SettingTabs id="rater-palette" label="Color scheme" attribute="raterPalette" options={[
+            ["classic", "Classic"],
+            ["okabe-ito", "Okabe-Ito"],
+        ]} />
+        <SettingTabs id="rater-half-step" label="Half-steps" attribute="raterHalfStep" options={[
+            ["gradient", "Gradient"],
+            ["split", "Split"],
+        ]} />
         <hr />
         {/* <a href="/tutorial">Overview & Tutorial</a> */}
         <a href="/tlcc">Trans Lesbian Badges</a>
@@ -56,6 +67,16 @@ const templates = (await getCollection("templates"))
 </script>
 
 <style>
+    :global(:root[data-rater-palette="okabe-ito"]) {
+        --rating-1: #56b4e9;
+        --rating-2: #009e73;
+        --rating-3: #f0e442;
+        --rating-4: #d55e00;
+    }
+    :global(:root[data-rater-half-step="split"]) {
+        --rater-first-stop: 50%;
+        --rater-second-stop: 50%;
+    }
     :global(#menu-toggle) {
         position: fixed;
         top: 12px;

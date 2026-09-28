@@ -3,8 +3,9 @@ import { ratings } from "../base";
 import styles from "./Rater.module.css";
 
 function background(rating: number): string {
-    if (rating % 1 === 0) return ratings[rating][1];
-    return `linear-gradient(135deg, ${ratings[rating - 0.5][1]} 0%, ${ratings[rating + 0.5][1]} 100%)`;
+    const color = (value: number) => `var(--rating-${value}, ${ratings[value][1]})`;
+    if (rating % 1 === 0) return color(rating);
+    return `linear-gradient(135deg, ${color(rating - 0.5)} var(--rater-first-stop, 0%), ${color(rating + 0.5)} var(--rater-second-stop, 100%))`;
 }
 
 export default function Rater({ text, rating, setRating }:
