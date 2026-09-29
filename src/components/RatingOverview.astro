@@ -1,10 +1,11 @@
 ---
 import { ratings } from "../base";
+import type { validRating } from "../zod";
 import Rater from "./Rater";
 ---
 
 <div>
-    {ratings.map((text, rating) => <Rater {text} {rating} />)}
+    {ratings.map((text, rating) => <Rater {text} rating={rating as validRating} />)}
 </div>
 
 <style>
