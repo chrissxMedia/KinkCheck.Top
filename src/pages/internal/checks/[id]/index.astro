@@ -2,6 +2,7 @@
 import { decodeKinkCheck } from "../../../../base";
 import HeaderLogo from "../../../../components/HeaderLogo.astro";
 import { Check } from "../../../../components/KinkCheck";
+import ErrorPage from "../../../../layouts/ErrorPage.astro";
 import RatingOverview from "../../../../components/RatingOverview.astro";
 import { getCheck, getTemplateVersion } from "../../../../db";
 import Layout from "../../../../layouts/Layout.astro";
@@ -10,32 +11,36 @@ export const prerender = false;
 const { id } = Astro.params;
 const check = id && (await getCheck(id));
 
-if (!check) {
-    return new Response("The check does not exist.", { status: 404 });
-}
-
-const template = await getTemplateVersion(
+const template = check && await getTemplateVersion(
     check.template_id,
     check.template_revision,
 );
+const err = !check
+    ? { status: 404, title: "Check not found", detail: "The check does not exist." }
+    : !template
+      ? { status: 500, title: "Broken check", detail: "Broken check, template doesnt exist" }
+      : undefined;
+if (err) Astro.response.status = err.status;
 
-if (!template) {
-    return new Response("Broken check, template doesnt exist", { status: 500 });
-}
+const createdAt = check && new Intl.DateTimeFormat("en-CA", {
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hour12: false, timeZone: "UTC", timeZoneName: "short",
+}).format(check.created_at).replace(", ", " ");
 ---
 
-<Layout
+{err ? <ErrorPage {...err}><a href="/">Start a new check</a></ErrorPage> : check && template && <Layout
     title={`${template.name} ${template.revision} check ${id}`}
     screenshotOptions={{ width: 1500 }}
 >
     <HeaderLogo slot="header">
         <span class="smol">
-            {template.name}&nbsp;v{template.revision} check&nbsp;{id}
+            {template.name}&nbsp;v{template.revision} check&nbsp;{id} · {createdAt}
         </span>
     </HeaderLogo>
     <RatingOverview slot="header" />
     <Check kinks={template.kinks} {...decodeKinkCheck(template, check.data)} />
-</Layout>
+</Layout>}
 
 <style>
     :global(div#content) {

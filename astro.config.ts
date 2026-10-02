@@ -6,6 +6,10 @@ import node from "@astrojs/node";
 export default defineConfig({
   site: "https://Bottom.KinkCheck.Top",
   integrations: [preact()],
+  // Keep the content data-store in the project .astro so `astro sync` (build mode)
+  // and vitest (dev mode, root/.astro) read the same store instead of sync writing
+  // to node_modules/.astro while tests read an empty root/.astro.
+  cacheDir: "./.astro",
   adapter: node({ mode: "standalone", bodySizeLimit: 1024 * 1024 /* 1 MiB is plenty for now */ }),
   env: {
     schema: {
@@ -18,7 +22,7 @@ export default defineConfig({
   security: {
     csp: {
       directives: [
-        "font-src https://fonts.chrissx.de https://fonts.gstatic.com https://db.onlinewebfonts.com",
+        "font-src https://fonts.chrissx.de https://fonts.gstatic.com https://db.onlinewebfonts.com https://www.minecraftplot.com",
         "frame-src https://w.soundcloud.com",
       ],
       styleDirective: {
