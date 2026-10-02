@@ -1,4 +1,4 @@
-import type { checkData, TRData } from "./zod";
+import type { checkData, TRData, validRating } from "./zod";
 
 export const ratings: string[] = [
     "i dont know",
@@ -13,7 +13,7 @@ const valueForAllKinks = <T>({ kinks }: TRData, x: T) =>
     kinks.map<T[][]>((c) => c[1].map((k) => k[1].map(() => x)));
 
 /** The runtime / template-specific representation of a check */
-export type kinkcheck = { ratings: number[][][] };
+export type kinkcheck = { ratings: validRating[][][] };
 export const defaultKinkcheck = (t: TRData): kinkcheck => ({ ratings: valueForAllKinks(t, 0) });
 
 function packIndexedValues<T>(indexedValues: [number, T][]): (T | undefined)[] {
@@ -35,7 +35,7 @@ export function updateCheck(oldCheck: checkData, newCheck: checkData): checkData
 
 export function encodeKinkCheck({ kinks }: TRData, { ratings }: kinkcheck): checkData {
     const r = packIndexedValues(kinks.flatMap(([, ks], cat) =>
-        ks.flatMap(([, , kid], i): [number, number[]][] => kid.length === 1
+        ks.flatMap(([, , kid], i): [number, validRating[]][] => kid.length === 1
             ? [[kid[0], ratings[cat][i]]]
             : kid.map((id, p) => [id, [ratings[cat][i][p]]]))));
     return { ratings: r.map(x => x ? (new Set(x).size === 1 ? x[0] : x) : []) } as checkData;
