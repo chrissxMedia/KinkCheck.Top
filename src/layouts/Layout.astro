@@ -3,7 +3,7 @@ import { BaseLayout, Footer } from "cmdesigns";
 import favicon from "../favicon.png";
 import { version } from "../../package.json";
 import Sidebar from "../components/Sidebar.astro";
-import ScreenshotButton from "../components/ScreenshotButton";
+import ScreenshotButton from "../components/ScreenshotButton.astro";
 import type { SnapdomOptions } from "@zumer/snapdom";
 import { GIT_REF, GIT_SHA } from "astro:env/server";
 
@@ -32,7 +32,7 @@ const internal = Astro.url.pathname.startsWith("/internal/");
         </div>
         {internal && <Sidebar>
             <slot name="bottom-nav" />
-            <ScreenshotButton {title} options={screenshotOptions} client:idle />
+            <ScreenshotButton {title} options={screenshotOptions} />
         </Sidebar>}
     </div>
     <Footer start={2023} {link} {build}>
@@ -44,7 +44,7 @@ const internal = Astro.url.pathname.startsWith("/internal/");
             <a href="/privacy">Privacy Policy</a>
             |
             <slot name="bottom-nav" />
-            <ScreenshotButton {title} options={screenshotOptions} client:idle />
+            <ScreenshotButton {title} options={screenshotOptions} />
         </nav>}
     </Footer>
 </BaseLayout>
@@ -102,7 +102,8 @@ const internal = Astro.url.pathname.startsWith("/internal/");
         margin-bottom: 0.5em;
     }
     nav.footer-nav :global(a),
-    nav.footer-nav :global(a:visited) {
+    nav.footer-nav :global(a:visited),
+    nav.footer-nav :global(.screenshot-button) {
         color: #c0c0c0;
         text-decoration: underline;
         cursor: pointer;
