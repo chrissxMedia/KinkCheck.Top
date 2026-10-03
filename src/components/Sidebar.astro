@@ -145,6 +145,7 @@ const templates = (await getCollection("templates"))
     }
     nav :global(a),
     nav :global(a:visited),
+    nav :global(.screenshot-button),
     nav :global(button[data-store]),
     nav :global(button[data-template-id]) {
         display: block;
@@ -153,6 +154,7 @@ const templates = (await getCollection("templates"))
         cursor: pointer;
     }
     nav :global(a:hover),
+    nav :global(.screenshot-button:hover),
     nav :global(button[data-store]:hover),
     nav :global(button[data-template-id]:hover) {
         text-decoration: underline;
