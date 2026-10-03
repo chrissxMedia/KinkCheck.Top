@@ -1,0 +1,47 @@
+---
+import type { SnapdomOptions } from "@zumer/snapdom";
+
+interface Props {
+    title: string;
+    options?: SnapdomOptions;
+}
+
+const { title, options = {} } = Astro.props;
+options.width ??= 1440;
+---
+
+<a class="screenshot-button" data-title={title} data-options={JSON.stringify(options)}>Take a Screenshot</a>
+
+<script>
+    import { snapdom, type SnapdomOptions } from "@zumer/snapdom";
+
+    document.querySelectorAll<HTMLAnchorElement>(".screenshot-button").forEach((button) => {
+        const title = button.dataset.title!;
+        const options: SnapdomOptions = JSON.parse(button.dataset.options!);
+        button.addEventListener("click", async () => {
+            // TODO: be able to pass in a selector for what to screenshot
+            const content = document.querySelector("div#content") as HTMLElement;
+            document.body.classList.add("screenshot");
+            content.style.width = options.width + "px";
+            const filename = title + " " + new Date().toISOString().slice(0, 19).replace("T", " ") + ".png";
+            await snapdom.download(content, {
+                format: "png",
+                type: "png",
+                backgroundColor: "#000",
+                scale: 2,
+                localFonts: [
+                    {
+                        family: "Unifont",
+                        src: "https://fonts.chrissx.de/fonts/unifont-14.0.03.otf",
+                    }
+                ],
+                embedFonts: true,
+                filename,
+                ...options,
+                width: options.width! * (options.scale ?? 2),
+            });
+            document.body.classList.remove("screenshot");
+            content.style.width = "";
+        });
+    });
+</script>
