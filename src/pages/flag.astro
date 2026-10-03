@@ -1,15 +1,57 @@
 ---
-import FlagGenerator from "../components/FlagGenerator.astro";
 import HeaderLogo from "../components/HeaderLogo.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Flag Generator" screenshotOptions={{ width: 600 }}>
     <HeaderLogo slot="header">Flag Generator</HeaderLogo>
-    <FlagGenerator />
+    <main id="flag-generator">
+        <input type="text" placeholder="trans, rat, ant, ..." aria-label="Flag letters"
+            spellcheck="false" autocorrect="off" autofocus />
+        <div class="flag"></div>
+    </main>
 </Layout>
 
+<script>
+    const colors: Record<string, string> = {
+        "t": "rgb(var(--transblue))",
+        "r": "rgb(var(--transpink))",
+        "a": "white",
+        "n": "rgb(var(--transpink))",
+        "s": "rgb(var(--transblue))",
+    };
+
+    const input = document.querySelector<HTMLInputElement>("#flag-generator input")!;
+    const flag = document.querySelector<HTMLDivElement>("#flag-generator .flag")!;
+    input.addEventListener("input", () => {
+        const chars = [...input.value.toLowerCase()].filter(x => "trans".includes(x));
+        flag.replaceChildren(...chars.map(char => {
+            const stripe = document.createElement("div");
+            stripe.style.backgroundColor = colors[char];
+            return stripe;
+        }));
+    });
+</script>
+
 <style>
+    input {
+        margin: 0.5em 0;
+        border: 0;
+        padding: 0.25em;
+        font-size: 2em;
+        width: 14.5em;
+        background-color: rgb(var(--cmblack));
+        color: white;
+    }
+    .flag {
+        display: flex;
+        flex-direction: column;
+        width: 30em;
+        height: 20em;
+    }
+    .flag > :global(div) {
+        flex: 1;
+    }
     :global(div#content) {
         width: max-content;
         max-width: 100%;
