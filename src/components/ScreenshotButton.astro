@@ -13,12 +13,13 @@ options.width ??= 1440;
 <button type="button" class="screenshot-button" data-title={title} data-options={JSON.stringify(options)}>Take a Screenshot</button>
 
 <script>
-    import { snapdom, type SnapdomOptions } from "@zumer/snapdom";
+    import type { SnapdomOptions } from "@zumer/snapdom";
 
     document.querySelectorAll<HTMLButtonElement>(".screenshot-button").forEach((button) => {
         const title = button.dataset.title!;
         const options: SnapdomOptions = JSON.parse(button.dataset.options!);
         button.addEventListener("click", async () => {
+            const { snapdom } = await import("@zumer/snapdom");
             // TODO: be able to pass in a selector for what to screenshot
             const content = document.querySelector("div#content") as HTMLElement;
             const width = content.style.width;
