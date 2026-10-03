@@ -5,8 +5,8 @@ import KinkCheck from "../../../../components/KinkCheck";
 import RatingOverview from "../../../../components/RatingOverview.astro";
 import { getTemplateVersion } from "../../../../db";
 import Layout from "../../../../layouts/Layout.astro";
-import ClearButton from "../../../../components/ClearButton";
-import SaveButton from "../../../../components/SaveButton";
+import ClearButton from "../../../../components/ClearButton.astro";
+import SaveButton from "../../../../components/SaveButton.astro";
 import ErrorPage from "../../../../layouts/ErrorPage.astro";
 
 const { id, rev } = Astro.params;
@@ -41,12 +41,11 @@ export async function getStaticPaths() {
     </select>
     <RatingOverview slot="header" />
     <KinkCheck kinks={template.kinks} store={template.id} client:load />
-    <ClearButton store={template.id} slot="bottom-nav" client:load />
+    <ClearButton store={template.id} slot="bottom-nav" />
     <SaveButton
         template_id={template.id}
         template_revision={template.revision}
         slot="bottom-nav"
-        client:load
     />
 </Layout> : <ErrorPage title="Template not found" detail="Template not found"><a href="/">Start a new check</a></ErrorPage>}
 

@@ -1,0 +1,74 @@
+---
+import Button from "./Button.astro";
+
+interface Props {
+    template_id: string;
+    template_revision: string;
+}
+
+const { template_id, template_revision } = Astro.props;
+---
+
+<a data-template-id={template_id} data-template-revision={template_revision}>Save</a>
+<dialog>
+    <p></p>
+    <div>
+        <Button>OK</Button>
+    </div>
+</dialog>
+
+<script>
+    import { actions } from "astro:actions";
+
+    document.querySelectorAll<HTMLAnchorElement>("a[data-template-id][data-template-revision]").forEach((button) => {
+        const dialog = button.nextElementSibling as HTMLDialogElement;
+        const message = dialog.querySelector("p")!;
+        const props = {
+            template_id: button.dataset.templateId!,
+            template_revision: button.dataset.templateRevision!,
+        };
+        button.addEventListener("click", async () => {
+            const saved = window.localStorage.getItem(props.template_id);
+            if (!saved) {
+                message.textContent = "Couldn't load check data";
+                dialog.showModal();
+                return;
+            }
+
+            const { data, error } = await actions.check.save({ ...props, data: JSON.parse(saved) });
+
+            if (error) {
+                message.textContent = error.message;
+                dialog.showModal();
+            } else {
+                window.location.href = `/internal/checks/${data.id}`;
+            }
+        });
+        dialog.addEventListener("click", (event) => {
+            if (event.target === dialog && event.currentTarget === dialog) {
+                dialog.close();
+            }
+        });
+        dialog.querySelector("button")!.addEventListener("click", () => dialog.close());
+    });
+</script>
+
+<style>
+    dialog {
+        background-color: black;
+        border: 1px solid white;
+        border-radius: 0.5em;
+    }
+    p {
+        font-family: var(--sans-serif);
+        margin: 0;
+    }
+    div {
+        display: flex;
+        flex-direction: row-reverse;
+        margin-top: 0.5em;
+    }
+    button {
+        min-width: 8ch;
+    }
+</style>
