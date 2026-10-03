@@ -1,5 +1,6 @@
 ---
 import Button from "./Button.astro";
+import Dialog from "./Dialog.astro";
 
 interface Props {
     template_id: string;
@@ -10,12 +11,9 @@ const { template_id, template_revision } = Astro.props;
 ---
 
 <a data-template-id={template_id} data-template-revision={template_revision}>Save</a>
-<dialog>
-    <p></p>
-    <div>
-        <Button>OK</Button>
-    </div>
-</dialog>
+<Dialog>
+    <Button slot="buttons" data-close>OK</Button>
+</Dialog>
 
 <script>
     import { actions } from "astro:actions";
@@ -44,30 +42,10 @@ const { template_id, template_revision } = Astro.props;
                 window.location.href = `/internal/checks/${data.id}`;
             }
         });
-        dialog.addEventListener("click", (event) => {
-            if (event.target === dialog && event.currentTarget === dialog) {
-                dialog.close();
-            }
-        });
-        dialog.querySelector("button")!.addEventListener("click", () => dialog.close());
     });
 </script>
 
 <style>
-    dialog {
-        background-color: black;
-        border: 1px solid white;
-        border-radius: 0.5em;
-    }
-    p {
-        font-family: var(--sans-serif);
-        margin: 0;
-    }
-    div {
-        display: flex;
-        flex-direction: row-reverse;
-        margin-top: 0.5em;
-    }
     button {
         min-width: 8ch;
     }

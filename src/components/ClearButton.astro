@@ -1,5 +1,6 @@
 ---
 import Button from "./Button.astro";
+import Dialog from "./Dialog.astro";
 
 interface Props {
     store: string;
@@ -9,26 +10,16 @@ const { store } = Astro.props;
 ---
 
 <a data-store={store}>Clear</a>
-<dialog>
-    <p>
-        Are you sure you want to clear your ratings? This action is irreversible.
-    </p>
-    <div>
-        <Button>Cancel</Button>
-        <Button>Clear</Button>
-    </div>
-</dialog>
+<Dialog>
+    Are you sure you want to clear your ratings? This action is irreversible.
+    <Button slot="buttons" data-close>Cancel</Button>
+    <Button slot="buttons">Clear</Button>
+</Dialog>
 
 <script>
     document.querySelectorAll<HTMLAnchorElement>("a[data-store]").forEach((button) => {
         const dialog = button.nextElementSibling as HTMLDialogElement;
         button.addEventListener("click", () => dialog.showModal());
-        dialog.addEventListener("click", (event) => {
-            if (event.target === dialog && event.currentTarget === dialog) {
-                dialog.close();
-            }
-        });
-        dialog.querySelector<HTMLButtonElement>("button:first-child")!.addEventListener("click", () => dialog.close());
         dialog.querySelector<HTMLButtonElement>("button:last-child")!.addEventListener("click", () => {
             window.localStorage.removeItem(button.dataset.store!);
             window.location.reload();
@@ -37,20 +28,6 @@ const { store } = Astro.props;
 </script>
 
 <style>
-    dialog {
-        background-color: black;
-        border: 1px solid white;
-        border-radius: 0.5em;
-    }
-    p {
-        font-family: var(--sans-serif);
-        margin: 0;
-    }
-    div {
-        display: flex;
-        flex-direction: row-reverse;
-        margin-top: 0.5em;
-    }
     button:last-child {
         background-color: rgb(var(--cmred));
     }
