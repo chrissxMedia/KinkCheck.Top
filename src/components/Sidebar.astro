@@ -144,13 +144,15 @@ const templates = (await getCollection("templates"))
         font: inherit;
     }
     nav :global(a),
-    nav :global(a:visited) {
+    nav :global(a:visited),
+    nav :global(.screenshot-button) {
         display: block;
         color: #c0c0c0;
         text-decoration: none;
         cursor: pointer;
     }
-    nav :global(a:hover) {
+    nav :global(a:hover),
+    nav :global(.screenshot-button:hover) {
         text-decoration: underline;
     }
     @media screen and (width < 1500px) {

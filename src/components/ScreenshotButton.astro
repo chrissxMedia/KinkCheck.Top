@@ -10,12 +10,12 @@ const { title, options = {} } = Astro.props;
 options.width ??= 1440;
 ---
 
-<a class="screenshot-button" data-title={title} data-options={JSON.stringify(options)}>Take a Screenshot</a>
+<button type="button" class="screenshot-button" data-title={title} data-options={JSON.stringify(options)}>Take a Screenshot</button>
 
 <script>
     import { snapdom, type SnapdomOptions } from "@zumer/snapdom";
 
-    document.querySelectorAll<HTMLAnchorElement>(".screenshot-button").forEach((button) => {
+    document.querySelectorAll<HTMLButtonElement>(".screenshot-button").forEach((button) => {
         const title = button.dataset.title!;
         const options: SnapdomOptions = JSON.parse(button.dataset.options!);
         button.addEventListener("click", async () => {
@@ -49,3 +49,13 @@ options.width ??= 1440;
         });
     });
 </script>
+
+<style>
+    button {
+        border: 0;
+        padding: 0;
+        background: none;
+        font: inherit;
+        text-align: inherit;
+    }
+</style>
