@@ -1,0 +1,55 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../../layouts/Layout.astro";
+import HeaderLogo from "../../../components/HeaderLogo.astro";
+import RatingOverview from "../../../components/RatingOverview.astro";
+import Button from "../../../components/Button";
+import TouchRatings, { prototypes } from "../../../components/TouchRatings";
+
+export function getStaticPaths() {
+    return prototypes.map((prototype, index) => ({ params: { method: prototype.id }, props: { prototype, index } }));
+}
+
+const { prototype, index } = Astro.props;
+const template = (await getCollection("templates")).find((template) => template.id === "kcc");
+if (!template) throw new Error("KinkCheck Classic template missing");
+const kinks = template.data.revisions[0].kinks;
+const previous = prototypes[(index + prototypes.length - 1) % prototypes.length];
+const next = prototypes[(index + 1) % prototypes.length];
+---
+
+<Layout title={`${prototype.name} | Touch prototypes`}>
+    <HeaderLogo slot="header">
+        <span class="smol">{template.data.name}&nbsp;v{template.data.revisions[0].revision}</span>
+    </HeaderLogo>
+    <RatingOverview slot="header" />
+    <div class="intro">
+        <nav aria-label="Touch prototypes">
+            <form action="/internal/touch/">
+                <Button type="submit" label="All prototypes" />
+            </form>
+            <form action={`/internal/touch/${previous.id}/`}>
+                <Button type="submit" label="Previous" />
+            </form>
+            <span>{index + 1} / {prototypes.length}</span>
+            <form action={`/internal/touch/${next.id}/`}>
+                <Button type="submit" label="Next" />
+            </form>
+        </nav>
+        <h1>{prototype.name}</h1>
+        <p>{prototype.instruction}</p>
+        <p class="tradeoff">{prototype.tradeoff}</p>
+    </div>
+    <TouchRatings method={prototype.id} {kinks} client:load />
+    <a slot="bottom-nav" href="/internal/touch/">Touch prototypes</a>
+</Layout>
+
+<style>
+    :global(div#content) { min-width: 475px; max-width: 1800px; }
+    .intro { max-width: 850px; margin: 0 auto; padding: 16px 12px 0; }
+    nav { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 0.875rem; }
+    nav form:first-child { margin-right: 24px; }
+    h1 { font-size: 1.5rem; }
+    p { line-height: 1.5; }
+    .tradeoff { color: #bbb; font-size: 0.875rem; }
+</style>
