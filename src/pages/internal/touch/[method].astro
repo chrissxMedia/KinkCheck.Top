@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import Layout from "../../../layouts/Layout.astro";
 import HeaderLogo from "../../../components/HeaderLogo.astro";
 import RatingOverview from "../../../components/RatingOverview.astro";
-import Button from "../../../components/Button";
+import Button from "../../../components/Button.astro";
 import TouchRatings, { prototypes } from "../../../components/TouchRatings";
 
 export function getStaticPaths() {
@@ -26,14 +26,14 @@ const next = prototypes[(index + 1) % prototypes.length];
     <div class="intro">
         <nav aria-label="Touch prototypes">
             <form action="/internal/touch/">
-                <Button type="submit" label="All prototypes" />
+                <Button type="submit">All prototypes</Button>
             </form>
             <form action={`/internal/touch/${previous.id}/`}>
-                <Button type="submit" label="Previous" />
+                <Button type="submit">Previous</Button>
             </form>
             <span>{index + 1} / {prototypes.length}</span>
             <form action={`/internal/touch/${next.id}/`}>
-                <Button type="submit" label="Next" />
+                <Button type="submit">Next</Button>
             </form>
         </nav>
         <h1>{prototype.name}</h1>

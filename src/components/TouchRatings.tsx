@@ -4,7 +4,6 @@ import { ratings } from "../base";
 import type { kinklist, validRating } from "../zod";
 import Rater from "./Rater";
 import { Check } from "./KinkCheck";
-import Button from "./Button";
 import styles from "./TouchRatings.module.css";
 
 export const prototypes = [
@@ -154,8 +153,8 @@ export default function TouchRatings({ method, kinks }: { method: Method, kinks:
     }
 
     const toggle = <div class={styles.mode} role="group" aria-label="Rating increment">
-        <Button type="button" label="Full steps" aria-pressed={!half} onClick={() => setHalf(false)} />
-        <Button type="button" label="Half steps" aria-pressed={half} onClick={() => setHalf(true)} />
+        <button type="button" class={styles.button} aria-pressed={!half} onClick={() => setHalf(false)}>Full steps</button>
+        <button type="button" class={styles.button} aria-pressed={half} onClick={() => setHalf(true)}>Half steps</button>
     </div>;
 
     return <>
@@ -184,7 +183,7 @@ export default function TouchRatings({ method, kinks }: { method: Method, kinks:
                         }}>{value} · {describe(value)}</button>
                     </div>)}
                 </div>
-                <Button type="button" label="Cancel" onClick={() => dialog.current?.close()} />
+                <button type="button" class={styles.button} onClick={() => dialog.current?.close()}>Cancel</button>
             </div>}
         </dialog>
     </>;
