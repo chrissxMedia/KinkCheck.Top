@@ -1,0 +1,62 @@
+---
+import Button from "./Button.astro";
+import Dialog from "./Dialog.astro";
+
+interface Props {
+    template_id: string;
+    template_revision: string;
+}
+
+const { template_id, template_revision } = Astro.props;
+---
+
+<button type="button" data-template-id={template_id} data-template-revision={template_revision}>Save</button>
+<Dialog>
+    <Button slot="buttons" data-close>OK</Button>
+</Dialog>
+
+<script>
+    import { actions } from "astro:actions";
+
+    document.querySelectorAll<HTMLButtonElement>("button[data-template-id][data-template-revision]").forEach((button) => {
+        const dialog = button.nextElementSibling as HTMLDialogElement;
+        const message = dialog.querySelector("p")!;
+        const props = {
+            template_id: button.dataset.templateId!,
+            template_revision: button.dataset.templateRevision!,
+        };
+        button.addEventListener("click", async () => {
+            if (button.disabled) return;
+            const saved = window.localStorage.getItem(props.template_id);
+            if (!saved) {
+                message.textContent = "Couldn't load check data";
+                dialog.showModal();
+                return;
+            }
+
+            button.disabled = true;
+            try {
+                const { data, error } = await actions.check.save({ ...props, data: JSON.parse(saved) });
+                if (error) throw error;
+                window.location.href = `/internal/checks/${data.id}`;
+            } catch (error) {
+                button.disabled = false;
+                message.textContent = error instanceof Error ? error.message : "Couldn't save check";
+                dialog.showModal();
+            }
+        });
+    });
+</script>
+
+<style>
+    button[data-template-id] {
+        border: 0;
+        padding: 0;
+        background: none;
+        font: inherit;
+        text-align: inherit;
+    }
+    dialog button {
+        min-width: 8ch;
+    }
+</style>
