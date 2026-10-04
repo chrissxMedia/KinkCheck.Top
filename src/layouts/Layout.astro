@@ -103,7 +103,9 @@ const internal = Astro.url.pathname.startsWith("/internal/");
     }
     nav.footer-nav :global(a),
     nav.footer-nav :global(a:visited),
-    nav.footer-nav :global(.screenshot-button) {
+    nav.footer-nav :global(.screenshot-button),
+    nav.footer-nav :global(button[data-store]),
+    nav.footer-nav :global(button[data-template-id]) {
         color: #c0c0c0;
         text-decoration: underline;
         cursor: pointer;
