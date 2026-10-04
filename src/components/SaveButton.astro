@@ -26,6 +26,7 @@ const { template_id, template_revision } = Astro.props;
             template_revision: button.dataset.templateRevision!,
         };
         button.addEventListener("click", async () => {
+            if (button.disabled) return;
             const saved = window.localStorage.getItem(props.template_id);
             if (!saved) {
                 message.textContent = "Couldn't load check data";
@@ -33,13 +34,15 @@ const { template_id, template_revision } = Astro.props;
                 return;
             }
 
-            const { data, error } = await actions.check.save({ ...props, data: JSON.parse(saved) });
-
-            if (error) {
-                message.textContent = error.message;
-                dialog.showModal();
-            } else {
+            button.disabled = true;
+            try {
+                const { data, error } = await actions.check.save({ ...props, data: JSON.parse(saved) });
+                if (error) throw error;
                 window.location.href = `/internal/checks/${data.id}`;
+            } catch (error) {
+                button.disabled = false;
+                message.textContent = error instanceof Error ? error.message : "Couldn't save check";
+                dialog.showModal();
             }
         });
     });
