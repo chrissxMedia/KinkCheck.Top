@@ -1,0 +1,41 @@
+---
+import Button from "./Button.astro";
+import Dialog from "./Dialog.astro";
+
+interface Props {
+    store: string;
+}
+
+const { store } = Astro.props;
+---
+
+<button type="button" data-store={store}>Clear</button>
+<Dialog>
+    Are you sure you want to clear your ratings? This action is irreversible.
+    <Button slot="buttons" data-close>Cancel</Button>
+    <Button slot="buttons">Clear</Button>
+</Dialog>
+
+<script>
+    document.querySelectorAll<HTMLButtonElement>("button[data-store]").forEach((button) => {
+        const dialog = button.nextElementSibling as HTMLDialogElement;
+        button.addEventListener("click", () => dialog.showModal());
+        dialog.querySelector<HTMLButtonElement>("button:last-child")!.addEventListener("click", () => {
+            window.localStorage.removeItem(button.dataset.store!);
+            window.location.reload();
+        });
+    });
+</script>
+
+<style>
+    button[data-store] {
+        border: 0;
+        padding: 0;
+        background: none;
+        font: inherit;
+        text-align: inherit;
+    }
+    dialog button:last-child {
+        background-color: rgb(var(--cmred));
+    }
+</style>
