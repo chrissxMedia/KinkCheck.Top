@@ -2,11 +2,12 @@
 import ErrorPage from "../layouts/ErrorPage.astro";
 import { Code } from "astro:components";
 export type Props = { error: any };
+export const prerender = false;
 const { error = "" } = Astro.props;
 ---
 
 <ErrorPage title="500: Internal Server Error">
-    <p slot="detail">
+    <p slot="detail" class="error">
         The path <code>{Astro.url.pathname}</code> failed to render. This is probably
         a serious error, please <a
             href="https://github.com/chrissxMedia/KinkCheck.Top/issues/new"
@@ -23,7 +24,7 @@ const { error = "" } = Astro.props;
 </ErrorPage>
 
 <style>
-    :global(html) {
+    :global(html):has(.error) {
         display: flex;
         flex-direction: column;
         justify-content: center;

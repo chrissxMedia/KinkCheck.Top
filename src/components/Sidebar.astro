@@ -77,32 +77,6 @@ const templates = (await getCollection("templates"))
         --rater-first-stop: 50%;
         --rater-second-stop: 50%;
     }
-    :global(#menu-toggle) {
-        position: fixed;
-        top: 12px;
-        right: 12px;
-        z-index: 11;
-        display: grid;
-        place-items: center;
-        width: 2.25rem;
-        height: 2rem;
-        padding: 0;
-        border: 0;
-        border-radius: 0.25rem;
-        background: rgb(var(--cmblack));
-        color: white;
-        font-size: 1.5rem;
-        cursor: pointer;
-    }
-    :global(#menu-toggle::before) {
-        content: "☰";
-    }
-    :global(#menu-toggle[aria-expanded="true"]::before) {
-        content: "×";
-    }
-    :global(body.screenshot #menu-toggle) {
-        display: none;
-    }
     #sidebar {
         box-sizing: border-box;
         width: 250px;

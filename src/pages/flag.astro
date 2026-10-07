@@ -52,13 +52,13 @@ import Layout from "../layouts/Layout.astro";
     .flag > :global(div) {
         flex: 1;
     }
-    :global(div#content) {
+    div#content {
         width: max-content;
         max-width: 100%;
         font-size: 20px;
     }
     @media screen and (width <= 667px) {
-        :global(div#content) {
+        div#content {
             font-size: 3vw;
         }
     }
