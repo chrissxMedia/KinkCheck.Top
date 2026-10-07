@@ -4,7 +4,7 @@ import node from "@astrojs/node";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://KinkCheck.Top",
+  site: process.env.GIT_REF === "bottom" ? "https://Bottom.KinkCheck.Top" : "https://KinkCheck.Top",
   integrations: [preact()],
   // Keep the content data-store in the project .astro so `astro sync` (build mode)
   // and vitest (dev mode, root/.astro) read the same store instead of sync writing
