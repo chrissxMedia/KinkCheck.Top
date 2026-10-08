@@ -3,7 +3,7 @@ import HeaderLogo from "../components/HeaderLogo.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Rewind" screenshotOptions={{ width: 1000 }}>
+<Layout title="Rewind" screenshotOptions={{ width: 1000 }} maxWidth="max-content">
     <HeaderLogo slot="header">Rewind</HeaderLogo>
     <main>
         <p>Click on the text to edit it.</p>
@@ -99,9 +99,5 @@ import Layout from "../layouts/Layout.astro";
     .sexminsnum {
         color: #d78f52;
         font-weight: bolder;
-    }
-
-    :global(div#content) {
-        max-width: max-content;
     }
 </style>

@@ -10,10 +10,12 @@ import { GIT_REF, GIT_SHA } from "astro:env/server";
 export interface Props {
     title?: string;
     screenshotOptions?: Partial<SnapdomOptions>;
+    minWidth?: string;
+    maxWidth?: string;
 }
 
 const kc = `KinkCheck.Top v${version}`;
-let { title = kc, screenshotOptions } = Astro.props;
+let { title = kc, screenshotOptions, minWidth, maxWidth } = Astro.props;
 if (!title.includes(kc)) title += " | " + kc;
 let link = "https://github.com/chrissxMedia/KinkCheck.Top";
 if (GIT_SHA) link += `/tree/${GIT_SHA}`;
@@ -23,7 +25,7 @@ const internal = Astro.url.pathname.startsWith("/internal/");
 
 <BaseLayout lang="en" {title} {favicon}>
     <div class:list={{ page: internal }}>
-        <div id="content">
+        <div id="content" style={{ minWidth, maxWidth }}>
             <header class:list={{ "with-sidebar": internal }}>
                 <slot name="header" />
                 {internal && <button id="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="sidebar" aria-expanded="false"></button>}

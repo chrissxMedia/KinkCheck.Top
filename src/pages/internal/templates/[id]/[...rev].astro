@@ -23,7 +23,7 @@ export async function getStaticPaths() {
 }
 ---
 
-{template ? <Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }}>
+{template ? <Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }} minWidth="475px" maxWidth="1800px">
     <HeaderLogo slot="header">
         <span class="smol">{template.name}&nbsp;v{template.revision}</span>
     </HeaderLogo>
@@ -56,10 +56,6 @@ export async function getStaticPaths() {
 </script>
 
 <style>
-    :global(div#content) {
-        min-width: 475px;
-        max-width: 1800px;
-    }
     select {
         margin: auto 0;
     }

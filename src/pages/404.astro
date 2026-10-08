@@ -1,10 +1,12 @@
 ---
 import ErrorPage from "../layouts/ErrorPage.astro";
+
+export const prerender = false;
 ---
 
 <ErrorPage title="404: Not Found">
     <p slot="detail">
-        The path <code>{Astro.url.pathname}</code> could not be found. If you believe
+        The path <code>{Astro.originPathname}</code> could not be found. If you believe
         this is an error, i.e. a dead link, please <a
             href="https://github.com/chrissxMedia/KinkCheck.Top/issues/new"
         >
