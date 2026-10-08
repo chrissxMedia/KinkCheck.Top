@@ -33,7 +33,7 @@ if (a && b && template) {
 }
 ---
 
-{err ? <ErrorPage {...err}><a href="/">Start a new check</a></ErrorPage> : a && b && template && matched && <Layout title="Matcher">
+{err ? <ErrorPage {...err}><a href="/">Start a new check</a></ErrorPage> : a && b && template && matched && <Layout title="Matcher" minWidth="475px" maxWidth="1800px">
     {/* FIXME: the header has really bad spacing issues apparent here */}
     <HeaderLogo slot="header">
         <span class="smol">
@@ -47,10 +47,6 @@ if (a && b && template) {
 </Layout>}
 
 <style>
-    :global(div#content) {
-        min-width: 475px;
-        max-width: 1800px;
-    }
     p {
         width: fit-content;
         margin: 1em auto;
