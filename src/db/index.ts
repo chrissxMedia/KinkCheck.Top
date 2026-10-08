@@ -34,16 +34,12 @@ export async function getTemplate(id: string): Promise<template | null> {
     return e ? e.data : null;
 }
 
-export async function getCurrentTemplate(id: string): Promise<template & template_revision | null> {
-    const t = await getTemplate(id);
-    return t && t.revisions.length ? { ...t, ...t.revisions[0] } : null;
-}
-
-export async function getTemplateVersion(id: string, revision: string):
+/** Falsy revision resolves to the current (most recent) one. */
+export async function getTemplateVersion(id: string, revision?: string | null):
     Promise<template & template_revision | null> {
     const t = await getTemplate(id);
     if (!t) return null;
-    const rs = t.revisions.filter((r) => r.revision === revision);
+    const rs = revision ? t.revisions.filter((r) => r.revision === revision) : t.revisions;
     return rs.length ? { ...t, ...rs[0] } : null;
 }
 

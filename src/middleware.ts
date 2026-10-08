@@ -1,5 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
-import type { APIContext } from "astro";
+import type { APIContext, AstroRuntimeLogger } from "astro";
 import { getActionContext } from "astro:actions";
 import { GIT_REF } from "astro:env/server";
 import { Address6 } from "ip-address";
@@ -41,12 +41,12 @@ function checkRateLimit(ip: string): RateLimitResult {
     return ok ? { ok } : { ok, retryAfter: Math.ceil((windowed[0] + WINDOW_MS - now) / 1000) };
 }
 
-function logFirstBlock(key: string) {
+function logFirstBlock(key: string, logger: AstroRuntimeLogger) {
     const now = Date.now();
     const last = firstBlockMap.get(key) ?? 0;
     if (now - last >= WINDOW_MS) {
         firstBlockMap.set(key, now);
-        console.log("Rate limited: " + key);
+        logger.info("Rate limited: " + key);
     }
 }
 
@@ -64,14 +64,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
         const result = checkRateLimit(key);
 
         if (!result.ok) {
-            logFirstBlock(key);
+            logFirstBlock(key, context.logger);
             return new Response("Only 5 action calls per 10 minutes allowed", {
                 status: 429,
                 headers: { "Retry-After": String(result.retryAfter) },
             });
         }
 
-        console.log(`Action ${action.name} called from ${key} (${ip})`);
+        context.logger.info(`Action ${action.name} called from ${key} (${ip})`);
     }
 
     return next();

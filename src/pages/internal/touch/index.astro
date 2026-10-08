@@ -1,0 +1,52 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import HeaderLogo from "../../../components/HeaderLogo.astro";
+import { prototypes } from "../../../components/TouchRatings";
+---
+
+<Layout title="Touch rating prototypes">
+    <HeaderLogo slot="header" />
+    <main>
+        <h1>Half steps on a phone</h1>
+        <p>{prototypes.length} ways to rate without a keyboard. Each page has the same sample Check.</p>
+        <div class="prototypes">
+            {prototypes.map((prototype, i) => <a href={`/internal/touch/${prototype.id}/`}>
+                <span class="number">{String(i + 1).padStart(2, "0")}</span>
+                <h2>{prototype.name}</h2>
+                <p>{prototype.instruction}</p>
+                <p class="tradeoff">{prototype.tradeoff}</p>
+            </a>)}
+        </div>
+    </main>
+    <a slot="bottom-nav" href="/internal/touch/">Touch prototypes</a>
+</Layout>
+
+<style>
+    main {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 16px;
+    }
+    h1 { font-size: 1.75rem; }
+    main > p { max-width: 65ch; }
+    .prototypes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+        gap: 12px;
+        margin-top: 24px;
+    }
+    .prototypes a {
+        display: block;
+        padding: 20px;
+        border: 1px solid #666;
+        border-radius: 8px;
+        color: white;
+        background: #111;
+        text-decoration: none;
+    }
+    .prototypes a:hover, .prototypes a:focus-visible { border-color: #e0aaff; }
+    .number { color: #e0aaff; font-size: 0.875rem; }
+    h2 { margin: 8px 0 12px; font-size: 1.125rem; }
+    .prototypes p { font-size: 0.875rem; line-height: 1.5; }
+    .tradeoff { margin-bottom: 0; color: #bbb; }
+</style>

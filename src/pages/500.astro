@@ -1,12 +1,12 @@
 ---
-import MarkdownLayout from "../layouts/MarkdownLayout.astro";
+import ErrorPage from "../layouts/ErrorPage.astro";
 import { Code } from "astro:components";
 export type Props = { error: any };
 const { error = "" } = Astro.props;
 ---
 
-<MarkdownLayout frontmatter={{ title: "500: Internal Server Error" }}>
-    <p>
+<ErrorPage title="500: Internal Server Error">
+    <p slot="detail">
         The path <code>{Astro.url.pathname}</code> failed to render. This is probably
         a serious error, please <a
             href="https://github.com/chrissxMedia/KinkCheck.Top/issues/new"
@@ -20,7 +20,7 @@ const { error = "" } = Astro.props;
         theme={"none" as any}
         lang="text"
     />
-</MarkdownLayout>
+</ErrorPage>
 
 <style>
     :global(html) {
