@@ -12,7 +12,7 @@ if (!template) {
 }
 ---
 
-<Layout screenshotOptions={{ width: 1500 }}>
+<Layout screenshotOptions={{ width: 1500 }} minWidth="500px" maxWidth="1800px">
 	<HeaderLogo slot="header">
 		<span class="smol">v{template.revision}</span>
 	</HeaderLogo>
@@ -20,10 +20,3 @@ if (!template) {
 	<KinkCheck kinks={template.kinks} store={template.id} client:load />
     <ClearButton store={template.id} slot="bottom-nav" />
 </Layout>
-
-<style>
-	:global(div#content) {
-		min-width: 500px;
-		max-width: 1800px;
-	}
-</style>
