@@ -4,7 +4,6 @@
 
 .td {
     padding: .1em .05em .1em .4em;
-    position: relative;
 }
 
 .td:last-child {
@@ -15,12 +14,13 @@
     background-color: rgb(var(--cmblack));
     color: white;
     visibility: hidden;
-    width: 300px;
+    width: min(300px, calc(100vw - 16px));
+    overflow-wrap: anywhere;
     text-align: center;
     border-radius: .5em;
-    position: absolute;
+    position: fixed;
     z-index: 1;
-    top: 100%;
+    top: 0;
     left: 0;
 }
 
