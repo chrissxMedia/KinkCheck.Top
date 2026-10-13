@@ -15,7 +15,8 @@ export default function Rater({ text, rating, setRating }:
     });
     const handleClick = updateRating && ((e: MouseEvent) => {
         e.preventDefault();
-        const step = e.shiftKey || e.altKey
+        const halfStep = document.documentElement.dataset.raterStep === "half";
+        const step = (e.shiftKey || e.altKey) !== halfStep
             ? (e.button ? -0.5 : 0.5)
             : (e.button ? -1 : 1);
         updateRating(step);
