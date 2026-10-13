@@ -16,9 +16,11 @@ export default function Rater({ label, text, rating, setRating }:
     });
     const handleClick = updateRating && ((e: MouseEvent) => {
         e.preventDefault();
-        const input = document.documentElement.dataset.raterStep
-            ?? localStorage.getItem("rater-step")
-            ?? (navigator.maxTouchPoints > 0 ? "picker" : "full");
+        let input = navigator.maxTouchPoints > 0 ? "picker" : "full";
+        try {
+            input = document.documentElement.dataset.raterStep
+                ?? localStorage.getItem("rater-step") ?? input;
+        } catch {}
         if (e.button === 0 && input === "picker") {
             setPicker(true);
             return;
@@ -64,7 +66,7 @@ function RatingPicker({ label, rating, setRating, close }: {
     useEffect(() => { dialog.current?.showModal(); }, []);
 
     return <dialog ref={dialog} class={styles.picker} aria-labelledby={title}
-        onClose={close} onClick={(event) => {
+        onClose={close} onPointerDown={(event) => {
             if (event.target === event.currentTarget) dialog.current?.close();
         }}>
         <div class={styles.pickerContent}>
