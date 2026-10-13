@@ -19,7 +19,9 @@ const { id, label, options, touchDefault } = Astro.props;
 <script>
     document.querySelectorAll<HTMLElement>(".setting-tabs").forEach((setting) => {
         const inputs = Array.from(setting.querySelectorAll<HTMLInputElement>('input[type="radio"]'));
-        const saved = inputs.find((input) => input.value === localStorage.getItem(setting.id));
+        let stored: string | null = null;
+        try { stored = localStorage.getItem(setting.id); } catch {}
+        const saved = inputs.find((input) => input.value === stored);
         const touchDefault = navigator.maxTouchPoints > 0
             && inputs.find((input) => input.value === setting.dataset.touchDefault);
         const selected = saved || touchDefault || inputs[0];
@@ -29,7 +31,7 @@ const { id, label, options, touchDefault } = Astro.props;
         setting.addEventListener("change", (event) => {
             if (!(event.target instanceof HTMLInputElement)) return;
             document.documentElement.setAttribute("data-" + setting.id, event.target.value);
-            localStorage.setItem(setting.id, event.target.value);
+            try { localStorage.setItem(setting.id, event.target.value); } catch {}
         });
     });
 </script>
