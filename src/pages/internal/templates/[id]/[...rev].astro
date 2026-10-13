@@ -25,20 +25,22 @@ export async function getStaticPaths() {
 
 {template ? <Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }} maxWidth="1800px">
     <HeaderLogo slot="header">
-        <span class="smol">{template.name}&nbsp;v{template.revision}</span>
-    </HeaderLogo>
-    <select class="versionselector" slot="header-controls" aria-label="Template version">
-        <option value={`/internal/templates/${template.id}/`} selected={!rev}>
-            latest ({template.revisions[0].revision})
-        </option>
-        <optgroup label="Versions">
-            {template.revisions.map(({ revision }) => (
-                <option value={`/internal/templates/${template.id}/${revision}/`} selected={rev === revision}>
-                    {revision}
+        <span class="smol">
+            {template.name}&nbsp;
+            <select class="versionselector" aria-label="Template version">
+                <option value={`/internal/templates/${template.id}/`} selected={!rev}>
+                    latest ({template.revisions[0].revision})
                 </option>
-            ))}
-        </optgroup>
-    </select>
+                <optgroup label="Versions">
+                    {template.revisions.map(({ revision }) => (
+                        <option value={`/internal/templates/${template.id}/${revision}/`} selected={rev === revision}>
+                            {revision}
+                        </option>
+                    ))}
+                </optgroup>
+            </select>
+        </span>
+    </HeaderLogo>
     <RatingOverview slot="header-legend" />
     <KinkCheck kinks={template.kinks} store={template.id} client:load />
     <ClearButton store={template.id} slot="bottom-nav" />
@@ -54,3 +56,18 @@ export async function getStaticPaths() {
         window.location.href = (event.currentTarget as HTMLSelectElement).value;
     });
 </script>
+
+<style>
+    .versionselector {
+        padding: 0.25em 0.5em;
+        border: 1px solid #666;
+        border-radius: 0.25rem;
+        background: black;
+        color: white;
+        cursor: pointer;
+    }
+    .versionselector:focus-visible {
+        outline: none;
+        border-color: white;
+    }
+</style>
