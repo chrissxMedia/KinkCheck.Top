@@ -23,11 +23,11 @@ export async function getStaticPaths() {
 }
 ---
 
-{template ? <Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }} minWidth="475px" maxWidth="1800px">
+{template ? <Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }} maxWidth="1800px">
     <HeaderLogo slot="header">
         <span class="smol">{template.name}&nbsp;v{template.revision}</span>
     </HeaderLogo>
-    <select class="versionselector" slot="header" aria-label="Template version">
+    <select class="versionselector" slot="header-controls" aria-label="Template version">
         <option value={`/internal/templates/${template.id}/`} selected={!rev}>
             latest ({template.revisions[0].revision})
         </option>
@@ -39,7 +39,7 @@ export async function getStaticPaths() {
             ))}
         </optgroup>
     </select>
-    <RatingOverview slot="header" />
+    <RatingOverview slot="header-legend" />
     <KinkCheck kinks={template.kinks} store={template.id} client:load />
     <ClearButton store={template.id} slot="bottom-nav" />
     <SaveButton
@@ -54,9 +54,3 @@ export async function getStaticPaths() {
         window.location.href = (event.currentTarget as HTMLSelectElement).value;
     });
 </script>
-
-<style>
-    select {
-        margin: auto 0;
-    }
-</style>
