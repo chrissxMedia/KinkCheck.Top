@@ -2,15 +2,16 @@
 interface Props {
     id: string;
     label: string;
-    options: [[string, string], [string, string]];
+    options: [string, string][];
+    touchDefault?: string;
 }
 
-const { id, label, options } = Astro.props;
+const { id, label, options, touchDefault } = Astro.props;
 ---
 
-<div class="setting-tabs" {id}>
+<div class="setting-tabs" {id} data-touch-default={touchDefault}>
     <span id={`${id}-label`}>{label}</span>
-    <div class="tabs" role="radiogroup" aria-labelledby={`${id}-label`}>
+    <div class="tabs" role="radiogroup" aria-labelledby={`${id}-label`} style={{ "--tab-count": options.length }}>
         {options.map(([value, option], index) => (
             <>
                 <input id={`${id}-${value}`} type="radio" name={id} {value} checked={index === 0} />
@@ -23,7 +24,10 @@ const { id, label, options } = Astro.props;
 <script>
     document.querySelectorAll<HTMLElement>(".setting-tabs").forEach((setting) => {
         const inputs = Array.from(setting.querySelectorAll<HTMLInputElement>('input[type="radio"]'));
-        const selected = inputs.find((input) => input.value === localStorage.getItem(setting.id)) ?? inputs[0];
+        const saved = inputs.find((input) => input.value === localStorage.getItem(setting.id));
+        const touchDefault = navigator.maxTouchPoints > 0
+            && inputs.find((input) => input.value === setting.dataset.touchDefault);
+        const selected = saved || touchDefault || inputs[0];
         selected.checked = true;
         document.documentElement.setAttribute("data-" + setting.id, selected.value);
         setting.addEventListener("change", (event) => {
@@ -44,9 +48,12 @@ const { id, label, options } = Astro.props;
     .setting-tabs > span {
         font-size: 0.875rem;
     }
+    .setting-tabs:has(input:nth-of-type(3)) {
+        grid-template-columns: minmax(0, 1fr);
+    }
     .tabs {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(var(--tab-count), minmax(0, 1fr));
         gap: 3px;
         position: relative;
         padding: 3px;
@@ -59,14 +66,17 @@ const { id, label, options } = Astro.props;
         top: 3px;
         bottom: 3px;
         left: 3px;
-        width: calc((100% - 9px) / 2);
+        width: calc((100% - (var(--tab-count) + 1) * 3px) / var(--tab-count));
         border-radius: 999px;
         background: #666;
         transition: transform 180ms ease;
         pointer-events: none;
     }
-    .tabs:has(input:last-of-type:checked)::before {
+    .tabs:has(input:nth-of-type(2):checked)::before {
         transform: translateX(calc(100% + 3px));
+    }
+    .tabs:has(input:nth-of-type(3):checked)::before {
+        transform: translateX(calc(200% + 6px));
     }
     input {
         position: absolute;
