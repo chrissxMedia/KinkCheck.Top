@@ -25,7 +25,7 @@ export async function getStaticPaths() {
 
 {template ? <Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }} maxWidth="1800px">
     <HeaderLogo slot="header">
-        <span class="smol">
+        <span class="smol template-version">
             {template.name}&nbsp;
             <select class="versionselector" aria-label="Template version">
                 <option value={`/internal/templates/${template.id}/`} selected={!rev}>
@@ -58,7 +58,14 @@ export async function getStaticPaths() {
 </script>
 
 <style>
+    .template-version {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        white-space: nowrap;
+    }
     .versionselector {
+        min-width: 0;
         padding: 0.25em 0.5em;
         border: 1px solid #666;
         border-radius: 0.25rem;

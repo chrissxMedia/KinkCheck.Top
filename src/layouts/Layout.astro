@@ -82,23 +82,17 @@ const internal = Astro.url.pathname.startsWith("/internal/");
         flex: none;
     }
     header {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-areas: "title";
+        display: flex;
         align-items: center;
         gap: 0.5rem 1rem;
     }
-    header:has(.header-legend) {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-        grid-template-areas: "title legend";
-    }
     .header-title {
-        grid-area: title;
+        flex: 1;
         min-width: 0;
         overflow-wrap: anywhere;
     }
     .header-legend {
-        grid-area: legend;
+        flex: 2;
         min-width: 0;
     }
     header.with-sidebar {
@@ -107,13 +101,13 @@ const internal = Astro.url.pathname.startsWith("/internal/");
     :global(body.screenshot) header {
         padding-right: 0;
     }
-    @media screen and (width <= 1000px) {
-        :global(body:not(.screenshot)) header:has(.header-legend) {
-            grid-template-columns: minmax(0, 1fr);
-            grid-template-areas: "title" "legend";
+    @media screen and (max-width: 1000px) {
+        :global(body:not(.screenshot)) header {
+            flex-direction: column;
+            align-items: stretch;
         }
     }
-    @media screen and (width <= 600px) {
+    @media screen and (max-width: 600px) {
         div#content {
             padding: 0;
         }
