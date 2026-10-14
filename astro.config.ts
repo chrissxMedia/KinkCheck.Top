@@ -6,6 +6,17 @@ import node from "@astrojs/node";
 export default defineConfig({
   site: process.env.GIT_REF === "bottom" ? "https://Bottom.KinkCheck.Top" : "https://KinkCheck.Top",
   integrations: [preact()],
+  vite: {
+    build: {
+      rolldownOptions: {
+        output: {
+          minify: {
+            compress: { dropConsole: true },
+          },
+        },
+      },
+    },
+  },
   // Keep the content data-store in the project .astro so `astro sync` (build mode)
   // and vitest (dev mode, root/.astro) read the same store instead of sync writing
   // to node_modules/.astro while tests read an empty root/.astro.
