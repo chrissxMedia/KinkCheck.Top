@@ -16,8 +16,6 @@ const { template_id, template_revision } = Astro.props;
 </Dialog>
 
 <script>
-    import { actions } from "astro:actions";
-
     document.querySelectorAll<HTMLButtonElement>("button[data-template-id][data-template-revision]").forEach((button) => {
         const dialog = button.nextElementSibling as HTMLDialogElement;
         const message = dialog.querySelector("p")!;
@@ -36,6 +34,7 @@ const { template_id, template_revision } = Astro.props;
 
             button.disabled = true;
             try {
+                const { actions } = await import("astro:actions");
                 const { data, error } = await actions.check.save({ ...props, data: JSON.parse(saved) });
                 if (error) throw error;
                 window.location.href = `/internal/checks/${data.id}`;
