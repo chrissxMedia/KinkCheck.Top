@@ -4,23 +4,34 @@ import type { validRating } from "../zod";
 import Rater from "./Rater";
 ---
 
-<div>
-    {ratings.map((text, rating) => <Rater {text} rating={rating as validRating} />)}
+<div class="overview">
+    <div class="ratings">
+        {ratings.map((text, rating) => <Rater {text} rating={rating as validRating} />)}
+    </div>
 </div>
 
 <style>
-    div {
+    .overview {
+        container-type: inline-size;
+        font-size: 1.35em;
+    }
+    .ratings {
         display: flex;
         flex-flow: row wrap;
         justify-content: space-evenly;
         align-items: center;
         gap: 0.25em 1.5ch;
-        font-size: 1.35em;
         white-space: nowrap;
     }
     @media screen and (width <= 800px) {
-        :global(body:not(.screenshot)) div {
+        :global(body:not(.screenshot)) .ratings {
             justify-content: space-between;
+        }
+    }
+    @container (width >= 52ch) and (width < 93ch) {
+        .ratings {
+            display: grid;
+            grid-template-columns: repeat(3, max-content);
         }
     }
 </style>
