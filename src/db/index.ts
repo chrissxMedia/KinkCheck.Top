@@ -12,6 +12,7 @@ async function openDb(): Promise<NodeSQLiteDatabase<EmptyRelations>> {
     const file = KCT_DATABASE_FILE;
     const existed = existsSync(file);
     const db = drizzle(file);
+    db.$client.exec("PRAGMA busy_timeout = 5000");
     if (existed && GIT_SHA) {
         const backupFile = `${file}.${GIT_SHA.substring(0, 7)}.bak`;
         if (!existsSync(backupFile)) await backup(db.$client, backupFile);
