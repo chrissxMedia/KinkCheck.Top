@@ -6,10 +6,10 @@ import { drizzle, type NodeSQLiteDatabase } from "drizzle-orm/node-sqlite";
 import { migrate } from "drizzle-orm/node-sqlite/migrator";
 import { existsSync } from "node:fs";
 import { backup } from "node:sqlite";
-import { KCT_DATABASE_FILE, GIT_SHA } from "astro:env/server";
+import { GIT_SHA } from "astro:env/server";
 
 async function openDb(): Promise<NodeSQLiteDatabase<EmptyRelations>> {
-    const file = KCT_DATABASE_FILE;
+    const file = process.env.KCT_DATABASE_FILE ?? "./.dev.db";
     const existed = existsSync(file);
     const db = drizzle(file);
     db.$client.exec("PRAGMA busy_timeout = 5000");
