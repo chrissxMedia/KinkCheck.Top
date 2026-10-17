@@ -3,6 +3,12 @@
 .git/
 .github/
 .vscode/
+**/.env
+**/.env.*
+!**/.env.example
+**/*.db
+**/*.db-*
+**/*.db.*.bak*
 dist/
 node_modules/
 test/
