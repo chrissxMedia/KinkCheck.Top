@@ -10,13 +10,13 @@ import Rater from "./Rater";
 
 <style>
     div {
-        flex-grow: 1;
         display: flex;
         flex-flow: row wrap;
         justify-content: space-evenly;
         align-items: center;
-        column-gap: 1.5ch;
+        gap: 0.25em 1.5ch;
         font-size: 1.35em;
+        white-space: nowrap;
     }
     @media screen and (width <= 800px) {
         :global(body:not(.screenshot)) div {
