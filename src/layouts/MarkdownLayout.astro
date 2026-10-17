@@ -5,7 +5,7 @@ export type Props = { frontmatter: { title: string } };
 const { frontmatter } = Astro.props;
 ---
 
-<Layout title={frontmatter.title}>
+<Layout title={frontmatter.title} maxWidth="120ch">
     <header><HeaderLogo>{frontmatter.title}</HeaderLogo></header>
     <main>
         <slot />
@@ -13,10 +13,6 @@ const { frontmatter } = Astro.props;
 </Layout>
 
 <style>
-    :global(div#content) {
-        max-width: 120ch;
-    }
-
     main :global(p) {
         font-family: var(--sans-serif);
     }

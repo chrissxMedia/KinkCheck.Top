@@ -1,3 +1,12 @@
+:global(:root) {
+    --rating-0: #d0d0d0;
+    --rating-1: #00e0e0;
+    --rating-2: #00c020;
+    --rating-3: #eeee20;
+    --rating-4: #d02000;
+    --rating-5: #303030;
+}
+
 .clickable,
 .noclick {
     display: flex;
@@ -12,6 +21,37 @@
     border-radius: 0;
     margin-right: .1875em;
     padding: 0 .5em;
+}
+
+:is(.clickable, .noclick) button[data-rating="0"] { background: var(--rating-0); }
+:is(.clickable, .noclick) button[data-rating="1"] { background: var(--rating-1); }
+:is(.clickable, .noclick) button[data-rating="2"] { background: var(--rating-2); }
+:is(.clickable, .noclick) button[data-rating="3"] { background: var(--rating-3); }
+:is(.clickable, .noclick) button[data-rating="4"] { background: var(--rating-4); }
+:is(.clickable, .noclick) button[data-rating="5"] { background: var(--rating-5); }
+
+:is(.clickable, .noclick) button[data-rating="1.5"] {
+    --rater-lower: var(--rating-1);
+    --rater-upper: var(--rating-2);
+}
+
+:is(.clickable, .noclick) button[data-rating="2.5"] {
+    --rater-lower: var(--rating-2);
+    --rater-upper: var(--rating-3);
+}
+
+:is(.clickable, .noclick) button[data-rating="3.5"] {
+    --rater-lower: var(--rating-3);
+    --rater-upper: var(--rating-4);
+}
+
+:is(.clickable, .noclick) button[data-rating="4.5"] {
+    --rater-lower: var(--rating-4);
+    --rater-upper: var(--rating-5);
+}
+
+:is(.clickable, .noclick) button[data-rating$=".5"] {
+    background: linear-gradient(135deg, var(--rater-lower) var(--rater-first-stop, 0%), var(--rater-upper) var(--rater-second-stop, 100%));
 }
 
 .clickable,

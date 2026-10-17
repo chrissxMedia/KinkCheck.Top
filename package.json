@@ -1,19 +1,19 @@
 {
   "name": "kinkcheck",
   "type": "module",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "vitest"
+    "test": "astro sync && vitest run"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.5",
     "@astrojs/preact": "^6.0.0",
-    "@zumer/snapdom": "^2.15.0",
+    "@zumer/snapdom": "^3.1.1",
     "astro": "^7.3.2",
     "autoprefixer": "^10.5.0",
     "cmdesigns": "^0.1.6",
@@ -31,7 +31,7 @@
     "vitest": "^5.0.0"
   },
   "allowScripts": {
-    "esbuild@0.28.1": true,
-    "fsevents@2.3.3": true
+    "esbuild": true,
+    "fsevents": true
   }
 }
