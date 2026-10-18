@@ -33,6 +33,10 @@ export const validRating = z.union([
 export type validRating = z.infer<typeof validRating>;
 
 export const checkData = z.object({
-    ratings: z.array(z.union([z.array(validRating).nonempty(), validRating]).nullish()),
+    // shortcut: templates use IDs 0..101 and at most two positions, raise these bounds for larger templates.
+    ratings: z.custom<unknown[]>(value => Array.isArray(value) && value.length <= 256
+        && value.every(r => !Array.isArray(r) || r.length <= 2),
+        "Expected at most 256 kink ratings with at most two positions each")
+        .pipe(z.array(z.union([z.array(validRating).nonempty(), validRating]).nullish())),
 });
 export type checkData = z.infer<typeof checkData>;
