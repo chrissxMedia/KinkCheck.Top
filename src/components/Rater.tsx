@@ -23,7 +23,8 @@ export default function Rater({ text, rating, setRating }:
             suppressClick.current = false;
             return;
         }
-        const step = e.shiftKey || e.altKey || longPress
+        const halfStep = document.documentElement.dataset.raterStep === "half";
+        const step = (e.shiftKey || e.altKey || longPress) !== halfStep
             ? (e.button ? -0.5 : 0.5)
             : (e.button ? -1 : 1);
         updateRating(step);
