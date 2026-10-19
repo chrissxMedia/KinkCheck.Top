@@ -4,35 +4,9 @@ import type { template, template_revision } from "../zod";
 import { getEntry } from "astro:content";
 import { drizzle, type NodeSQLiteDatabase } from "drizzle-orm/node-sqlite";
 import { migrate } from "drizzle-orm/node-sqlite/migrator";
-import { closeSync, existsSync, mkdtempSync, openSync, readSync, renameSync, rmSync } from "node:fs";
-import { backup, DatabaseSync } from "node:sqlite";
+import { existsSync, mkdtempSync, renameSync, rmSync } from "node:fs";
+import { backup } from "node:sqlite";
 import { KCT_DATABASE_FILE, GIT_SHA } from "astro:env/server";
-
-function validBackup(file: string): boolean {
-    let db: DatabaseSync | undefined;
-    try {
-        const fd = openSync(file, "r");
-        try {
-            const header = Buffer.alloc(16);
-            // SQLite accepts zero-byte files as empty databases, even for integrity_check.
-            if (readSync(fd, header, 0, header.length, 0) !== header.length ||
-                header.toString() !== "SQLite format 3\0") return false;
-        } finally {
-            closeSync(fd);
-        }
-        db = new DatabaseSync(file, { readOnly: true });
-        const result = db.prepare("PRAGMA integrity_check").all();
-        return result.length === 1 && result[0].integrity_check === "ok";
-    } catch (error) {
-        if (error instanceof Error && (
-            ("code" in error && error.code === "ENOENT") ||
-            ("errcode" in error && (error.errcode === 11 || error.errcode === 26))
-        )) return false;
-        throw error;
-    } finally {
-        db?.close();
-    }
-}
 
 async function openDb(): Promise<NodeSQLiteDatabase<EmptyRelations>> {
     const file = KCT_DATABASE_FILE;
@@ -41,13 +15,12 @@ async function openDb(): Promise<NodeSQLiteDatabase<EmptyRelations>> {
     db.$client.exec("PRAGMA busy_timeout = 5000");
     if (existed && GIT_SHA) {
         const backupFile = `${file}.${GIT_SHA.substring(0, 7)}.bak`;
-        if (!validBackup(backupFile)) {
+        if (!existsSync(backupFile)) {
             const temporaryDir = mkdtempSync(`${backupFile}.`);
             const temporaryFile = `${temporaryDir}/backup.db`;
             try {
                 await backup(db.$client, temporaryFile);
-                if (!validBackup(temporaryFile)) throw new Error(`Invalid backup: ${temporaryFile}`);
-                if (!validBackup(backupFile)) renameSync(temporaryFile, backupFile);
+                if (!existsSync(backupFile)) renameSync(temporaryFile, backupFile);
             } finally {
                 rmSync(temporaryDir, { recursive: true, force: true });
             }
