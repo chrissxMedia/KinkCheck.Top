@@ -4,7 +4,7 @@ import type { template, template_revision } from "../zod";
 import { getEntry } from "astro:content";
 import { drizzle, type NodeSQLiteDatabase } from "drizzle-orm/node-sqlite";
 import { migrate } from "drizzle-orm/node-sqlite/migrator";
-import { existsSync } from "node:fs";
+import { existsSync, mkdtempSync, renameSync, rmSync } from "node:fs";
 import { backup } from "node:sqlite";
 import { KCT_DATABASE_FILE, GIT_SHA } from "astro:env/server";
 
@@ -15,7 +15,16 @@ async function openDb(): Promise<NodeSQLiteDatabase<EmptyRelations>> {
     db.$client.exec("PRAGMA busy_timeout = 5000");
     if (existed && GIT_SHA) {
         const backupFile = `${file}.${GIT_SHA.substring(0, 7)}.bak`;
-        if (!existsSync(backupFile)) await backup(db.$client, backupFile);
+        if (!existsSync(backupFile)) {
+            const temporaryDir = mkdtempSync(`${backupFile}.`);
+            const temporaryFile = `${temporaryDir}/backup.db`;
+            try {
+                await backup(db.$client, temporaryFile);
+                if (!existsSync(backupFile)) renameSync(temporaryFile, backupFile);
+            } finally {
+                rmSync(temporaryDir, { recursive: true, force: true });
+            }
+        }
     }
     db.$client.exec("PRAGMA journal_mode = WAL");
     migrate(db, { migrationsFolder: "migrations" });
