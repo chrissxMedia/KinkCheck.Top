@@ -40,10 +40,14 @@ export default function Rater({ text, rating, setRating }:
     });
     const handlePointerMove = cancelPress && ((e: PointerEvent) => {
         const start = pointer.current;
-        if (start && start.pointerId === e.pointerId
-            && Math.hypot(e.clientX - start.clientX, e.clientY - start.clientY) > 10) cancelPress();
+        if (!start || start.pointerId !== e.pointerId) return;
+        const bounds = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        if (Math.hypot(e.clientX - start.clientX, e.clientY - start.clientY) > 10
+            || e.clientX < bounds.left || e.clientX >= bounds.right
+            || e.clientY < bounds.top || e.clientY >= bounds.bottom) cancelPress();
     });
-    const handlePointerUp = handleClick && ((e: PointerEvent) => {
+    const handlePointerUp = handleClick && handlePointerMove && ((e: PointerEvent) => {
+        handlePointerMove(e);
         const start = pointer.current;
         if (!start || start.pointerId !== e.pointerId) return;
         pointer.current = null;
