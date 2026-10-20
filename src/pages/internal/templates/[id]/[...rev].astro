@@ -29,12 +29,12 @@ export async function getStaticPaths() {
             {template.name}&nbsp;
             <select class="versionselector" aria-label="Template version">
                 <option value={`/internal/templates/${template.id}/`} selected={!rev}>
-                    latest ({template.revisions[0].revision})
+                    latest (v{template.revisions[0].revision})
                 </option>
                 <optgroup label="Versions">
                     {template.revisions.map(({ revision }) => (
                         <option value={`/internal/templates/${template.id}/${revision}/`} selected={rev === revision}>
-                            {revision}
+                            v{revision}
                         </option>
                     ))}
                 </optgroup>
