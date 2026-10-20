@@ -13,8 +13,9 @@
     flex-direction: row;
 }
 
-.clickable button,
-.noclick button {
+.rating {
+    box-sizing: border-box;
+    flex-shrink: 0;
     width: 1em;
     height: 1em;
     border: none;
@@ -23,34 +24,34 @@
     padding: 0 .5em;
 }
 
-:is(.clickable, .noclick) button[data-rating="0"] { background: var(--rating-0); }
-:is(.clickable, .noclick) button[data-rating="1"] { background: var(--rating-1); }
-:is(.clickable, .noclick) button[data-rating="2"] { background: var(--rating-2); }
-:is(.clickable, .noclick) button[data-rating="3"] { background: var(--rating-3); }
-:is(.clickable, .noclick) button[data-rating="4"] { background: var(--rating-4); }
-:is(.clickable, .noclick) button[data-rating="5"] { background: var(--rating-5); }
+.rating[data-rating="0"] { background: var(--rating-0); }
+.rating[data-rating="1"] { background: var(--rating-1); }
+.rating[data-rating="2"] { background: var(--rating-2); }
+.rating[data-rating="3"] { background: var(--rating-3); }
+.rating[data-rating="4"] { background: var(--rating-4); }
+.rating[data-rating="5"] { background: var(--rating-5); }
 
-:is(.clickable, .noclick) button[data-rating="1.5"] {
+.rating[data-rating="1.5"] {
     --rater-lower: var(--rating-1);
     --rater-upper: var(--rating-2);
 }
 
-:is(.clickable, .noclick) button[data-rating="2.5"] {
+.rating[data-rating="2.5"] {
     --rater-lower: var(--rating-2);
     --rater-upper: var(--rating-3);
 }
 
-:is(.clickable, .noclick) button[data-rating="3.5"] {
+.rating[data-rating="3.5"] {
     --rater-lower: var(--rating-3);
     --rater-upper: var(--rating-4);
 }
 
-:is(.clickable, .noclick) button[data-rating="4.5"] {
+.rating[data-rating="4.5"] {
     --rater-lower: var(--rating-4);
     --rater-upper: var(--rating-5);
 }
 
-:is(.clickable, .noclick) button[data-rating$=".5"] {
+.rating[data-rating$=".5"] {
     background: linear-gradient(135deg, var(--rater-lower) var(--rater-first-stop, 0%), var(--rater-upper) var(--rater-second-stop, 100%));
 }
 
@@ -100,13 +101,10 @@
     margin-bottom: 12px;
 }
 
-.options > div {
+.options > button {
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-.options > div > button {
     width: 100%;
     min-height: 44px;
     border: 1px solid #777;
@@ -120,7 +118,7 @@
     cursor: pointer;
 }
 
-.options > div > button[aria-pressed="true"] {
+.options > button[aria-pressed="true"] {
     outline: 1px solid white;
 }
 

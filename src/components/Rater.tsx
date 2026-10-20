@@ -3,6 +3,11 @@ import { ratings } from "../base";
 import type { validRating } from "../zod";
 import styles from "./Rater.module.css";
 
+function formatRating(rating: validRating) {
+    return `${rating} · ${Number.isInteger(rating) ? ratings[rating]
+        : `${ratings[Math.floor(rating)]} / ${ratings[Math.ceil(rating)]}`}`;
+}
+
 export default function Rater({ label, text, rating, setRating }:
     { label?: string, text?: string, rating: validRating, setRating?: (r: validRating) => void }) {
     const [picker, setPicker] = useState(false);
@@ -26,8 +31,9 @@ export default function Rater({ label, text, rating, setRating }:
         }
         let input = navigator.maxTouchPoints > 0 ? "picker" : "full";
         try {
-            input = document.documentElement.dataset.raterStep
-                ?? localStorage.getItem("rater-step") ?? input;
+            const preferred = document.documentElement.dataset.raterStep
+                ?? localStorage.getItem("rater-step");
+            if (preferred && ["full", "half", "picker"].includes(preferred)) input = preferred;
         } catch {}
         if (e.button === 0 && input === "picker") {
             setPicker(true);
@@ -85,8 +91,9 @@ export default function Rater({ label, text, rating, setRating }:
                 onPointerDown={handlePointerDown} onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp} onPointerCancel={cancelPress} onPointerLeave={cancelPress}
                 onKeyDown={handleKey} onMouseEnter={focus} onMouseLeave={unfocus}>
-                <button type="button" data-rating={rating} ref={btn}
-                    tabIndex={setRating ? 0 : -1} aria-label={label ?? text ?? "Rating"} />
+                <button type="button" class={styles.rating} data-rating={rating} ref={btn}
+                    tabIndex={setRating ? 0 : -1}
+                    aria-label={`${label ?? text ?? "Rating"}, ${formatRating(rating)}`} />
                 {text && <span>{text}</span>}
             </div>
             {picker && setRating && <RatingPicker label={label ?? text ?? "Rating"}
@@ -104,20 +111,23 @@ function RatingPicker({ label, rating, setRating, close }: {
 
     return <dialog ref={dialog} class={styles.picker} aria-labelledby={title}
         onClose={close} onPointerDown={(event) => {
-            if (event.target === event.currentTarget) dialog.current?.close();
+            if (event.target !== event.currentTarget) return;
+            const { left, right, top, bottom } = event.currentTarget.getBoundingClientRect();
+            if (event.clientX < left || event.clientX >= right
+                || event.clientY < top || event.clientY >= bottom) dialog.current?.close();
         }}>
         <div class={styles.pickerContent}>
             <h2 id={title}>{label}</h2>
             <div class={styles.options}>
-                {([0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5] as const).map((value) => <div key={value}>
-                    <Rater rating={value} />
-                    <button type="button" autoFocus={value === rating}
+                {([0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5] as const).map((value) =>
+                    <button key={value} type="button" autoFocus={value === rating}
                         aria-pressed={value === rating} onClick={() => {
                             setRating(value);
                             dialog.current?.close();
-                        }}>{value} · {Number.isInteger(value) ? ratings[value]
-                            : `${ratings[Math.floor(value)]} / ${ratings[Math.ceil(value)]}`}</button>
-                </div>)}
+                        }}>
+                        <span class={styles.rating} data-rating={value} aria-hidden="true" />
+                        <span>{formatRating(value)}</span>
+                    </button>)}
             </div>
             <button type="button" class={styles.cancel} onClick={() => dialog.current?.close()}>Cancel</button>
         </div>
