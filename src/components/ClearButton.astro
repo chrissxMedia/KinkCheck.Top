@@ -1,5 +1,5 @@
 ---
-import Button from "./Button.astro";
+import { Button } from "cmdesigns";
 import Dialog from "./Dialog.astro";
 
 interface Props {
@@ -13,13 +13,15 @@ const { store } = Astro.props;
 <Dialog>
     Are you sure you want to clear your ratings? This action is irreversible.
     <Button slot="buttons" data-close>Cancel</Button>
-    <Button slot="buttons">Clear</Button>
+    <Button slot="buttons" variant="danger">Clear</Button>
 </Dialog>
 
 <script>
+    import { showDialog } from "../dialog";
+
     document.querySelectorAll<HTMLButtonElement>("button[data-store]").forEach((button) => {
         const dialog = button.nextElementSibling as HTMLDialogElement;
-        button.addEventListener("click", () => dialog.showModal());
+        button.addEventListener("click", () => showDialog(dialog, button));
         dialog.querySelector<HTMLButtonElement>("button:last-child")!.addEventListener("click", () => {
             window.localStorage.removeItem(button.dataset.store!);
             window.location.reload();
@@ -34,8 +36,5 @@ const { store } = Astro.props;
         background: none;
         font: inherit;
         text-align: inherit;
-    }
-    dialog button:last-child {
-        background-color: rgb(var(--cmred));
     }
 </style>

@@ -1,13 +1,14 @@
 ---
+import { Dialog } from "cmdesigns";
 import type { HTMLAttributes } from "astro/types";
 
 type Props = HTMLAttributes<"dialog">;
 ---
 
-<dialog {...Astro.props} data-dialog>
+<Dialog {...Astro.props} data-dialog>
     <p><slot /></p>
-    <div><slot name="buttons" /></div>
-</dialog>
+    <slot name="buttons" slot="buttons" />
+</Dialog>
 
 <script>
     document.querySelectorAll<HTMLDialogElement>("dialog[data-dialog]").forEach((dialog) => {
@@ -23,21 +24,8 @@ type Props = HTMLAttributes<"dialog">;
 </script>
 
 <style>
-    dialog {
-        background-color: black;
-        border: 1px solid white;
-        border-radius: 0.5em;
-    }
-    dialog::backdrop {
-        background-color: rgba(0, 0, 0, 0.5);
-    }
     p {
         font-family: var(--sans-serif);
         margin: 0;
-    }
-    div {
-        display: flex;
-        flex-direction: row-reverse;
-        margin-top: 0.5em;
     }
 </style>
