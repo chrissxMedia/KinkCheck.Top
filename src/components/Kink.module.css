@@ -4,30 +4,61 @@
 
 .td {
     padding: .1em .05em .1em .4em;
+    position: relative;
 }
 
 .td:last-child {
     padding-right: .4em;
 }
 
+.label {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+    cursor: pointer;
+}
+
 .desc {
     background-color: rgb(var(--cmblack));
     color: white;
-    visibility: hidden;
+    display: none;
+    margin: 0;
+    border: 0;
+    padding: 0;
     width: min(300px, calc(100vw - 16px));
     overflow-wrap: anywhere;
     text-align: center;
     border-radius: .5em;
-    position: fixed;
+    position: absolute;
     z-index: 1;
-    top: 0;
-    left: 0;
+    inset: 100% auto auto 0;
 }
 
-.td:hover .desc {
-    visibility: visible;
+.desc:popover-open {
+    display: block;
+    position: fixed;
+    inset: auto auto 8px 8px;
 }
 
-.td:hover .desc:hover {
-    visibility: hidden;
+@media screen and (max-width: 900px) {
+    :global(body:not(.screenshot)) .desc {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+        border-radius: 0;
+        padding: .25em .4em;
+        padding-bottom: max(.25em, env(safe-area-inset-bottom));
+    }
+}
+
+@media (hover: hover) {
+    .td:hover .desc {
+        display: block;
+    }
 }
