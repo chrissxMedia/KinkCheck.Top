@@ -28,7 +28,10 @@
     margin: 0;
     border: 0;
     padding: 0;
+    box-sizing: border-box;
     width: min(300px, calc(100vw - 16px));
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
     overflow-wrap: anywhere;
     text-align: center;
     border-radius: .5em;
@@ -41,9 +44,6 @@
     display: block;
     position: fixed;
     inset: auto auto 8px 8px;
-    box-sizing: border-box;
-    max-height: calc(100dvh - 16px);
-    overflow-y: auto;
 }
 
 @media screen and (max-width: 900px) {
