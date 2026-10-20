@@ -21,6 +21,9 @@
 }
 
 @media screen and (width <= 900px) {
+    :global(body:not(.screenshot)) .category {
+        overflow-x: auto;
+    }
     :global(body:not(.screenshot)) .category,
     :global(body:not(.screenshot)) .table {
         width: 100%;

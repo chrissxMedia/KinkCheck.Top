@@ -27,7 +27,8 @@ const internal = Astro.url.pathname.startsWith("/internal/");
     <div class:list={{ page: internal }}>
         <div id="content" style={{ minWidth, maxWidth }}>
             <header class:list={{ "with-sidebar": internal }}>
-                <slot name="header" />
+                <div class="header-title"><slot name="header" /></div>
+                {Astro.slots.has("header-legend") && <div class="header-legend"><slot name="header-legend" /></div>}
                 {internal && <button id="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="sidebar" aria-expanded="false"></button>}
             </header>
             <slot />
@@ -72,8 +73,17 @@ const internal = Astro.url.pathname.startsWith("/internal/");
     }
     header {
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem 1rem;
+    }
+    .header-title {
+        flex: 0 1 auto;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+    .header-legend {
+        flex: 1 0 50%;
+        min-width: 0;
     }
     header.with-sidebar {
         padding-right: 2.5rem;
@@ -81,9 +91,21 @@ const internal = Astro.url.pathname.startsWith("/internal/");
     :global(body.screenshot) header {
         padding-right: 0;
     }
-    @media screen and (width <= 600px) {
+    @media screen and (max-width: 1000px) {
+        :global(body:not(.screenshot)) header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+    @media screen and (max-width: 600px) {
         div#content {
             padding: 0;
+        }
+        :global(body:not(.screenshot)) header.with-sidebar {
+            padding-right: 0;
+        }
+        :global(body:not(.screenshot)) .with-sidebar .header-title {
+            padding-right: 3rem;
         }
     }
     nav.footer-nav {
