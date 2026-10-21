@@ -4,7 +4,8 @@ import type { template, template_revision } from "../zod";
 import { getEntry } from "astro:content";
 import { drizzle, type NodeSQLiteDatabase } from "drizzle-orm/node-sqlite";
 import { migrate } from "drizzle-orm/node-sqlite/migrator";
-import { existsSync, mkdtempSync, renameSync, rmSync } from "node:fs";
+import { closeSync, existsSync, fsyncSync, mkdtempSync, openSync, renameSync, rmSync } from "node:fs";
+import { dirname } from "node:path";
 import { backup } from "node:sqlite";
 import { KCT_DATABASE_FILE, GIT_SHA } from "astro:env/server";
 
@@ -20,7 +21,21 @@ async function openDb(): Promise<NodeSQLiteDatabase<EmptyRelations>> {
             const temporaryFile = `${temporaryDir}/backup.db`;
             try {
                 await backup(db.$client, temporaryFile);
-                if (!existsSync(backupFile)) renameSync(temporaryFile, backupFile);
+                const backupFd = openSync(temporaryFile, "r");
+                try {
+                    fsyncSync(backupFd);
+                } finally {
+                    closeSync(backupFd);
+                }
+                if (!existsSync(backupFile)) {
+                    renameSync(temporaryFile, backupFile);
+                    const directoryFd = openSync(dirname(backupFile), "r");
+                    try {
+                        fsyncSync(directoryFd);
+                    } finally {
+                        closeSync(directoryFd);
+                    }
+                }
             } finally {
                 rmSync(temporaryDir, { recursive: true, force: true });
             }
