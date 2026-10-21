@@ -13,7 +13,7 @@ export default defineConfig({
   adapter: node({ mode: "standalone", bodySizeLimit: 1024 * 1024 /* 1 MiB is plenty for now */ }),
   env: {
     schema: {
-      KCT_DATABASE_FILE: envField.string({ context: "server", access: "public", default: "./.dev.db" }),
+      KCT_DATABASE_FILE: envField.string({ context: "server", access: "secret", default: "./.dev.db" }),
       GIT_SHA: envField.string({ context: "server", access: "public", optional: true }),
       GIT_REF: envField.string({ context: "server", access: "public", optional: true }),
     },

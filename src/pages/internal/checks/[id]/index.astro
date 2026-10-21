@@ -32,19 +32,13 @@ const createdAt = check && new Intl.DateTimeFormat("en-CA", {
 {err ? <ErrorPage {...err}><a href="/">Start a new check</a></ErrorPage> : check && template && <Layout
     title={`${template.name} ${template.revision} check ${id}`}
     screenshotOptions={{ width: 1500 }}
+    maxWidth="1800px"
 >
     <HeaderLogo slot="header">
         <span class="smol">
             {template.name}&nbsp;v{template.revision} check&nbsp;{id} · {createdAt}
         </span>
     </HeaderLogo>
-    <RatingOverview slot="header" />
+    <RatingOverview slot="header-legend" />
     <Check kinks={template.kinks} {...decodeKinkCheck(template, check.data)} />
 </Layout>}
-
-<style>
-    :global(div#content) {
-        min-width: 475px;
-        max-width: 1800px;
-    }
-</style>

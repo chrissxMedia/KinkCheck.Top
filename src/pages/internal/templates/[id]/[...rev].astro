@@ -23,23 +23,25 @@ export async function getStaticPaths() {
 }
 ---
 
-{template ? <Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }}>
+{template ? <Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }} maxWidth="1800px">
     <HeaderLogo slot="header">
-        <span class="smol">{template.name}&nbsp;v{template.revision}</span>
-    </HeaderLogo>
-    <select class="versionselector" slot="header" aria-label="Template version">
-        <option value={`/internal/templates/${template.id}/`} selected={!rev}>
-            latest ({template.revisions[0].revision})
-        </option>
-        <optgroup label="Versions">
-            {template.revisions.map(({ revision }) => (
-                <option value={`/internal/templates/${template.id}/${revision}/`} selected={rev === revision}>
-                    {revision}
+        <span class="smol template-version">
+            {template.name}&nbsp;
+            <select class="versionselector" aria-label="Template version">
+                <option value={`/internal/templates/${template.id}/`} selected={!rev}>
+                    latest (v{template.revisions[0].revision})
                 </option>
-            ))}
-        </optgroup>
-    </select>
-    <RatingOverview slot="header" />
+                <optgroup label="Versions">
+                    {template.revisions.map(({ revision }) => (
+                        <option value={`/internal/templates/${template.id}/${revision}/`} selected={rev === revision}>
+                            v{revision}
+                        </option>
+                    ))}
+                </optgroup>
+            </select>
+        </span>
+    </HeaderLogo>
+    <RatingOverview slot="header-legend" />
     <KinkCheck kinks={template.kinks} store={template.id} client:load />
     <ClearButton store={template.id} slot="bottom-nav" />
     <SaveButton
@@ -56,11 +58,28 @@ export async function getStaticPaths() {
 </script>
 
 <style>
-    :global(div#content) {
-        min-width: 475px;
-        max-width: 1800px;
+    .template-version {
+        display: inline-flex;
+        align-items: center;
+        max-width: 100%;
+        overflow-wrap: normal;
     }
-    select {
-        margin: auto 0;
+    .versionselector {
+        min-width: 0;
+        padding: 0.25em 0.5em;
+        border: 1px solid #666;
+        border-radius: 0.25rem;
+        background: black;
+        color: white;
+        cursor: pointer;
+    }
+    .versionselector:focus-visible {
+        outline: none;
+        border-color: white;
+    }
+    @media screen and (min-width: 1001px) {
+        .versionselector {
+            flex-shrink: 0;
+        }
     }
 </style>

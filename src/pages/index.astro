@@ -12,18 +12,11 @@ if (!template) {
 }
 ---
 
-<Layout screenshotOptions={{ width: 1500 }}>
+<Layout screenshotOptions={{ width: 1500 }} maxWidth="1800px">
 	<HeaderLogo slot="header">
 		<span class="smol">v{template.revision}</span>
 	</HeaderLogo>
-	<RatingOverview slot="header" />
+	<RatingOverview slot="header-legend" />
 	<KinkCheck kinks={template.kinks} store={template.id} client:load />
     <ClearButton store={template.id} slot="bottom-nav" />
 </Layout>
-
-<style>
-	:global(div#content) {
-		min-width: 500px;
-		max-width: 1800px;
-	}
-</style>
