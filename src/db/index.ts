@@ -29,15 +29,17 @@ async function openDb(): Promise<NodeSQLiteDatabase<EmptyRelations>> {
                 }
                 if (!existsSync(backupFile)) {
                     renameSync(temporaryFile, backupFile);
-                    const directoryFd = openSync(dirname(backupFile), "r");
-                    try {
-                        fsyncSync(directoryFd);
-                    } finally {
-                        closeSync(directoryFd);
-                    }
                 }
             } finally {
                 rmSync(temporaryDir, { recursive: true, force: true });
+            }
+        }
+        for (const path of [backupFile, dirname(backupFile)]) {
+            const fd = openSync(path, "r");
+            try {
+                fsyncSync(fd);
+            } finally {
+                closeSync(fd);
             }
         }
     }
