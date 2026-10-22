@@ -42,3 +42,11 @@ Two environment variables are passed by CI (not needed locally):
 ## Contributing
 
 Issue tracker and pull requests are open — improvements, bug fixes, and feature suggestions are welcome.
+
+### Adding a new Template or revision
+
+To add a new Template, register its ID, name, and type in `tMeta` in `src/content.config.ts`, then add `templates/[id]/[revision].yaml`. For a new revision of an existing Template, add only the YAML file. The `created` date determines which revision is current.
+
+Each kink row's third value is a numeric ID. Ratings are stored by these IDs, so don't change it when moving a kink to another category or renaming it. Keep position order stable across revisions; ratings for a kink's positions are stored in that order. Keep an ID for the same concept across revisions. Give distinct kinks different IDs, and do not reuse an old ID for an unrelated kink. IDs must uniquely identify one kink within a Template.
+
+Currently, different Templates may use the same IDs. If a Template is derived from another, it's recommended to reuse IDs for kinks that keep the same meaning.

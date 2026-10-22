@@ -1,0 +1,62 @@
+---
+import type { SnapdomOptions } from "@zumer/snapdom";
+
+interface Props {
+    title: string;
+    options?: SnapdomOptions;
+}
+
+const { title, options = {} } = Astro.props;
+options.width ??= 1440;
+---
+
+<button type="button" class="screenshot-button" data-title={title} data-options={JSON.stringify(options)}>Take a Screenshot</button>
+
+<script>
+    import type { SnapdomOptions } from "@zumer/snapdom";
+
+    document.querySelectorAll<HTMLButtonElement>(".screenshot-button").forEach((button) => {
+        const title = button.dataset.title!;
+        const options: SnapdomOptions = JSON.parse(button.dataset.options!);
+        button.addEventListener("click", async () => {
+            const { snapdom } = await import("@zumer/snapdom");
+            // TODO: be able to pass in a selector for what to screenshot
+            const content = document.querySelector("div#content") as HTMLElement;
+            const width = content.style.width;
+            try {
+                document.body.classList.add("screenshot");
+                content.style.width = options.width + "px";
+                const filename = title + " " + new Date().toISOString().slice(0, 19).replace("T", " ") + ".png";
+                await snapdom.download(content, {
+                    format: "png",
+                    type: "png",
+                    backgroundColor: "#000",
+                    scale: 2,
+                    localFonts: [
+                        {
+                            family: "Unifont",
+                            src: "https://fonts.chrissx.de/fonts/unifont-14.0.03.otf",
+                        }
+                    ],
+                    embedFonts: true,
+                    filename,
+                    ...options,
+                    width: options.width! * (options.scale ?? 2),
+                });
+            } finally {
+                document.body.classList.remove("screenshot");
+                content.style.width = width;
+            }
+        });
+    });
+</script>
+
+<style>
+    button {
+        border: 0;
+        padding: 0;
+        background: none;
+        font: inherit;
+        text-align: inherit;
+    }
+</style>
