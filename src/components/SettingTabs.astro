@@ -1,0 +1,43 @@
+---
+import { Tabs } from "cmdesigns";
+
+interface Props {
+    id: string;
+    label: string;
+    options: [[string, string], [string, string]];
+}
+
+const { id, label, options } = Astro.props;
+---
+
+<div class="setting-tabs" {id}>
+    <span>{label}</span>
+    <Tabs id={`${id}-tabs`} name={id} {label} {options} />
+</div>
+
+<script>
+    document.querySelectorAll<HTMLElement>(".setting-tabs").forEach((setting) => {
+        const inputs = Array.from(setting.querySelectorAll<HTMLInputElement>('input[type="radio"]'));
+        const selected = inputs.find((input) => input.value === localStorage.getItem(setting.id)) ?? inputs[0];
+        selected.checked = true;
+        selected.dispatchEvent(new Event("change", { bubbles: true }));
+        document.documentElement.setAttribute("data-" + setting.id, selected.value);
+        setting.addEventListener("change", (event) => {
+            if (!(event.target instanceof HTMLInputElement)) return;
+            document.documentElement.setAttribute("data-" + setting.id, event.target.value);
+            localStorage.setItem(setting.id, event.target.value);
+        });
+    });
+</script>
+
+<style>
+    .setting-tabs {
+        display: grid;
+        grid-template-columns: 4.75rem minmax(0, 1fr);
+        align-items: center;
+        gap: 0.375rem;
+    }
+    .setting-tabs > span {
+        font-size: 0.875rem;
+    }
+</style>

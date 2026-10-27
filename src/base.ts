@@ -1,20 +1,39 @@
-import type { checkData, TRData } from "./zod";
+import type { checkData, TRData, validRating } from "./zod";
 
-export const ratings: [string, string][] = [
-    ["i dont know", "#d0d0d0"],
-    ["favorite", "#00e0e0"],
-    ["want to do", "#00c020"],
-    ["could be convinced", "#eeee20"],
-    ["not interested", "#d02000"],
-    ["hard limit", "#303030"],
+export const ratings: string[] = [
+    "i dont know",
+    "favorite",
+    "want to do",
+    "could be convinced",
+    "not interested",
+    "hard limit",
 ];
 
 const valueForAllKinks = <T>({ kinks }: TRData, x: T) =>
     kinks.map<T[][]>((c) => c[1].map((k) => k[1].map(() => x)));
 
 /** The runtime / template-specific representation of a check */
-export type kinkcheck = { ratings: number[][][] };
+export type kinkcheck = { ratings: validRating[][][] };
 export const defaultKinkcheck = (t: TRData): kinkcheck => ({ ratings: valueForAllKinks(t, 0) });
+
+function matchRating(a: validRating, b: validRating): validRating {
+    if (!a || !b) return a || b;
+    if (a == 5 || b == 5) return 5;
+    return (Math.round(a + b) / 2) as validRating;
+}
+
+export function match(
+    { ratings: a }: kinkcheck,
+    { ratings: b }: kinkcheck,
+): kinkcheck {
+    return {
+        ratings: a.map((rA, cat) =>
+            rA.map((rsA, kink) =>
+                rsA.map((ratA, pos) => matchRating(ratA, b[cat][kink][pos])),
+            ),
+        ),
+    };
+}
 
 function packIndexedValues<T>(indexedValues: [number, T][]): (T | undefined)[] {
     if (!indexedValues.length) return [];
@@ -35,7 +54,7 @@ export function updateCheck(oldCheck: checkData, newCheck: checkData): checkData
 
 export function encodeKinkCheck({ kinks }: TRData, { ratings }: kinkcheck): checkData {
     const r = packIndexedValues(kinks.flatMap(([, ks], cat) =>
-        ks.flatMap(([, , kid], i): [number, number[]][] => kid.length === 1
+        ks.flatMap(([, , kid], i): [number, validRating[]][] => kid.length === 1
             ? [[kid[0], ratings[cat][i]]]
             : kid.map((id, p) => [id, [ratings[cat][i][p]]]))));
     return { ratings: r.map(x => x ? (new Set(x).size === 1 ? x[0] : x) : []) } as checkData;

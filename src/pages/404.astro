@@ -1,17 +1,19 @@
 ---
-import MarkdownLayout from "../layouts/MarkdownLayout.astro";
+import ErrorPage from "../layouts/ErrorPage.astro";
+
+export const prerender = false;
 ---
 
-<MarkdownLayout frontmatter={{ title: "404: Not Found" }}>
-    <p>
-        The path <code>{Astro.url.pathname}</code> could not be found. If you believe
+<ErrorPage title="404: Not Found">
+    <p slot="detail">
+        The path <code>{Astro.originPathname}</code> could not be found. If you believe
         this is an error, i.e. a dead link, please <a
             href="https://github.com/chrissxMedia/KinkCheck.Top/issues/new"
         >
             file an issue on GitHub
         </a>.
     </p>
-</MarkdownLayout>
+</ErrorPage>
 
 <style>
     :global(html) {

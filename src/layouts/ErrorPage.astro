@@ -1,0 +1,11 @@
+---
+import MarkdownLayout from "./MarkdownLayout.astro";
+
+export type Props = { title: string; detail?: string };
+const { title, detail } = Astro.props;
+---
+
+<MarkdownLayout frontmatter={{ title }}>
+    <slot name="detail"><p>{detail}</p></slot>
+    <slot />
+</MarkdownLayout>
