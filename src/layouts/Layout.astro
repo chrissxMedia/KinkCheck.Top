@@ -8,22 +8,26 @@ import type { SnapdomOptions } from "@zumer/snapdom";
 import { GIT_REF, GIT_SHA } from "astro:env/server";
 
 export interface Props {
-    title?: string;
+    title: string;
     screenshotOptions?: Partial<SnapdomOptions>;
     minWidth?: string;
     maxWidth?: string;
 }
 
-const kc = `KinkCheck.Top v${version}`;
-let { title = kc, screenshotOptions, minWidth, maxWidth } = Astro.props;
-if (!title.includes(kc)) title += " | " + kc;
+const { title, screenshotOptions, minWidth, maxWidth } = Astro.props;
 let link = "https://github.com/chrissxMedia/KinkCheck.Top";
 if (GIT_SHA) link += `/tree/${GIT_SHA}`;
 const build = `KinkCheck.Top (${GIT_REF ?? "unknown"}) v${version}-${GIT_SHA?.substring(0, 7) ?? "???????"}`;
-const internal = Astro.url.pathname.startsWith("/internal/");
+const internal = Astro.url.pathname.startsWith("/internal");
 ---
 
-<BaseLayout lang="en" {title} {favicon}>
+<BaseLayout
+    lang="en"
+    {title}
+    {favicon}
+    site={{ name: "KinkCheck.Top", titleFormat: "{title} | KinkCheck.Top" }}
+    noindex={internal}
+>
     <div class:list={{ page: internal }}>
         <div id="content" style={{ minWidth, maxWidth }}>
             <header class:list={{ "with-sidebar": internal }}>
@@ -35,7 +39,7 @@ const internal = Astro.url.pathname.startsWith("/internal/");
         </div>
         {internal && <Sidebar>
             <slot name="bottom-nav" />
-            <ScreenshotButton {title} options={screenshotOptions} />
+            <ScreenshotButton options={screenshotOptions} />
         </Sidebar>}
     </div>
     <Footer start={2023} {link} {build}>
@@ -47,7 +51,7 @@ const internal = Astro.url.pathname.startsWith("/internal/");
             <a href="/privacy">Privacy Policy</a>
             |
             <slot name="bottom-nav" />
-            <ScreenshotButton {title} options={screenshotOptions} />
+            <ScreenshotButton options={screenshotOptions} />
         </nav>}
     </Footer>
 </BaseLayout>

@@ -12,7 +12,7 @@ if (!template) {
 }
 ---
 
-<Layout screenshotOptions={{ width: 1500 }} maxWidth="1800px">
+<Layout title={`${template.name} ${template.revision}`} screenshotOptions={{ width: 1500 }} maxWidth="1800px">
 	<HeaderLogo slot="header">
 		<span class="smol">v{template.revision}</span>
 	</HeaderLogo>
