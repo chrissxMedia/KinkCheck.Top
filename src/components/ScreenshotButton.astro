@@ -2,21 +2,19 @@
 import type { SnapdomOptions } from "@zumer/snapdom";
 
 interface Props {
-    title: string;
     options?: SnapdomOptions;
 }
 
-const { title, options = {} } = Astro.props;
+const { options = {} } = Astro.props;
 options.width ??= 1440;
 ---
 
-<button type="button" class="screenshot-button" data-title={title} data-options={JSON.stringify(options)}>Take a Screenshot</button>
+<button type="button" class="screenshot-button" data-options={JSON.stringify(options)}>Take a Screenshot</button>
 
 <script>
     import type { SnapdomOptions } from "@zumer/snapdom";
 
     document.querySelectorAll<HTMLButtonElement>(".screenshot-button").forEach((button) => {
-        const title = button.dataset.title!;
         const options: SnapdomOptions = JSON.parse(button.dataset.options!);
         button.addEventListener("click", async () => {
             const { snapdom } = await import("@zumer/snapdom");
@@ -26,7 +24,7 @@ options.width ??= 1440;
             try {
                 document.body.classList.add("screenshot");
                 content.style.width = options.width + "px";
-                const filename = title + " " + new Date().toISOString().slice(0, 19).replace("T", " ") + ".png";
+                const filename = document.title + " " + new Date().toISOString().slice(0, 19).replace("T", " ") + ".png";
                 await snapdom.download(content, {
                     format: "png",
                     type: "png",
