@@ -27,9 +27,10 @@ const templates = (await getCollection("templates"))
             ["gradient", "Gradient"],
             ["split", "Split"],
         ]} />
-        <SettingTabs id="rater-step" label="Step size" options={[
-            ["full", "Full"],
-            ["half", "Half"],
+        <SettingTabs id="rater-step" label="Rating input" touchDefault="picker" options={[
+            ["full", "Full steps"],
+            ["half", "Half steps"],
+            ["picker", "Picker"],
         ]} />
         <hr />
         {/* <a href="/tutorial">Overview & Tutorial</a> */}
