@@ -1,10 +1,27 @@
 name: Main
-on: push
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch
+        required: true
+        type: string
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && 'bottom' || github.ref }}
+  cancel-in-progress: false
 jobs:
   test:
     runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.source.outputs.sha }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+      - name: Resolve source commit
+        id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v7
         with:
           node-version: lts/*
@@ -16,9 +33,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     env:
-      DOCKER_IMAGE: chrissx/kinkcheck.top:${{ github.ref_name == 'daddy' && 'latest' || github.ref_name == 'bottom' && 'bottom' || 'ci' }}
+      DOCKER_IMAGE: chrissx/kinkcheck.top:${{ github.event_name == 'workflow_dispatch' && 'bottom' || github.ref_name == 'daddy' && 'latest' || 'ci' }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.test.outputs.sha }}
       - uses: docker/setup-docker-action@v5
         with:
           daemon-config: |
@@ -32,8 +51,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.DOCKER_IMAGE }}
           build-args: |
-            GIT_SHA=${{ github.sha }}
-            GIT_REF=${{ github.ref_name }}
+            GIT_SHA=${{ needs.test.outputs.sha }}
+            GIT_REF=${{ inputs.ref || github.ref_name }}
       - name: Smoke test both image platforms
         shell: bash
         run: |
@@ -65,10 +84,10 @@ jobs:
           done
           trap - EXIT
       - uses: docker/login-action@v4
-        if: github.ref_name == 'daddy' || github.ref_name == 'bottom'
+        if: github.event_name == 'workflow_dispatch' || github.ref_name == 'daddy'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Push tested image
-        if: github.ref_name == 'daddy' || github.ref_name == 'bottom'
+        if: github.event_name == 'workflow_dispatch' || github.ref_name == 'daddy'
         run: docker push "$DOCKER_IMAGE"
