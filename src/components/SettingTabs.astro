@@ -4,13 +4,14 @@ import { Tabs } from "cmdesigns";
 interface Props {
     id: string;
     label: string;
-    options: [[string, string], [string, string]];
+    options: [string, string][];
+    touchDefault?: string;
 }
 
-const { id, label, options } = Astro.props;
+const { id, label, options, touchDefault } = Astro.props;
 ---
 
-<div class="setting-tabs" {id}>
+<div class="setting-tabs" {id} data-touch-default={touchDefault}>
     <span>{label}</span>
     <Tabs id={`${id}-tabs`} name={id} {label} {options} />
 </div>
@@ -18,14 +19,19 @@ const { id, label, options } = Astro.props;
 <script>
     document.querySelectorAll<HTMLElement>(".setting-tabs").forEach((setting) => {
         const inputs = Array.from(setting.querySelectorAll<HTMLInputElement>('input[type="radio"]'));
-        const selected = inputs.find((input) => input.value === localStorage.getItem(setting.id)) ?? inputs[0];
+        let stored: string | null = null;
+        try { stored = localStorage.getItem(setting.id); } catch {}
+        const saved = inputs.find((input) => input.value === stored);
+        const touchDefault = navigator.maxTouchPoints > 0
+            && inputs.find((input) => input.value === setting.dataset.touchDefault);
+        const selected = saved || touchDefault || inputs[0];
         selected.checked = true;
         selected.dispatchEvent(new Event("change", { bubbles: true }));
         document.documentElement.setAttribute("data-" + setting.id, selected.value);
         setting.addEventListener("change", (event) => {
             if (!(event.target instanceof HTMLInputElement)) return;
             document.documentElement.setAttribute("data-" + setting.id, event.target.value);
-            localStorage.setItem(setting.id, event.target.value);
+            try { localStorage.setItem(setting.id, event.target.value); } catch {}
         });
     });
 </script>
@@ -39,5 +45,8 @@ const { id, label, options } = Astro.props;
     }
     .setting-tabs > span {
         font-size: 0.875rem;
+    }
+    :global(.setting-tabs:has(input:nth-of-type(3))) {
+        grid-template-columns: minmax(0, 1fr);
     }
 </style>
