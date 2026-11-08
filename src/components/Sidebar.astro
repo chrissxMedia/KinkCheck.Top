@@ -6,7 +6,7 @@ const templates = (await getCollection("templates"))
     .toSorted((a, b) => b.data.revisions[0].created.getTime() - a.data.revisions[0].created.getTime());
 ---
 
-<aside id="sidebar" aria-label="Navigation" hidden>
+<aside id="sidebar" aria-label="Navigation">
     <nav>
         <h2>Templates</h2>
         {templates.map((template) => (
@@ -46,18 +46,19 @@ const templates = (await getCollection("templates"))
     const toggle = document.querySelector<HTMLButtonElement>("#menu-toggle");
     const sidebar = document.querySelector<HTMLElement>("#sidebar");
     if (toggle && sidebar) {
+        const root = document.documentElement;
         const desktop = window.matchMedia("(min-width: 1500px)");
         let preferredOpen: boolean | undefined;
         const setOpen = (open: boolean, remember = false) => {
             if (remember) preferredOpen = open;
-            sidebar.hidden = !open;
+            root.dataset.sidebarOpen = String(open);
             toggle.setAttribute("aria-expanded", String(open));
         };
         setOpen(desktop.matches);
         desktop.addEventListener("change", () => setOpen(preferredOpen ?? desktop.matches));
-        toggle.addEventListener("click", () => setOpen(sidebar.hidden, true));
+        toggle.addEventListener("click", () => setOpen(root.dataset.sidebarOpen !== "true", true));
         document.addEventListener("keydown", (event) => {
-            if (event.key !== "Escape" || sidebar.hidden || document.querySelector("dialog[open]")) return;
+            if (event.key !== "Escape" || root.dataset.sidebarOpen !== "true" || document.querySelector("dialog[open]")) return;
             const wasInside = sidebar.contains(document.activeElement);
             setOpen(false, true);
             if (wasInside) toggle.focus();
@@ -101,13 +102,14 @@ const templates = (await getCollection("templates"))
     :global(#menu-toggle::before) {
         content: "☰";
     }
-    :global(#menu-toggle[aria-expanded="true"]::before) {
+    :global(:root[data-sidebar-open="true"] #menu-toggle::before) {
         content: "×";
     }
     :global(body.screenshot #menu-toggle) {
         display: none;
     }
     #sidebar {
+        display: none;
         box-sizing: border-box;
         width: 250px;
         height: 100dvh;
@@ -120,6 +122,9 @@ const templates = (await getCollection("templates"))
         padding: 3.5rem 1rem 1rem;
         border-left: 1px solid #666;
         background: black;
+    }
+    :global(:root[data-sidebar-open="true"]) #sidebar {
+        display: block;
     }
     nav {
         display: flex;
@@ -163,6 +168,14 @@ const templates = (await getCollection("templates"))
     nav :global(button[data-store]:hover),
     nav :global(button[data-template-id]:hover) {
         text-decoration: underline;
+    }
+    @media screen and (width >= 1500px) {
+        :global(:root:not([data-sidebar-open="false"])) #sidebar {
+            display: block;
+        }
+        :global(:root:not([data-sidebar-open="false"]) #menu-toggle::before) {
+            content: "×";
+        }
     }
     @media screen and (width < 1500px) {
         #sidebar {
