@@ -9,6 +9,9 @@ export const server = {
         save: defineAction({
             input: checkInsertSchema.pick({ template_id: true, template_revision: true, data: true }),
             handler: async (input) => {
+                if (!input.template_revision) {
+                    throw new ActionError({ code: "BAD_REQUEST", message: "template revision is required" });
+                }
                 const template = await getTemplateVersion(input.template_id, input.template_revision);
                 if (!template) {
                     throw new ActionError({ code: "NOT_FOUND", message: `template revision ${input.template_id}@${input.template_revision} not found` });
