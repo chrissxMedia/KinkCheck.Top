@@ -4,8 +4,8 @@ import type { validRating } from "../zod";
 import styles from "./Rater.module.css";
 
 function formatRating(rating: validRating) {
-    return `${rating} · ${Number.isInteger(rating) ? ratings[rating]
-        : `${ratings[Math.floor(rating)]} / ${ratings[Math.ceil(rating)]}`}`;
+    return Number.isInteger(rating) ? ratings[rating]
+        : `${ratings[Math.floor(rating)]} / ${ratings[Math.ceil(rating)]}`;
 }
 
 export default function Rater({ label, text, rating, setRating }:
