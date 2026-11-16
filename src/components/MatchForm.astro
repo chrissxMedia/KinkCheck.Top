@@ -1,0 +1,58 @@
+---
+import { Button } from "cmdesigns";
+import { matchingWeights, type MatchingWeights } from "../base";
+
+interface Props {
+    id: string;
+    other?: string;
+    weights?: MatchingWeights;
+}
+
+const { id, other, weights = "flat" } = Astro.props;
+---
+
+<form action={`/internal/checks/${encodeURIComponent(id)}/match`} method="get">
+    <label>
+        Match with
+        <input name="other" type="text" value={other} placeholder="Check ID" required />
+    </label>
+    <label>
+        Weights
+        <select name="weights">
+            {Object.entries(matchingWeights).map(([value, { name }]) => (
+                <option {value} selected={weights === value}>{name}</option>
+            ))}
+        </select>
+    </label>
+    <Button type="submit">Match</Button>
+</form>
+
+<style>
+    form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        justify-content: center;
+        gap: 0.75rem;
+        margin: 1rem;
+    }
+    :global(body.screenshot) form {
+        display: none;
+    }
+    label {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        min-width: 0;
+    }
+    input, select {
+        box-sizing: border-box;
+        max-width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #777;
+        border-radius: 0.25rem;
+        background: black;
+        color: white;
+        font: inherit;
+    }
+</style>
