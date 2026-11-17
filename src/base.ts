@@ -1,20 +1,59 @@
-import type { checkData, TRData } from "./zod";
+import type { checkData, TRData, validRating } from "./zod";
 
-export const ratings: [string, string][] = [
-    ["i dont know", "#d0d0d0"],
-    ["favorite", "#00e0e0"],
-    ["want to do", "#00c020"],
-    ["could be convinced", "#eeee20"],
-    ["not interested", "#d02000"],
-    ["hard limit", "#303030"],
+export const ratings: string[] = [
+    "i dont know",
+    "favorite",
+    "want to do",
+    "could be convinced",
+    "not interested",
+    "hard limit",
 ];
 
 const valueForAllKinks = <T>({ kinks }: TRData, x: T) =>
     kinks.map<T[][]>((c) => c[1].map((k) => k[1].map(() => x)));
 
 /** The runtime / template-specific representation of a check */
-export type kinkcheck = { ratings: number[][][] };
+export type kinkcheck = { ratings: validRating[][][] };
 export const defaultKinkcheck = (t: TRData): kinkcheck => ({ ratings: valueForAllKinks(t, 0) });
+
+type RatingWeight = (rating: validRating, other: validRating) => number;
+
+export const matchingWeights = {
+    flat: {
+        name: "Flat",
+        description: "Both ratings have equal weight. (actual average)",
+        weight: () => 1,
+    },
+    nicole: {
+        name: "Nicole's",
+        description: '"Favorite" counts 2× when the other person at least "could be convinced". Otherwise it counts 1×. "Want to do" and "could be convinced" count 1×. "Not interested" counts 2×, and halfway to "hard limit" counts 2.5×. The other half-steps are interpolated linearly.',
+        weight: (rating: validRating, other: validRating) =>
+            rating < 2 && other > 3 ? 1 : Math.max(1, 3 - rating, rating - 2),
+    },
+};
+export type MatchingWeights = keyof typeof matchingWeights;
+
+function matchRating(a: validRating, b: validRating, weight: RatingWeight): validRating {
+    if (!a || !b) return a || b;
+    if (a == 5 || b == 5) return 5;
+    const weightA = weight(a, b), weightB = weight(b, a);
+    const average = (a * weightA + b * weightB) / (weightA + weightB);
+    return (Math.round(average * 2) / 2) as validRating;
+}
+
+export function match(
+    { ratings: a }: kinkcheck,
+    { ratings: b }: kinkcheck,
+    weight: RatingWeight = matchingWeights.flat.weight,
+): kinkcheck {
+    return {
+        ratings: a.map((rA, cat) =>
+            rA.map((rsA, kink) =>
+                rsA.map((ratA, pos) => matchRating(ratA, b[cat][kink][pos], weight)),
+            ),
+        ),
+    };
+}
 
 function packIndexedValues<T>(indexedValues: [number, T][]): (T | undefined)[] {
     if (!indexedValues.length) return [];
@@ -35,7 +74,7 @@ export function updateCheck(oldCheck: checkData, newCheck: checkData): checkData
 
 export function encodeKinkCheck({ kinks }: TRData, { ratings }: kinkcheck): checkData {
     const r = packIndexedValues(kinks.flatMap(([, ks], cat) =>
-        ks.flatMap(([, , kid], i): [number, number[]][] => kid.length === 1
+        ks.flatMap(([, , kid], i): [number, validRating[]][] => kid.length === 1
             ? [[kid[0], ratings[cat][i]]]
             : kid.map((id, p) => [id, [ratings[cat][i][p]]]))));
     return { ratings: r.map(x => x ? (new Set(x).size === 1 ? x[0] : x) : []) } as checkData;

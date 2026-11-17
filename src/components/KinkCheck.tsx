@@ -2,11 +2,11 @@ import { useEffect, useState } from "preact/hooks";
 import { decodeKinkCheck, defaultKinkcheck, encodeKinkCheck, updateCheck, type kinkcheck } from "../base";
 import Kink from "./Kink";
 import styles from "./KinkCheck.module.css";
-import type { kink, TRData } from "../zod";
+import type { kink, TRData, validRating } from "../zod";
 
 export function ExampleTable({ kinks }: { kinks: kink[] }) {
-    const [ratings, setRatings] = useState(kinks.map(([, positions]) => positions.map(() => 0)));
-    const setRating = (kink: number) => (pos: number) => (rat: number) => {
+    const [ratings, setRatings] = useState<validRating[][]>(kinks.map(([, positions]) => positions.map(() => 0)));
+    const setRating = (kink: number) => (pos: number) => (rat: validRating) => {
         const r = [...ratings];
         r[kink][pos] = rat;
         setRatings(r);
@@ -15,8 +15,8 @@ export function ExampleTable({ kinks }: { kinks: kink[] }) {
 }
 
 export function Category({ cat, kinks, ratings, setRating }: {
-    cat?: string, kinks: kink[], ratings: number[][],
-    setRating?: (k: number) => (p: number) => (r: number) => void
+    cat?: string, kinks: kink[], ratings: validRating[][],
+    setRating?: (k: number) => (p: number) => (r: validRating) => void
 }) {
     return (
         <div class={styles.category}>
@@ -38,7 +38,7 @@ export default function KinkCheck(meta: TRData & { init?: kinkcheck, store?: str
         const saved = meta.store && window.localStorage.getItem(meta.store);
         if (saved) setRatings(decodeKinkCheck(meta, JSON.parse(saved)).ratings);
     }, []);
-    const setRating = (cat: number) => (kink: number) => (pos: number) => (rat: number) => {
+    const setRating = (cat: number) => (kink: number) => (pos: number) => (rat: validRating) => {
         const r = [...ratings];
         r[cat][kink][pos] = rat;
         setRatings(r);
@@ -53,7 +53,7 @@ export default function KinkCheck(meta: TRData & { init?: kinkcheck, store?: str
 }
 
 export function Check({ kinks, ratings, setRating }: TRData &
-{ ratings: number[][][], setRating?: (c: number) => (k: number) => (p: number) => (r: number) => void }) {
+{ ratings: validRating[][][], setRating?: (c: number) => (k: number) => (p: number) => (r: validRating) => void }) {
     return <main class={styles.catcontainer}>
         {
             kinks.map(([cat, kinks], i) => (
