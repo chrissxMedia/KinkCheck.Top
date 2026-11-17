@@ -62,7 +62,7 @@ const internal = Astro.url.pathname.startsWith("/internal");
         align-items: flex-start;
     }
     @media screen and (width >= 1500px) {
-        .page:has(#menu-toggle[aria-expanded="true"]) {
+        :global(:root:not([data-sidebar-open="false"])) .page {
             padding-right: 250px;
         }
     }

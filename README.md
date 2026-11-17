@@ -25,19 +25,16 @@ npm install
 npm run dev
 ```
 
-## Branches & Deployment
+## Releases and deployment
 
-| Branch | URL |
-|---|---|
-| `daddy` (main/prod) | [KinkCheck.Top](https://kinkcheck.top) |
-| `bottom` (beta) | [Bottom.KinkCheck.Top](https://bottom.kinkcheck.top) |
+Pushes to `daddy` deploy to [KinkCheck.Top](https://kinkcheck.top). For [Bottom.KinkCheck.Top](https://bottom.kinkcheck.top), use **Actions > Main > Run workflow** and enter the branch name.
 
 Two environment variables are passed by CI (not needed locally):
 
 | Variable | Purpose |
 |---|---|
-| `GIT_SHA` | Current commit hash (only used for the footer) |
-| `GIT_REF` | Branch name (also used for production gating in middleware) |
+| `GIT_SHA` | Source commit, used for the footer and database backups |
+| `GIT_REF` | Source branch. `daddy` is production, everything else is beta. |
 
 ## Contributing
 

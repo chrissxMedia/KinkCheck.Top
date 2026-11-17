@@ -16,20 +16,40 @@ const valueForAllKinks = <T>({ kinks }: TRData, x: T) =>
 export type kinkcheck = { ratings: validRating[][][] };
 export const defaultKinkcheck = (t: TRData): kinkcheck => ({ ratings: valueForAllKinks(t, 0) });
 
-function matchRating(a: validRating, b: validRating): validRating {
+type RatingWeight = (rating: validRating, other: validRating) => number;
+
+export const matchingWeights = {
+    flat: {
+        name: "Flat",
+        description: "Both ratings have equal weight. (actual average)",
+        weight: () => 1,
+    },
+    nicole: {
+        name: "Nicole's",
+        description: '"Favorite" counts 2× when the other person at least "could be convinced". Otherwise it counts 1×. "Want to do" and "could be convinced" count 1×. "Not interested" counts 2×, and halfway to "hard limit" counts 2.5×. The other half-steps are interpolated linearly.',
+        weight: (rating: validRating, other: validRating) =>
+            rating < 2 && other > 3 ? 1 : Math.max(1, 3 - rating, rating - 2),
+    },
+};
+export type MatchingWeights = keyof typeof matchingWeights;
+
+function matchRating(a: validRating, b: validRating, weight: RatingWeight): validRating {
     if (!a || !b) return a || b;
     if (a == 5 || b == 5) return 5;
-    return (Math.round(a + b) / 2) as validRating;
+    const weightA = weight(a, b), weightB = weight(b, a);
+    const average = (a * weightA + b * weightB) / (weightA + weightB);
+    return (Math.round(average * 2) / 2) as validRating;
 }
 
 export function match(
     { ratings: a }: kinkcheck,
     { ratings: b }: kinkcheck,
+    weight: RatingWeight = matchingWeights.flat.weight,
 ): kinkcheck {
     return {
         ratings: a.map((rA, cat) =>
             rA.map((rsA, kink) =>
-                rsA.map((ratA, pos) => matchRating(ratA, b[cat][kink][pos])),
+                rsA.map((ratA, pos) => matchRating(ratA, b[cat][kink][pos], weight)),
             ),
         ),
     };

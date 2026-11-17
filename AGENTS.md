@@ -35,11 +35,11 @@ Run `npm run test` (Vitest).
 
 ## CI / GitHub Actions
 
-The main workflow runs tests, checks that migrations are current, then builds, smoke-tests, and pushes one multi-platform Docker image.
+The main workflow runs tests, checks that migrations are current, then builds and smoke-tests one multi-platform Docker image. It publishes `latest` on pushes to `daddy`, or `bottom` on manual runs.
 
 Two environment variables are passed at build time:
 
 | Variable | Purpose |
 |---|---|
 | `GIT_SHA` | Current commit hash (displayed in the footer and used to name database backups) |
-| `GIT_REF` | Branch name (used for prod gating in middleware) |
+| `GIT_REF` | Source branch, used for the site URL, branding, and prod gating in middleware. |
