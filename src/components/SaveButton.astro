@@ -27,15 +27,11 @@ const { template_id, template_revision } = Astro.props;
         };
         button.addEventListener("click", async () => {
             if (button.disabled) return;
-            const saved = window.localStorage.getItem(props.template_id);
-            if (!saved) {
-                message.textContent = "Couldn't load check data";
-                showDialog(dialog, button);
-                return;
-            }
-
-            button.disabled = true;
             try {
+                const saved = window.localStorage.getItem(props.template_id);
+                if (!saved) throw new Error("Couldn't load check data");
+
+                button.disabled = true;
                 const { actions } = await import("astro:actions");
                 const { data, error } = await actions.check.save({ ...props, data: JSON.parse(saved) });
                 if (error) throw error;
