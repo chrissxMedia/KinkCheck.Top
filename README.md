@@ -27,14 +27,15 @@ npm run dev
 
 ## Releases and deployment
 
-Pushes to `daddy` deploy to [KinkCheck.Top](https://kinkcheck.top). For [Bottom.KinkCheck.Top](https://bottom.kinkcheck.top), use **Actions > Main > Run workflow** and enter the branch name.
+Pushes to `daddy` deploy to [Bottom.KinkCheck.Top](https://bottom.kinkcheck.top).
+To release to [KinkCheck.Top](https://kinkcheck.top), use **Actions > Main > Run workflow**, select `daddy`, and enter the full commit SHA from the footer link on the Bottom build you tested.
 
-Two environment variables are passed by CI (not needed locally):
+CI sets `GIT_REF=bottom` for Bottom builds so they use Bottom branding even though the source commit comes from `daddy`.
 
-| Variable | Purpose |
-|---|---|
-| `GIT_SHA` | Source commit, used for the footer and database backups |
-| `GIT_REF` | Source branch. `daddy` is production, everything else is beta. |
+| Variable  | Purpose                                                                                           |
+| --------- | ------------------------------------------------------------------------------------------------- |
+| `GIT_SHA` | Source commit, used for the footer and database backups                                           |
+| `GIT_REF` | Build label shown in the footer. Set it to `daddy` to use production behavior, including locally. |
 
 ## Contributing
 
