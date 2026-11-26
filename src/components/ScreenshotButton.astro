@@ -17,11 +17,12 @@ options.width ??= 1440;
     document.querySelectorAll<HTMLButtonElement>(".screenshot-button").forEach((button) => {
         const options: SnapdomOptions = JSON.parse(button.dataset.options!);
         button.addEventListener("click", async () => {
-            const { snapdom } = await import("@zumer/snapdom");
             // TODO: be able to pass in a selector for what to screenshot
             const content = document.querySelector("div#content") as HTMLElement;
             const width = content.style.width;
+            button.disabled = true;
             try {
+                const { snapdom } = await import("@zumer/snapdom");
                 document.body.classList.add("screenshot");
                 content.style.width = options.width + "px";
                 const filename = document.title + " " + new Date().toISOString().slice(0, 19).replace("T", " ") + ".png";
@@ -44,6 +45,7 @@ options.width ??= 1440;
             } finally {
                 document.body.classList.remove("screenshot");
                 content.style.width = width;
+                button.disabled = false;
             }
         });
     });
