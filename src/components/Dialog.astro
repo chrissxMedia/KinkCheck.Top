@@ -1,0 +1,31 @@
+---
+import { Dialog } from "cmdesigns";
+import type { HTMLAttributes } from "astro/types";
+
+type Props = HTMLAttributes<"dialog">;
+---
+
+<Dialog {...Astro.props} data-dialog>
+    <p><slot /></p>
+    <slot name="buttons" slot="buttons" />
+</Dialog>
+
+<script>
+    document.querySelectorAll<HTMLDialogElement>("dialog[data-dialog]").forEach((dialog) => {
+        dialog.addEventListener("click", (event) => {
+            if (event.target === dialog && event.currentTarget === dialog) {
+                dialog.close();
+            }
+        });
+        dialog.querySelectorAll<HTMLButtonElement>("button[data-close]").forEach((button) => {
+            button.addEventListener("click", () => dialog.close());
+        });
+    });
+</script>
+
+<style>
+    p {
+        font-family: var(--sans-serif);
+        margin: 0;
+    }
+</style>
