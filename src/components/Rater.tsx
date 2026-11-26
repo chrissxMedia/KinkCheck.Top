@@ -88,6 +88,7 @@ export default function Rater({ label, text, rating, setRating }:
         <>
             <div class={setRating ? styles.clickable : styles.noclick}
                 onClick={handleClick} onContextMenu={handleClick}
+                onMouseDown={setRating && ((e) => e.preventDefault())}
                 onPointerDown={handlePointerDown} onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp} onPointerCancel={cancelPress} onPointerLeave={cancelPress}
                 onKeyDown={handleKey} onMouseEnter={focus} onMouseLeave={unfocus}>
