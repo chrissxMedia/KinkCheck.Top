@@ -12,6 +12,7 @@ const { store } = Astro.props;
 <button type="button" data-store={store}>Clear</button>
 <Dialog>
     Are you sure you want to clear your ratings? This action is irreversible.
+    <span data-clear-error role="alert"></span>
     <Button slot="buttons" data-close>Cancel</Button>
     <Button slot="buttons" variant="danger">Clear</Button>
 </Dialog>
@@ -21,15 +22,27 @@ const { store } = Astro.props;
 
     document.querySelectorAll<HTMLButtonElement>("button[data-store]").forEach((button) => {
         const dialog = button.nextElementSibling as HTMLDialogElement;
-        button.addEventListener("click", () => showDialog(dialog, button));
+        const error = dialog.querySelector("[data-clear-error]")!;
+        button.addEventListener("click", () => {
+            error.textContent = "";
+            showDialog(dialog, button);
+        });
         dialog.querySelector<HTMLButtonElement>("button:last-child")!.addEventListener("click", () => {
-            window.localStorage.removeItem(button.dataset.store!);
+            try {
+                window.localStorage.removeItem(button.dataset.store!);
+            } catch {
+                error.textContent = "Couldn't clear your ratings. Browser storage is unavailable.";
+                return;
+            }
             window.location.reload();
         });
     });
 </script>
 
 <style>
+    [data-clear-error] {
+        display: block;
+    }
     button[data-store] {
         border: 0;
         padding: 0;
