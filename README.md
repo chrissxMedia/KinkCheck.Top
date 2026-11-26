@@ -50,6 +50,8 @@ Each kink row's third value is a numeric ID. Ratings are stored by these IDs, so
 When changing a kink's name between revisions, group the old and new names under
 the Template's ID in the `aliases` table in
 [`templates.test.ts`](test/templates.test.ts). The test checks that no IDs are
-being reused for different kinks.
+being reused for different kinks. If the old name is already in a group, add the
+new name to that group. For example, extend `[A, B]` to `[A, B, C]` when `B`
+becomes `C`.
 
 Currently, different Templates may use the same IDs. If a Template is derived from another, it's recommended to reuse IDs for kinks that keep the same meaning.
