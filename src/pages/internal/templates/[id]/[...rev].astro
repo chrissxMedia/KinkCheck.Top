@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { Select } from "cmdesigns";
 import HeaderLogo from "../../../../components/HeaderLogo.astro";
 import KinkCheck from "../../../../components/KinkCheck";
 import RatingOverview from "../../../../components/RatingOverview.astro";
@@ -27,7 +28,7 @@ export async function getStaticPaths() {
     <HeaderLogo slot="header">
         <span class="smol template-version">
             {template.name}&nbsp;
-            <select class="versionselector" aria-label="Template version">
+            <Select class="versionselector" aria-label="Template version">
                 <option value={`/internal/templates/${template.id}/`} selected={!rev}>
                     latest (v{template.revisions[0].revision})
                 </option>
@@ -38,7 +39,7 @@ export async function getStaticPaths() {
                         </option>
                     ))}
                 </optgroup>
-            </select>
+            </Select>
         </span>
     </HeaderLogo>
     <RatingOverview slot="header-legend" />
@@ -63,19 +64,6 @@ export async function getStaticPaths() {
         align-items: center;
         max-width: 100%;
         overflow-wrap: normal;
-    }
-    .versionselector {
-        min-width: 0;
-        padding: 0.25em 0.5em;
-        border: 1px solid #666;
-        border-radius: 0.25rem;
-        background: black;
-        color: white;
-        cursor: pointer;
-    }
-    .versionselector:focus-visible {
-        outline: none;
-        border-color: white;
     }
     @media screen and (min-width: 1001px) {
         .versionselector {
